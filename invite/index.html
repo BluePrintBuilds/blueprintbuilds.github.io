@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en-AU">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Set your password — Blueprint Builds</title>
+  <meta name="description" content="Finish setting up your Blueprint Builds account.">
+  <meta name="robots" content="noindex">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <div class="wrap">
+    <header class="site">
+      <a class="brand" href="/"><span class="mark">▦</span> Blueprint Builds</a>
+      <nav class="site">
+        <a href="/support/">Support</a>
+        <a href="/privacy/">Privacy</a>
+        <a href="/terms/">Terms</a>
+      </nav>
+    </header>
+
+    <main>
+      <p class="kicker">Account</p>
+      <h1>Set your password</h1>
+
+      <div class="panel" id="panel-wait" hidden>
+        <h2>Open this page from your email</h2>
+        <p class="hint">This page finishes an invitation. Tap the button in the email we sent you — the link signs you in securely and brings you back here to choose a password. If your link has expired, ask your builder to send a fresh invite.</p>
+      </div>
+
+      <div class="panel" id="panel-expired" hidden>
+        <h2>This link has expired</h2>
+        <p class="hint">Invite and password links only work for a short time, and only once. Ask your builder to send a new one, or contact <a href="mailto:info@peninsulaequine.systems">info@peninsulaequine.systems</a> and we'll re-issue access.</p>
+      </div>
+
+      <div class="panel" id="panel-form" hidden>
+        <h2>Choose a password</h2>
+        <p class="hint" id="who">Signed in securely from your email link.</p>
+        <form id="form">
+          <label class="field"><span>New password</span>
+            <input autocomplete="new-password" id="password" minlength="8" required type="password">
+          </label>
+          <label class="field"><span>Confirm password</span>
+            <input autocomplete="new-password" id="confirm" minlength="8" required type="password">
+          </label>
+          <button class="btn" id="submit" type="submit">Save password</button>
+        </form>
+        <p class="status" id="form-status"></p>
+      </div>
+
+      <div class="panel" id="panel-done" hidden>
+        <h2>Password saved</h2>
+        <p class="hint" id="done-copy">You're all set. Open <strong>Blueprint Builds</strong> on your iPhone and sign in with your email and your new password. If the app isn't installed yet, use the TestFlight invitation from your builder first.</p>
+      </div>
+    </main>
+
+    <footer class="site">
+      <div>© 2026 Blueprint Builds · Operated by Peninsula Equine</div>
+      <div>
+        <a href="/support/">Support</a>
+        <a href="/privacy/">Privacy</a>
+        <a href="/terms/">Terms</a>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+  (function () {
+    'use strict';
+    var SUPABASE_URL = 'https://mxjuknqwzbvvmmdrvkql.supabase.co';
+    // Publishable key: safe to embed, it grants nothing without a user session.
+    var ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im14anVrbnF3emJ2dm1tZHJ2a3FsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU5ODU4MjcsImV4cCI6MjEwMTU2MTgyN30.RNrDixA6B1TgVHqoswkMDSYlwywGYfcC0P7SYY8A_lY';
+
+    function show(id) {
+      ['panel-wait', 'panel-expired', 'panel-form', 'panel-done'].forEach(function (name) {
+        document.getElementById(name).hidden = name !== id;
+      });
+    }
+    function status(kind, text) {
+      var el = document.getElementById('form-status');
+      el.className = 'status show ' + kind;
+      el.textContent = text;
+    }
+
+    var params = new URLSearchParams((location.hash || '').replace(/^#/, ''));
+    var accessToken = params.get('access_token');
+    var kind = params.get('type') || 'invite';
+
+    if (params.get('error') || params.get('error_code')) {
+      show('panel-expired');
+      return;
+    }
+    if (!accessToken) {
+      show('panel-wait');
+      return;
+    }
+    // The tokens stay in this page only — scrub them from the address bar.
+    try { history.replaceState(null, '', location.pathname); } catch (err) { /* cosmetic only */ }
+
+    var email = '';
+    try {
+      var payload = JSON.parse(atob(accessToken.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')));
+      email = typeof payload.email === 'string' ? payload.email : '';
+    } catch (err) { /* the token is still usable even if it cannot be decoded here */ }
+    if (email) {
+      document.getElementById('who').textContent = 'Setting the password for ' + email + '.';
+    }
+    show('panel-form');
+
+    document.getElementById('form').addEventListener('submit', function (event) {
+      event.preventDefault();
+      var password = document.getElementById('password').value;
+      var confirm = document.getElementById('confirm').value;
+      if (password.length < 8) { status('err', 'Use at least 8 characters.'); return; }
+      if (password !== confirm) { status('err', 'The two passwords do not match.'); return; }
+
+      var button = document.getElementById('submit');
+      button.disabled = true;
+      status('busy', 'Saving your password…');
+
+      fetch(SUPABASE_URL + '/auth/v1/user', {
+        method: 'PUT',
+        headers: {
+          apikey: ANON_KEY,
+          Authorization: 'Bearer ' + accessToken,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ password: password }),
+      }).then(function (response) {
+        if (response.ok) {
+          if (email) {
+            document.getElementById('done-copy').innerHTML =
+              'You\'re all set. Open <strong>Blueprint Builds</strong> on your iPhone and sign in as <strong>' +
+              email.replace(/[<>&]/g, '') + '</strong> with your new password. If the app isn\'t installed yet, use the TestFlight invitation from your builder first.';
+          }
+          show('panel-done');
+          return;
+        }
+        return response.json().catch(function () { return {}; }).then(function (body) {
+          var message = (body && (body.msg || body.message || body.error_description)) || '';
+          if (response.status === 401 || response.status === 403) {
+            show('panel-expired');
+          } else {
+            status('err', message || 'The password could not be saved. Try again.');
+            button.disabled = false;
+          }
+        });
+      }).catch(function () {
+        status('err', 'No connection. Check the internet and try again.');
+        button.disabled = false;
+      });
+    });
+
+    // Session type note: invite links and set-password links behave the same here.
+    void kind;
+  })();
+  </script>
+</body>
+</html>

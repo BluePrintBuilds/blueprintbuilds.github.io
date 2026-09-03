@@ -1,0 +1,302 @@
+<!doctype html>
+<html lang="en-AU">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Publish drawings — Blueprint Builds</title>
+  <meta name="description" content="Build-team tool: publish PDF and image drawings to a Blueprint Builds project from your computer.">
+  <meta name="robots" content="noindex">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <div class="wrap">
+    <header class="site">
+      <a class="brand" href="/"><span class="mark">▦</span> Blueprint Builds</a>
+      <nav class="site">
+        <a href="/support/">Support</a>
+        <a href="/privacy/">Privacy</a>
+        <a href="/terms/">Terms</a>
+      </nav>
+    </header>
+
+    <main>
+      <p class="kicker">Build team</p>
+      <h1>Publish drawings</h1>
+      <p class="lede">Upload issued PDFs and drawing images to a project's plan register — from the computer the drawings live on. They appear in everyone's app immediately.</p>
+
+      <div class="panel" id="panel-signin">
+        <h2>Sign in</h2>
+        <p class="hint">Use your Blueprint Builds staff login — the same one as the app. Client accounts are read-only and cannot publish.</p>
+        <form id="signin-form">
+          <label class="field"><span>Email</span>
+            <input autocomplete="username" id="email" required type="email">
+          </label>
+          <label class="field"><span>Password</span>
+            <input autocomplete="current-password" id="password" required type="password">
+          </label>
+          <button class="btn" id="signin-submit" type="submit">Sign in securely</button>
+        </form>
+        <p class="status" id="signin-status"></p>
+      </div>
+
+      <div class="session-bar" id="session-bar" hidden>
+        <div>Signed in as <b id="session-name"></b> · <span id="session-workspace"></span></div>
+        <button class="btn quiet" id="signout" type="button">Sign out</button>
+      </div>
+
+      <div class="panel" id="panel-upload" hidden>
+        <h2>Publish to the plan register</h2>
+        <p class="hint">PDF, JPG, PNG, WEBP or HEIC · up to 50MB each. The file name becomes the drawing title.</p>
+        <form id="upload-form">
+          <label class="field"><span>Project</span>
+            <select id="project"></select>
+          </label>
+          <label class="field"><span>Discipline</span>
+            <select id="discipline">
+              <option>Architectural</option><option>Structural</option><option>Civil</option>
+              <option>Services</option><option>Landscape</option><option>Survey</option>
+              <option selected>Other</option>
+            </select>
+          </label>
+          <label class="field"><span>Status in the set</span>
+            <select id="status">
+              <option value="current" selected>Current — the issue the field works from</option>
+              <option value="review">Review — in coordination, not yet issued</option>
+              <option value="superseded">Superseded — kept on record</option>
+            </select>
+          </label>
+          <label class="field"><span>Revision (optional, e.g. P1 or C)</span>
+            <input id="revision" maxlength="40" type="text">
+          </label>
+          <label class="field"><span>Drawing files</span>
+            <input accept=".pdf,.png,.jpg,.jpeg,.webp,.heic" id="files" multiple required type="file">
+          </label>
+          <button class="btn" id="publish" type="submit">Publish drawings</button>
+        </form>
+        <ul class="file-list" id="file-list"></ul>
+        <p class="status" id="upload-status"></p>
+      </div>
+    </main>
+
+    <footer class="site">
+      <div>© 2026 Blueprint Builds · Operated by Peninsula Equine</div>
+      <div>
+        <a href="/support/">Support</a>
+        <a href="/privacy/">Privacy</a>
+        <a href="/terms/">Terms</a>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+  (function () {
+    'use strict';
+    var SUPABASE_URL = 'https://mxjuknqwzbvvmmdrvkql.supabase.co';
+    // Publishable key: safe to embed, it grants nothing without a user session.
+    var ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im14anVrbnF3emJ2dm1tZHJ2a3FsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU5ODU4MjcsImV4cCI6MjEwMTU2MTgyN30.RNrDixA6B1TgVHqoswkMDSYlwywGYfcC0P7SYY8A_lY';
+    var MAX_BYTES = 52428800;
+    var MIME_BY_EXT = { pdf: 'application/pdf', png: 'image/png', jpg: 'image/jpeg', jpeg: 'image/jpeg', webp: 'image/webp', heic: 'image/heic' };
+    var STAFF_ROLES = ['Owner', 'Project manager', 'Site lead'];
+
+    var session = null; // { token, name, workspaceId, workspaceName }
+
+    function el(id) { return document.getElementById(id); }
+    function status(id, kind, text) {
+      var node = el(id);
+      node.className = kind ? 'status show ' + kind : 'status';
+      node.textContent = text || '';
+    }
+
+    function api(path, options) {
+      options = options || {};
+      options.headers = Object.assign({ apikey: ANON_KEY }, options.headers || {});
+      if (session) options.headers.Authorization = 'Bearer ' + session.token;
+      return fetch(SUPABASE_URL + path, options);
+    }
+
+    function readError(response, fallback) {
+      return response.json().catch(function () { return {}; }).then(function (body) {
+        if (response.status === 401) return 'The session expired — sign in again.';
+        if (response.status === 403 || (body && body.code === '42501')) {
+          return 'This account cannot publish drawings. Only build-team logins can.';
+        }
+        return (body && (body.message || body.msg || body.error_description)) || fallback;
+      });
+    }
+
+    el('signin-form').addEventListener('submit', function (event) {
+      event.preventDefault();
+      var button = el('signin-submit');
+      button.disabled = true;
+      status('signin-status', 'busy', 'Checking your staff access…');
+
+      fetch(SUPABASE_URL + '/auth/v1/token?grant_type=password', {
+        method: 'POST',
+        headers: { apikey: ANON_KEY, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: el('email').value.trim(), password: el('password').value }),
+      }).then(function (response) {
+        if (!response.ok) {
+          return response.json().catch(function () { return {}; }).then(function (body) {
+            throw new Error(body.error_description || body.msg || 'Check the email and password and try again.');
+          });
+        }
+        return response.json();
+      }).then(function (tokens) {
+        session = { token: tokens.access_token };
+        return api('/rest/v1/rpc/blueprint_mobile_session', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}',
+        });
+      }).then(function (response) {
+        if (!response.ok) throw new Error('This account is not assigned to a Blueprint Builds workspace.');
+        return response.json();
+      }).then(function (data) {
+        if (!data || STAFF_ROLES.indexOf(data.role) === -1) {
+          session = null;
+          throw new Error('This is a client login. Client accounts are read-only — publishing needs a build-team login.');
+        }
+        session.name = data.user && data.user.name ? data.user.name : 'Build team';
+        session.workspaceId = data.workspace.id;
+        session.workspaceName = data.workspace.name;
+        return api('/rest/v1/rpc/blueprint_mobile_projects', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}',
+        });
+      }).then(function (response) {
+        if (!response.ok) throw new Error('Projects could not be loaded. Try again.');
+        return response.json();
+      }).then(function (projects) {
+        var select = el('project');
+        select.innerHTML = '';
+        (projects || []).forEach(function (project) {
+          var option = document.createElement('option');
+          option.value = project.id;
+          option.textContent = project.name;
+          select.appendChild(option);
+        });
+        if (!select.options.length) throw new Error('No projects are assigned to this account yet.');
+
+        el('session-name').textContent = session.name;
+        el('session-workspace').textContent = session.workspaceName;
+        el('panel-signin').hidden = true;
+        el('session-bar').hidden = false;
+        el('panel-upload').hidden = false;
+        el('password').value = '';
+        status('signin-status', null, '');
+        button.disabled = false;
+      }).catch(function (reason) {
+        session = null;
+        status('signin-status', 'err', reason && reason.message ? reason.message : 'Sign-in failed. Try again.');
+        button.disabled = false;
+      });
+    });
+
+    el('signout').addEventListener('click', function () {
+      session = null;
+      el('panel-signin').hidden = false;
+      el('session-bar').hidden = true;
+      el('panel-upload').hidden = true;
+      el('file-list').innerHTML = '';
+      status('upload-status', null, '');
+    });
+
+    function titleFromName(name) {
+      var stem = name.replace(/\.[^.]+$/, '').replace(/[_-]+/g, ' ').replace(/\s+/g, ' ').trim();
+      return (stem || 'Drawing').slice(0, 200);
+    }
+
+    function publishOne(file, listItem) {
+      var ext = (file.name.split('.').pop() || '').toLowerCase();
+      var mime = MIME_BY_EXT[ext] || file.type;
+      if (!MIME_BY_EXT[ext]) return Promise.reject(new Error('Unsupported file type.'));
+      if (file.size < 1) return Promise.reject(new Error('The file is empty.'));
+      if (file.size > MAX_BYTES) return Promise.reject(new Error('Larger than the 50MB limit.'));
+
+      var eventId = crypto.randomUUID();
+      var path = session.workspaceId + '/' + el('project').value + '/' + eventId + '.' + ext;
+      listItem.querySelector('.state').textContent = 'uploading…';
+
+      return api('/storage/v1/object/plans/' + path, {
+        method: 'POST', headers: { 'Content-Type': mime }, body: file,
+      }).then(function (response) {
+        if (!response.ok) {
+          return readError(response, 'The upload failed.').then(function (message) { throw new Error(message); });
+        }
+        listItem.querySelector('.state').textContent = 'registering…';
+        return api('/rest/v1/rpc/blueprint_mobile_create_plan', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            p_project_id: el('project').value,
+            p_client_event_id: eventId,
+            p_title: titleFromName(file.name),
+            p_discipline: el('discipline').value,
+            p_revision: el('revision').value.trim() || null,
+            p_status: el('status').value,
+            p_storage_path: path,
+            p_mime_type: mime,
+            p_size_bytes: file.size,
+            p_page_count: null,
+          }),
+        });
+      }).then(function (response) {
+        if (!response.ok) {
+          return readError(response, 'The drawing could not be registered.').then(function (message) { throw new Error(message); });
+        }
+      });
+    }
+
+    el('upload-form').addEventListener('submit', function (event) {
+      event.preventDefault();
+      var files = Array.prototype.slice.call(el('files').files || []);
+      if (!files.length) { status('upload-status', 'err', 'Choose at least one drawing file.'); return; }
+
+      var button = el('publish');
+      button.disabled = true;
+      status('upload-status', 'busy', 'Publishing ' + files.length + ' drawing' + (files.length === 1 ? '' : 's') + '…');
+
+      var list = el('file-list');
+      list.innerHTML = '';
+      var items = files.map(function (file) {
+        var li = document.createElement('li');
+        var name = document.createElement('span');
+        name.className = 'name';
+        name.textContent = titleFromName(file.name);
+        var state = document.createElement('span');
+        state.className = 'state';
+        state.textContent = 'queued';
+        li.appendChild(name);
+        li.appendChild(state);
+        list.appendChild(li);
+        return li;
+      });
+
+      var failures = 0;
+      var chain = Promise.resolve();
+      files.forEach(function (file, index) {
+        chain = chain.then(function () {
+          return publishOne(file, items[index]).then(function () {
+            items[index].querySelector('.state').textContent = 'published';
+            items[index].querySelector('.state').className = 'state done';
+          }).catch(function (reason) {
+            failures += 1;
+            items[index].querySelector('.state').textContent = reason.message || 'failed';
+            items[index].querySelector('.state').className = 'state fail';
+          });
+        });
+      });
+
+      chain.then(function () {
+        button.disabled = false;
+        if (failures === 0) {
+          status('upload-status', 'ok', 'Done — every drawing is in the register. Open the project in the app and check Plans.');
+          el('files').value = '';
+        } else if (failures < files.length) {
+          status('upload-status', 'err', failures + ' of ' + files.length + ' failed — see the list above. The rest are published.');
+        } else {
+          status('upload-status', 'err', 'Nothing was published — see the reasons above.');
+        }
+      });
+    });
+  })();
+  </script>
+</body>
+</html>
