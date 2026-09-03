@@ -1,0 +1,19 @@
+{
+  "applinks": {
+    "details": [
+      {
+        "appIDs": ["S597TNF89K.com.blueprintbuilds.app"],
+        "components": [
+          { "/": "/invite/*", "exclude": true, "comment": "Web-only: finishes invite emails; must never open the app" },
+          { "/": "/publish/*", "exclude": true, "comment": "Web-only build-team tool" },
+          { "/": "/privacy/*", "exclude": true },
+          { "/": "/terms/*", "exclude": true },
+          { "/": "/support/*", "exclude": true },
+          { "/": "/", "exclude": true, "comment": "Marketing home opens in the browser" },
+          { "/": "/project/*", "comment": "Deep link into a project (app route exists)" }
+        ]
+      }
+    ]
+  },
+  "webcredentials": { "apps": ["S597TNF89K.com.blueprintbuilds.app"] }
+}

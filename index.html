@@ -1,117 +1,268 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en-AU">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Blueprint Builds — site evidence and decisions for construction delivery</title>
-  <meta name="description" content="Blueprint Builds is an invitation-only field app for construction delivery: capture site evidence, resolve client decisions, and keep an auditable project record.">
-  <link rel="stylesheet" href="/styles.css">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Blueprint Builds — Offline-First Evidence & Auditable Decisions for Construction</title>
+<meta name="description" content="Blueprint Builds is offline-first evidence capture with time-stamped, append-only audit records, decisions with cost and time impact, and role-scoped client views — built for construction delivery. Zero trackers. Zero external requests." />
+<meta name="theme-color" content="#0B0F17" />
+<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+<link rel="canonical" href="https://blueprintbuilds.github.io/" />
+<meta property="og:title" content="Blueprint Builds — Offline-First Evidence & Auditable Decisions" />
+<meta property="og:description" content="Time-stamped, auditable field evidence and decisions for construction delivery. Privacy-first: zero trackers." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://blueprintbuilds.github.io/" />
+<link rel="stylesheet" href="/assets/landing.css" />
 </head>
-<body class="landing">
-  <div class="wrap">
-    <header class="site">
-      <a class="brand" href="/"><span class="mark">▦</span> Blueprint Builds</a>
-      <nav class="site">
-        <a href="/support/">Support</a>
-        <a href="/privacy/">Privacy</a>
-        <a href="/terms/">Terms</a>
-      </nav>
-    </header>
+<body>
+<div class="grid-bg" aria-hidden="true"></div>
 
-    <main>
-      <section class="hero">
-        <div class="hero-copy">
-          <p class="kicker">Field &amp; decision layer · construction delivery</p>
-          <h1>The site record that keeps decisions moving.</h1>
-          <p class="lede">Blueprint Builds is a mobile field app for construction teams and their clients: capture evidence while context is fresh, put decisions in front of the right person, and keep the whole trail auditable.</p>
-          <div class="hero-points">
-            <span class="point"><b>▣</b> Photo &amp; voice evidence</span>
-            <span class="point"><b>◉</b> One-tap client approvals</span>
-            <span class="point"><b>≡</b> Immutable audit trail</span>
-          </div>
+<header class="nav">
+  <div class="wrap nav-inner">
+    <a class="brand" href="/" data-testid="nav-logo" aria-label="Blueprint Builds home">
+      <img class="mark" src="/favicon.svg" alt="" width="34" height="34" />
+      Blueprint&nbsp;Builds
+    </a>
+    <nav class="nav-links" aria-label="Primary">
+      <a href="#features" data-testid="nav-features-link">Features</a>
+      <a href="#audit" data-testid="nav-audit-link">Audit Trail</a>
+      <a href="#privacy" data-testid="nav-privacy-anchor-link">Privacy</a>
+      <a href="/support/" data-testid="nav-support-link">Support</a>
+    </nav>
+    <div class="nav-right">
+      <a class="btn btn-primary" href="#download" data-testid="cta-testflight-button">Get access</a>
+      <button class="nav-toggle" data-testid="nav-menu-toggle" aria-label="Open menu" aria-expanded="false">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      </button>
+    </div>
+  </div>
+  <div class="mobile-menu" data-testid="mobile-menu">
+    <a href="#features">Features</a>
+    <a href="#audit">Audit Trail</a>
+    <a href="#privacy">Privacy</a>
+    <a href="/support/">Support</a>
+    <a class="btn btn-primary" href="#download">Get access</a>
+  </div>
+</header>
+
+<main>
+  <!-- HERO -->
+  <section class="hero">
+    <div class="wrap hero-grid">
+      <div class="reveal">
+        <span class="badge"><span class="dot on"></span> iOS · TestFlight beta</span>
+        <h1>Offline-first evidence.<br /><span class="accent">Auditable</span> decisions.<br />Progress you can trust.</h1>
+        <p class="lead">Blueprint Builds captures time-stamped, attributed field evidence — even with no signal — and turns variations into decisions clients answer with the cost and time impact in front of them. A role-scoped client view shows each stakeholder exactly what they should see. Nothing more.</p>
+        <div class="hero-cta">
+          <a class="btn btn-primary" href="#download" data-testid="hero-testflight-button">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M16.4 12.9c0-2 1.6-3 1.7-3-1-1.4-2.4-1.6-2.9-1.6-1.2-.1-2.4.7-3 .7s-1.6-.7-2.6-.7c-1.3 0-2.6.8-3.3 2-1.4 2.4-.4 6 1 8 .7.9 1.4 2 2.5 2 1 0 1.4-.7 2.6-.7s1.6.7 2.6.6c1.1 0 1.8-1 2.5-2 .5-.7.7-1.4.7-1.5-.1 0-2.1-.9-2.3-3zM14.6 6.1c.5-.7.9-1.6.8-2.5-.8 0-1.8.5-2.4 1.2-.5.6-1 1.5-.9 2.4.9.1 1.9-.4 2.5-1.1z"/></svg>
+            Get Blueprint Builds
+          </a>
+          <a class="btn btn-ghost" href="#simulator" data-testid="hero-demo-button">See it work offline →</a>
         </div>
+        <div class="trust-row">
+          <div><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20 6 9 17l-5-5"/></svg> No signal? Still captures.</div>
+          <div><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20 6 9 17l-5-5"/></svg> Append-only audit trail</div>
+          <div><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20 6 9 17l-5-5"/></svg> No cookies, no cross-site tracking</div>
+        </div>
+      </div>
 
-        <div class="hero-visual" aria-hidden="true">
-          <div class="phone">
-            <div class="phone-screen">
-              <div class="mini-header">
-                <div>
-                  <div class="mini-brand">BLUEPRINT BUILDS</div>
-                  <div class="mini-workspace">Peninsula Equine</div>
-                </div>
-                <span class="mini-avatar">CC</span>
+      <div class="reveal">
+        <div class="device" aria-hidden="true">
+          <div class="device-screen">
+            <div class="ds-top">
+              <div class="ds-title">Riverside Stables · Stage 2</div>
+              <span class="badge"><span class="dot on"></span> OFFLINE</span>
+            </div>
+            <div class="ds-body">
+              <div class="evi">
+                <div class="thumb"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.5 4h-5L8 6H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-4l-1.5-2z"/><circle cx="12" cy="13" r="3.2"/></svg></div>
+                <div class="meta"><b>Roof sheeting — east wing</b><span>EVD-0182 · 2m ago · queued</span></div>
+                <span class="dot on"></span>
               </div>
-              <div class="mini-greeting">Morning, Ciro.</div>
-              <div class="mini-chips">
-                <span class="chip"><b>4</b> PROJECTS</span>
-                <span class="chip"><b>1</b> OPEN DECISION</span>
-                <span class="chip live">● LIVE</span>
+              <div class="evi">
+                <div class="thumb"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></div>
+                <div class="meta"><b>Variation approved · +$4,850 · +3d</b><span>APR-0044 · answered by the client</span></div>
+                <span class="dot appr"></span>
               </div>
-              <div class="mini-card decision">
-                <div class="mini-row">
-                  <span class="mini-pill danger">DECISION NEEDED</span>
-                  <span class="mini-when">waiting 26h</span>
-                </div>
-                <div class="mini-title">Arena lighting variation</div>
-                <div class="mini-sub">Peninsula Equine Centre · +$4,800 · +2 days</div>
-                <div class="mini-actions">
-                  <span class="mini-btn approve">Approve</span>
-                  <span class="mini-btn hold">Decline</span>
-                </div>
-              </div>
-              <div class="mini-card">
-                <div class="mini-photo"><span>▧</span></div>
-                <div class="mini-title sm">Arena base trimmed, levels rechecked</div>
-                <div class="mini-progress"><i></i></div>
-                <div class="mini-sub">Site diary · audit secured</div>
+              <div class="evi">
+                <div class="thumb"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2 3 7v6c0 5 3.5 8 9 9 5.5-1 9-4 9-9V7l-9-5z"/></svg></div>
+                <div class="meta"><b>Milestone: portal frames stood</b><span>2 of 4 done · progress 50%</span></div>
+                <span class="dot sync"></span>
               </div>
             </div>
           </div>
         </div>
-      </section>
-
-      <ul class="cards">
-        <li class="card">
-          <span class="glyph">＋</span>
-          <h3>Capture</h3>
-          <p>Field notes with photos and voice recordings, queued offline-first and written to an append-only project record.</p>
-        </li>
-        <li class="card">
-          <span class="glyph">▤</span>
-          <h3>Decisions</h3>
-          <p>Variations and approvals reach the client with source evidence and cost or time impact — answered in a tap, with a push notification to the right person.</p>
-        </li>
-        <li class="card">
-          <span class="glyph">◔</span>
-          <h3>Client view</h3>
-          <p>Clients see a role-curated view of their own project's status and decisions — never internal costs or other projects.</p>
-        </li>
-        <li class="card">
-          <span class="glyph">≡</span>
-          <h3>Audit trail</h3>
-          <p>Every evidence entry and decision is time-stamped and immutable once submitted, forming part of the project's construction record.</p>
-        </li>
-      </ul>
-
-      <div class="notice">
-        <p><strong>Invitation-only.</strong> Blueprint Builds is a private workspace app — there is no public sign-up. Accounts are issued by the workspace administrator. The first workspace is operated by Peninsula Equine.</p>
       </div>
+    </div>
+  </section>
 
-      <h2>Get in touch</h2>
-      <div class="contact-block">
-        <p>Questions, access requests, or help using the app:</p>
-        <p><a href="mailto:info@peninsulaequine.systems">info@peninsulaequine.systems</a> · <a href="mailto:ciro@procasa.com.au">ciro@procasa.com.au</a> · 0418&nbsp;585&nbsp;489</p>
+  <!-- FEATURES -->
+  <section id="features">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <span class="overline">The core, done right</span>
+        <h2>Three things it does — and nothing it shouldn't.</h2>
+        <p>No marketplace. No CRM. No estimating. No generic AI. Just the underserved fundamentals of construction delivery, built to hold up under scrutiny.</p>
       </div>
-    </main>
+      <div class="bento">
+        <div class="card reveal">
+          <div class="icn"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 1 0 10 10"/><path d="M12 6v6l4 2"/><path d="M18 2v4h4"/></svg></div>
+          <h3>Zero-signal field capture</h3>
+          <p>Photos, voice notes and site diary entries save to the device instantly — offline-first. When a connection returns, everything syncs in order. Basements and remote sites are no longer blind spots.</p>
+        </div>
+        <div class="card reveal">
+          <div class="icn"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2 4 5v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V5l-8-3z"/><path d="M9 12l2 2 4-4"/></svg></div>
+          <h3>Decisions on the record</h3>
+          <p>Every piece of evidence is time-stamped, attributed to its submitter and kept on an append-only audit trail. Variations reach the client with their cost and time impact, and every answer is sequenced and recorded — a defensible record, not a folder of loose photos.</p>
+        </div>
+        <div class="card reveal">
+          <div class="icn"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="8" r="3.2"/><path d="M2 21v-1a6 6 0 0 1 6-6h2"/><path d="M15 11l2 2 4-4"/></svg></div>
+          <h3>Role-scoped client views</h3>
+          <p>Owners, project managers, site leads and clients each see a view scoped to their role. Clients get progress, drawings and decisions — clarity and confidence without the noise, and without ever touching data they shouldn't.</p>
+        </div>
+      </div>
+    </div>
+  </section>
 
-    <footer class="site">
-      <div>© 2026 Blueprint Builds · Operated by Peninsula Equine</div>
-      <div>
-        <a href="/support/">Support</a>
-        <a href="/privacy/">Privacy</a>
-        <a href="/terms/">Terms</a>
+  <!-- SIMULATOR -->
+  <section id="simulator">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <span class="overline">Interactive demo</span>
+        <h2>Watch evidence get captured — offline.</h2>
+        <p>Toggle the device between full signal and zero signal, then capture evidence. Notice it never fails: it's time-stamped locally and queued to sync in order. This demo is an illustration and runs entirely in your browser — nothing is sent anywhere.</p>
       </div>
-    </footer>
+      <div class="sim reveal">
+        <div class="sim-controls">
+          <p class="mono" data-testid="sim-network-label" style="font-size:13px;color:var(--text-dim)"><span class="dot sync"></span> 5G Sync — connected</p>
+          <div class="switch-row">
+            <div class="switch" data-testid="offline-simulator-toggle" role="switch" tabindex="0" aria-checked="false" aria-label="Toggle network connectivity"><div class="knob"></div></div>
+            <span style="font-size:14px;color:var(--text-dim)">Flip to <strong style="color:var(--offline)">Zero Signal</strong></span>
+          </div>
+          <button class="btn btn-primary" data-testid="sim-capture-button">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.5 4h-5L8 6H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-4l-1.5-2z"/><circle cx="12" cy="13" r="3.2"/></svg>
+            Capture evidence
+          </button>
+          <p style="margin-top:14px;font-size:13px;color:var(--text-faint)">Every capture in the app is time-stamped the moment it happens and lands with an attributed audit event. Offline captures queue; online captures record immediately.</p>
+        </div>
+        <div class="sim-capture" data-testid="sim-capture-output">
+          <div class="log-line"><span class="k">ready</span> — press <span class="v-ok">Capture evidence</span> to generate a demo record</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- AUDIT / ROLE VIEW -->
+  <section id="audit">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <span class="overline">Role-scoped delivery</span>
+        <h2>One project. Different eyes. Scoped by role.</h2>
+        <p>Switch roles below to see how the same project surfaces different records. Locked rows are simply not visible to that role — the server enforces it, so no one has to remember to redact.</p>
+      </div>
+      <div class="reveal">
+        <div class="tabs" role="tablist" aria-label="Role view">
+          <button class="tab active" data-role-tab="sub" role="tab" data-testid="role-tab-sub">Site lead</button>
+          <button class="tab" data-role-tab="super" role="tab" data-testid="role-tab-super">Project manager</button>
+          <button class="tab" data-role-tab="client" role="tab" data-testid="role-tab-client">Client</button>
+        </div>
+        <div class="role-panel">
+          <div class="role-list">
+            <div class="role-item" data-role-visible="sub super client">
+              <div class="r-ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></div>
+              <div><b>Milestone: roof sheeting complete</b><small>visible to every role · drives live progress</small></div>
+            </div>
+            <div class="role-item" data-role-visible="sub super client">
+              <div class="r-ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.5 4h-5L8 6H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-4l-1.5-2z"/><circle cx="12" cy="13" r="3.2"/></svg></div>
+              <div><b>Site diary — portal frame bolts torqued and tagged</b><small>EVD-0182 · captured by the build team</small></div>
+            </div>
+            <div class="role-item" data-role-visible="sub super">
+              <div class="r-ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M7 14l3-3 3 3 5-6"/></svg></div>
+              <div><b>Commercial ledger — approved & pending exposure</b><small>build team only · never shown to clients</small></div>
+              <span class="lock"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg></span>
+            </div>
+            <div class="role-item" data-role-visible="sub super client">
+              <div class="r-ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2 3 7v6c0 5 3.5 8 9 9 5.5-1 9-4 9-9V7l-9-5z"/></svg></div>
+              <div><b>Variation approved — arena LED lighting +$4,850</b><small>answered by the client · on the record</small></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRIVACY SPOTLIGHT -->
+  <section id="privacy">
+    <div class="wrap">
+      <div class="spotlight reveal">
+        <span class="overline">The privacy pledge</span>
+        <h2 style="font-size:clamp(1.6rem,3vw,2.3rem);font-weight:800;letter-spacing:-0.025em;margin:12px 0 6px;">Privacy-first by default. Cookieless by design.</h2>
+        <p style="color:var(--text-dim);max-width:640px;">The Blueprint Builds app runs zero ad SDKs and zero third-party trackers. This website loads no third-party scripts and sets no cookies — none. Your project data lives in private, access-controlled storage and travels only over encrypted connections.</p>
+        <div class="pledge-grid">
+          <div class="pledge"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 6 9 17l-5-5"/></svg><div><b>No cookies, no fingerprinting</b><span>This site runs no analytics at all; the app contains no ad or tracking SDKs.</span></div></div>
+          <div class="pledge"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 6 9 17l-5-5"/></svg><div><b>Offline capture stays local</b><span>Evidence captured with no signal stays on the device until it syncs over an encrypted connection.</span></div></div>
+          <div class="pledge"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 6 9 17l-5-5"/></svg><div><b>Private media, signed links</b><span>Photos, voice notes and drawings live in private storage and open through short-lived signed links.</span></div></div>
+          <div class="pledge"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 6 9 17l-5-5"/></svg><div><b>Full deletion rights</b><span>Request account removal at any time — the process is on the support page.</span></div></div>
+        </div>
+        <div style="margin-top:26px;display:flex;gap:12px;flex-wrap:wrap">
+          <a class="btn btn-ghost" href="/privacy/" data-testid="privacy-read-full-button">Read the full policy →</a>
+          <a class="btn btn-ghost" href="/support/" data-testid="privacy-deletion-button">Account deletion</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- DOWNLOAD -->
+  <section id="download" class="download">
+    <div class="wrap">
+      <div class="card-lg reveal">
+        <span class="overline">Now in beta</span>
+        <h2 style="font-size:clamp(1.7rem,3.2vw,2.5rem);font-weight:800;letter-spacing:-0.025em;margin:12px 0 12px;">Get Blueprint Builds on your iPhone.</h2>
+        <p style="color:var(--text-dim);max-width:520px;margin:0 auto 26px;">Blueprint Builds is invitation-only. If your building company uses it, ask them for an invite — access arrives by email. Builders: register interest and we'll talk about setting up your workspace. Currently on TestFlight for iOS; Android is on the roadmap.</p>
+        <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap;">
+          <a class="btn btn-primary" href="mailto:info@peninsulaequine.systems?subject=Blueprint%20Builds%20%E2%80%94%20builder%20interest" data-testid="download-request-button">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M16.4 12.9c0-2 1.6-3 1.7-3-1-1.4-2.4-1.6-2.9-1.6-1.2-.1-2.4.7-3 .7s-1.6-.7-2.6-.7c-1.3 0-2.6.8-3.3 2-1.4 2.4-.4 6 1 8 .7.9 1.4 2 2.5 2 1 0 1.4-.7 2.6-.7s1.6.7 2.6.6c1.1 0 1.8-1 2.5-2 .5-.7.7-1.4.7-1.5-.1 0-2.1-.9-2.3-3zM14.6 6.1c.5-.7.9-1.6.8-2.5-.8 0-1.8.5-2.4 1.2-.5.6-1 1.5-.9 2.4.9.1 1.9-.4 2.5-1.1z"/></svg>
+            Builders: register interest
+          </a>
+          <a class="btn btn-ghost" href="/support/" data-testid="download-support-button">Talk to support</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="site">
+  <div class="wrap">
+    <div class="foot-grid">
+      <div class="foot-col">
+        <a class="brand" href="/" style="margin-bottom:14px" data-testid="footer-logo">
+          <img class="mark" src="/favicon.svg" alt="" width="30" height="30" /> Blueprint&nbsp;Builds
+        </a>
+        <p style="color:var(--text-dim);font-size:14px;max-width:320px;">Offline-first evidence and auditable decisions for construction delivery. Built privacy-first — the app runs zero trackers; this site loads no third-party scripts at all.</p>
+      </div>
+      <div class="foot-col">
+        <h4>Product</h4>
+        <a href="#features" data-testid="footer-features-link">Features</a>
+        <a href="#simulator" data-testid="footer-demo-link">Offline demo</a>
+        <a href="#download" data-testid="footer-download-link">Get access</a>
+      </div>
+      <div class="foot-col">
+        <h4>Legal & support</h4>
+        <a href="/privacy/" data-testid="footer-privacy-link">Privacy Policy</a>
+        <a href="/terms/" data-testid="footer-terms-link">Terms of Service</a>
+        <a href="/support/" data-testid="footer-support-link">Support</a>
+        <a href="/support/" data-testid="footer-deletion-link">Account Deletion</a>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>© <span data-testid="footer-year">2026</span> Blueprint Builds · Operated by Peninsula Equine</span>
+      <span class="mono">iOS · TestFlight beta</span>
+    </div>
   </div>
+</footer>
+
+<div class="toast" data-testid="toast" role="status" aria-live="polite"></div>
+<script src="/assets/landing.js"></script>
 </body>
 </html>
