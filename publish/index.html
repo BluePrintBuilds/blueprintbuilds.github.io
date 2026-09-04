@@ -46,7 +46,7 @@
 
       <div class="panel" id="panel-upload" hidden>
         <h2>Publish to the plan register</h2>
-        <p class="hint">PDF, JPG, PNG, WEBP or HEIC · up to 50MB each. The file name becomes the drawing title.</p>
+        <p class="hint">PDF, JPG, PNG, WEBP or HEIC · up to 50MB each. The file name becomes the drawing title. PDFs are also rendered to per-sheet images here in your browser, so the team can open and mark them up inside the app.</p>
         <form id="upload-form">
           <label class="field"><span>Project</span>
             <select id="project"></select>
@@ -88,6 +88,16 @@
     </footer>
   </div>
 
+  <!-- Self-hosted pdf.js 4.x (legacy minified ESM): renders each PDF page to
+       a PNG at publish time. No external requests — the site principle holds.
+       4.x is an ES module, so a tiny module shim hangs it on window.pdfjsLib
+       for the classic script below and pins the worker. -->
+  <script type="module">
+    import * as pdfjsLib from '/assets/pdfjs/pdf.min.js';
+    pdfjsLib.GlobalWorkerOptions.workerSrc = '/assets/pdfjs/pdf.worker.min.js';
+    window.pdfjsLib = pdfjsLib;
+    window.dispatchEvent(new Event('pdfjs-ready'));
+  </script>
   <script>
   (function () {
     'use strict';
@@ -203,51 +213,228 @@
       return (stem || 'Drawing').slice(0, 200);
     }
 
-    function publishOne(file, listItem) {
+    var MAX_SHEETS = 40;          // markup canvases per PDF; beyond this the PDF still publishes
+    var SHEET_LONG_EDGE = 2200;   // target raster size — crisp on tablets without absurd uploads
+
+    // pdf.js 4.x loads as a module (see the shim above), so it may not be on
+    // window yet when a fast user hits Publish. Wait briefly for the ready
+    // event — but never hang publishing on it; a PDF publishes fine without
+    // rasters if the module is slow or absent.
+    function whenPdfjs() {
+      if (window.pdfjsLib) return Promise.resolve(window.pdfjsLib);
+      return new Promise(function (resolve) {
+        var settled = false;
+        function finish() { if (settled) return; settled = true; resolve(window.pdfjsLib || null); }
+        window.addEventListener('pdfjs-ready', finish, { once: true });
+        setTimeout(finish, 5000);
+      });
+    }
+
+    // Resolves { sheets, note } — sheets is null when rasterising is not
+    // possible, and note says why in the words the final row will show.
+    function renderPdfSheets(file, onProgress) {
+      return whenPdfjs().then(function (lib) {
+        if (!lib) return { sheets: null, note: 'sheets could not be rendered in this browser' };
+        var doc = null;
+        return file.arrayBuffer().then(function (buffer) {
+          // isEvalSupported:false closes the eval path a hostile PDF font could
+          // reach (the CVE-2024-4367 class) — defence in depth beside the bump.
+          return lib.getDocument({ data: buffer, isEvalSupported: false }).promise;
+        }).then(function (pdf) {
+          doc = pdf;
+          if (pdf.numPages > MAX_SHEETS) {
+            return { sheets: null, note: pdf.numPages + ' sheets is over the ' + MAX_SHEETS + '-sheet markup limit' };
+          }
+          var sheets = [];
+          var chain = Promise.resolve();
+          for (var n = 1; n <= pdf.numPages; n += 1) {
+            (function (pageNumber) {
+              chain = chain.then(function () {
+                onProgress('rendering sheet ' + pageNumber + '/' + pdf.numPages + '…');
+                return pdf.getPage(pageNumber);
+              }).then(function (page) {
+                var base = page.getViewport({ scale: 1 });
+                var scale = Math.min(4, Math.max(1, SHEET_LONG_EDGE / Math.max(base.width, base.height)));
+                var viewport = page.getViewport({ scale: scale });
+                var canvas = document.createElement('canvas');
+                canvas.width = Math.round(viewport.width);
+                canvas.height = Math.round(viewport.height);
+                return page.render({ canvasContext: canvas.getContext('2d'), viewport: viewport }).promise.then(function () {
+                  return new Promise(function (resolve, reject) {
+                    canvas.toBlob(function (blob) {
+                      if (blob) { sheets.push(blob); resolve(); } else { reject(new Error('sheet_render_failed')); }
+                    }, 'image/png');
+                  });
+                });
+              });
+            })(n);
+          }
+          return chain.then(function () { return { sheets: sheets, note: null }; });
+        }).catch(function () {
+          // Corrupt, encrypted or unrenderable PDF: it still publishes without
+          // sheet images — markup just needs a republish from a browser that
+          // can render it.
+          return { sheets: null, note: 'sheets could not be rendered from this PDF' };
+        }).then(function (result) {
+          // Free the worker for this document either way — a publish session can
+          // process many PDFs, and leaked workers would pile up.
+          if (doc) { try { doc.destroy(); } catch (e) {} }
+          return result;
+        });
+      });
+    }
+
+    function uploadSheets(sheets, basePath, onProgress) {
+      var paths = [];
+      var chain = Promise.resolve();
+      sheets.forEach(function (blob, index) {
+        chain = chain.then(function () {
+          onProgress('uploading sheet ' + (index + 1) + '/' + sheets.length + '…');
+          var path = basePath + '-p' + (index + 1) + '.png';
+          return api('/storage/v1/object/plans/' + path, {
+            method: 'POST', headers: { 'Content-Type': 'image/png', 'x-upsert': 'true' }, body: blob,
+          }).then(function (response) {
+            guard401(response);
+            if (!response.ok) {
+              return readError(response, 'A sheet image failed to upload.').then(function (message) { throw new Error(message); });
+            }
+            paths.push(path);
+          });
+        });
+      });
+      return chain.then(function () { return paths; });
+    }
+
+    function publishOne(file, listItem, eventId) {
       var ext = (file.name.split('.').pop() || '').toLowerCase();
       var mime = MIME_BY_EXT[ext] || file.type;
       if (!MIME_BY_EXT[ext]) return Promise.reject(new Error('Unsupported file type.'));
       if (file.size < 1) return Promise.reject(new Error('The file is empty.'));
       if (file.size > MAX_BYTES) return Promise.reject(new Error('Larger than the 50MB limit.'));
 
-      var eventId = crypto.randomUUID();
-      var path = session.workspaceId + '/' + el('project').value + '/' + eventId + '.' + ext;
-      listItem.querySelector('.state').textContent = 'uploading…';
+      var basePath = session.workspaceId + '/' + el('project').value + '/' + eventId;
+      var path = basePath + '.' + ext;
+      var setState = function (text) { listItem.querySelector('.state').textContent = text; };
+      var sheetPaths = null;
+      var sheetNote = null;
 
-      return api('/storage/v1/object/plans/' + path, {
-        method: 'POST', headers: { 'Content-Type': mime }, body: file,
+      var prepare = mime === 'application/pdf'
+        ? renderPdfSheets(file, setState).then(function (result) {
+            sheetNote = result.note;
+            if (result.sheets && result.sheets.length) {
+              return uploadSheets(result.sheets, basePath, setState)
+                .then(function (paths) { sheetPaths = paths; })
+                .catch(function (reason) {
+                  // A dead session must surface as re-auth, not a silent skip.
+                  if (reason && reason.reauth) throw reason;
+                  // Otherwise sheet images are an enhancement, never a gate: the
+                  // PDF itself still publishes. (Any sheets already uploaded stay
+                  // unregistered and invisible.)
+                  sheetPaths = null;
+                  sheetNote = 'sheet images failed to upload — republish to retry markup';
+                });
+            }
+          })
+        : Promise.resolve();
+
+      return prepare.then(function () {
+        setState('uploading…');
+        return api('/storage/v1/object/plans/' + path, {
+          method: 'POST', headers: { 'Content-Type': mime, 'x-upsert': 'true' }, body: file,
+        });
       }).then(function (response) {
+        guard401(response);
         if (!response.ok) {
           return readError(response, 'The upload failed.').then(function (message) { throw new Error(message); });
         }
-        listItem.querySelector('.state').textContent = 'registering…';
-        return api('/rest/v1/rpc/blueprint_mobile_create_plan', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            p_project_id: el('project').value,
-            p_client_event_id: eventId,
-            p_title: titleFromName(file.name),
-            p_discipline: el('discipline').value,
-            p_revision: el('revision').value.trim() || null,
-            p_status: el('status').value,
-            p_storage_path: path,
-            p_mime_type: mime,
-            p_size_bytes: file.size,
-            p_page_count: null,
-          }),
+        setState('registering…');
+        // Base signature — every deployment understands these arguments.
+        var registerBody = {
+          p_project_id: el('project').value,
+          p_client_event_id: eventId,
+          p_title: titleFromName(file.name),
+          p_discipline: el('discipline').value,
+          p_revision: el('revision').value.trim() || null,
+          p_status: el('status').value,
+          p_storage_path: path,
+          p_mime_type: mime,
+          p_size_bytes: file.size,
+        };
+        // Sheet rasters ride on the extended signature. PostgREST resolves an
+        // overload by the JSON key set, so if the plan-markups migration has not
+        // reached this project yet the p_page_* keys 404 — and by then the file
+        // is already uploaded. Retry once on the base signature so the drawing
+        // still registers (markup lights up later) instead of orphaning storage.
+        function callRegister(body) {
+          return api('/rest/v1/rpc/blueprint_mobile_create_plan', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(body),
+          });
+        }
+        var extendedBody = {};
+        for (var key in registerBody) extendedBody[key] = registerBody[key];
+        extendedBody.p_page_count = sheetPaths ? sheetPaths.length : null;
+        extendedBody.p_page_paths = sheetPaths;
+        return callRegister(extendedBody).then(function (response) {
+          guard401(response);
+          // 404 here can only be an unresolved function signature: every domain
+          // error in the RPC raises 400/401/403, never 404. So it means the
+          // extended signature is not deployed — fall back, don't fail.
+          if (response.status === 404) return callRegister(registerBody);
+          return response;
         });
       }).then(function (response) {
+        guard401(response);
         if (!response.ok) {
           return readError(response, 'The drawing could not be registered.').then(function (message) { throw new Error(message); });
         }
+        return { sheets: sheetPaths ? sheetPaths.length : 0, isPdf: mime === 'application/pdf', note: sheetNote };
       });
+    }
+
+    // Idempotency + dedupe across re-submits of the same selection. A build-team
+    // user who clicks Publish twice — or re-clicks after a partial failure — must
+    // never create duplicate drawings: files that already succeeded are skipped,
+    // and retries reuse the same event id and storage path so the server dedupes.
+    var lastSelectionKey = null;
+    var selectionEventIds = {};   // index -> uuid, valid only for lastSelectionKey
+    var selectionDone = {};       // index -> true, valid only for lastSelectionKey
+
+    function selectionKeyFor(files) {
+      return files.map(function (f) { return f.name + '|' + f.size + '|' + f.lastModified; }).join('||');
+    }
+
+    function guard401(response) {
+      if (response.status === 401) {
+        var e = new Error('Your session expired — sign in again to keep publishing.');
+        e.reauth = true;
+        throw e;
+      }
+      return response;
+    }
+
+    function requireReauth(message) {
+      session = null;
+      el('panel-upload').hidden = true;
+      el('session-bar').hidden = true;
+      el('panel-signin').hidden = false;
+      status('signin-status', 'err', message);
     }
 
     el('upload-form').addEventListener('submit', function (event) {
       event.preventDefault();
       var files = Array.prototype.slice.call(el('files').files || []);
       if (!files.length) { status('upload-status', 'err', 'Choose at least one drawing file.'); return; }
+
+      // New selection resets the idempotency ledger; the same selection keeps it,
+      // so a re-click retries the failures and leaves the successes untouched.
+      var selectionKey = selectionKeyFor(files);
+      if (selectionKey !== lastSelectionKey) {
+        lastSelectionKey = selectionKey;
+        selectionEventIds = {};
+        selectionDone = {};
+      }
 
       var button = el('publish');
       button.disabled = true;
@@ -270,13 +457,30 @@
       });
 
       var failures = 0;
+      var reauthNeeded = false;
       var chain = Promise.resolve();
       files.forEach(function (file, index) {
         chain = chain.then(function () {
-          return publishOne(file, items[index]).then(function () {
-            items[index].querySelector('.state').textContent = 'published';
+          if (selectionDone[index]) {
+            var already = items[index].querySelector('.state');
+            already.textContent = 'already published';
+            already.className = 'state done';
+            return;
+          }
+          if (reauthNeeded) { return; } // session is gone — stop attempting the rest
+          if (!selectionEventIds[index]) selectionEventIds[index] = crypto.randomUUID();
+          return publishOne(file, items[index], selectionEventIds[index]).then(function (result) {
+            selectionDone[index] = true;
+            var label = 'published';
+            if (result && result.isPdf) {
+              label = result.sheets
+                ? 'published · ' + result.sheets + ' sheet' + (result.sheets === 1 ? '' : 's') + ' ready for markup'
+                : 'published · ' + (result.note || 'sheets could not be rendered in this browser');
+            }
+            items[index].querySelector('.state').textContent = label;
             items[index].querySelector('.state').className = 'state done';
           }).catch(function (reason) {
+            if (reason && reason.reauth) { reauthNeeded = true; }
             failures += 1;
             items[index].querySelector('.state').textContent = reason.message || 'failed';
             items[index].querySelector('.state').className = 'state fail';
@@ -286,11 +490,18 @@
 
       chain.then(function () {
         button.disabled = false;
+        if (reauthNeeded) {
+          requireReauth('Your session expired — sign in again to keep publishing. Your published drawings are safe.');
+          return;
+        }
         if (failures === 0) {
           status('upload-status', 'ok', 'Done — every drawing is in the register. Open the project in the app and check Plans.');
           el('files').value = '';
+          lastSelectionKey = null;
+          selectionEventIds = {};
+          selectionDone = {};
         } else if (failures < files.length) {
-          status('upload-status', 'err', failures + ' of ' + files.length + ' failed — see the list above. The rest are published.');
+          status('upload-status', 'err', failures + ' of ' + files.length + ' failed — see the list above. Re-click Publish to retry just those; the rest stay published.');
         } else {
           status('upload-status', 'err', 'Nothing was published — see the reasons above.');
         }
