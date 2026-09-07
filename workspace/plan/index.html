@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en-AU">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Plan Desk — Blueprint Builds</title>
+  <meta name="robots" content="noindex,nofollow">
+  <link rel="stylesheet" href="/styles.css">
+  <link rel="stylesheet" href="/workspace/workspace.css">
+</head>
+<body class="workspace-body">
+  <div class="plan-desk">
+    <header class="desk-header">
+      <div>
+        <a class="brand" href="/workspace/"><span class="mark">▦</span> Blueprint Builds</a>
+        <p class="security-strip">PRIVATE PLAN RECORD · SHORT-LIVED MEDIA LINKS · NO THIRD-PARTY PDF VIEWER</p>
+      </div>
+      <div class="workspace-actions"><a class="btn quiet" href="/workspace/">← Workspace</a><button class="btn quiet" id="signout" type="button" hidden>Sign out</button></div>
+    </header>
+
+    <main>
+      <section class="panel" id="signin-panel" hidden>
+        <h2>Sign in to the Plan Desk</h2>
+        <p class="hint">The drawing never becomes public. Access is checked against your Blueprint Builds workspace before media is signed.</p>
+        <form id="signin-form">
+          <label class="field"><span>Email</span><input id="email" type="email" autocomplete="username" required></label>
+          <label class="field"><span>Password</span><input id="password" type="password" autocomplete="current-password" required></label>
+          <button class="btn" id="signin" type="submit">Open secure drawing</button>
+        </form>
+        <p class="status" id="signin-status"></p>
+      </section>
+
+      <section id="desk" hidden>
+        <div style="margin-bottom:16px">
+          <p class="kicker" id="project-name">Plan record</p>
+          <h1 class="desk-title" id="plan-title">Loading drawing…</h1>
+          <p class="desk-sub" id="plan-meta"></p>
+        </div>
+        <div class="legacy-note" id="legacy-note" hidden></div>
+        <div class="desk-layout">
+          <section class="desk-stage">
+            <div class="sheet-rail" id="sheet-rail"></div>
+            <div class="sheet-frame" id="sheet-frame">
+              <div class="empty-state" id="sheet-loading">Preparing the secure drawing canvas…</div>
+              <img class="sheet-media" id="sheet-image" alt="Plan sheet" draggable="false" hidden>
+              <canvas class="sheet-canvas" id="pdf-canvas" hidden></canvas>
+              <div class="markup-layer" id="markup-layer"></div>
+              <div class="drawing-layer" id="drawing-layer" hidden></div>
+            </div>
+          </section>
+
+          <aside class="desk-sidebar">
+            <section class="workspace-panel" id="tools-panel">
+              <p class="kicker">Field markup</p>
+              <h2 style="margin-top:0">Mark the drawing</h2>
+              <p id="tool-hint">Select a tool, mark the sheet, then describe what the mark means. Saved markups are permanent records.</p>
+              <div class="tool-row">
+                <button class="tool" data-tool="pin" type="button">Pin</button>
+                <button class="tool" data-tool="zone" type="button">Zone</button>
+                <button class="tool" data-tool="freehand" type="button">Draw</button>
+              </div>
+              <div class="draft-box" id="draft-box" hidden>
+                <label class="field"><span>Markup note</span><textarea id="draft-note" maxlength="600" placeholder="What does this mark call out?"></textarea></label>
+                <div class="workspace-actions"><button class="btn" id="save-markup" type="button">Record markup</button><button class="btn quiet" id="cancel-markup" type="button">Cancel</button></div>
+                <p class="status" id="markup-status"></p>
+              </div>
+            </section>
+
+            <section class="workspace-panel">
+              <p class="kicker">Drawing record</p>
+              <h2 style="margin-top:0">Markups</h2>
+              <div class="markup-list" id="markup-list"><div class="empty-state">Loading markups…</div></div>
+            </section>
+          </aside>
+        </div>
+      </section>
+    </main>
+  </div>
+  <script type="module" src="/workspace/plan/plan.js"></script>
+</body>
+</html>

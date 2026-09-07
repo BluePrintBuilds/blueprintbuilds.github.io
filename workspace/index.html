@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en-AU">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Builder Workspace — Blueprint Builds</title>
+  <meta name="description" content="Secure Blueprint Builds workspace for project plans and build records.">
+  <meta name="robots" content="noindex,nofollow">
+  <link rel="stylesheet" href="/styles.css">
+  <link rel="stylesheet" href="/workspace/workspace.css">
+</head>
+<body class="workspace-body">
+  <div class="workspace-wrap">
+    <header class="site">
+      <a class="brand" href="/"><span class="mark">▦</span> Blueprint Builds</a>
+      <nav class="site"><a href="/publish/">Publish drawings</a><a href="/support/">Support</a></nav>
+    </header>
+
+    <main>
+      <p class="kicker">Secure build workspace</p>
+      <h1>Builder Workspace</h1>
+      <p class="lede">Plans, revisions and field markups stay inside Blueprint — tied to the project record, not a generic PDF preview.</p>
+
+      <section class="panel" id="signin-panel">
+        <h2>Sign in</h2>
+        <p class="hint">Use the same Blueprint Builds account as the app. Your session stays in this browser tab only.</p>
+        <form id="signin-form">
+          <label class="field"><span>Email</span><input id="email" type="email" autocomplete="username" required></label>
+          <label class="field"><span>Password</span><input id="password" type="password" autocomplete="current-password" required></label>
+          <button class="btn" id="signin" type="submit">Open workspace</button>
+        </form>
+        <p class="status" id="signin-status"></p>
+      </section>
+
+      <section id="workspace" hidden>
+        <div class="workspace-bar">
+          <div class="workspace-user" id="workspace-user"></div>
+          <div class="workspace-actions"><a class="btn quiet" href="/publish/">Publish drawings</a><button class="btn quiet" id="signout" type="button">Sign out</button></div>
+        </div>
+        <div class="workspace-grid">
+          <aside class="workspace-panel">
+            <p class="kicker">Assigned projects</p>
+            <h2>Your builds</h2>
+            <div class="project-list" id="projects"></div>
+          </aside>
+          <section class="workspace-panel">
+            <p class="kicker">Plan register</p>
+            <h2 id="plan-heading">Select a project</h2>
+            <p id="plan-context">Choose a build to open its current and superseded drawing record.</p>
+            <div class="plan-list" id="plans"></div>
+          </section>
+        </div>
+      </section>
+    </main>
+  </div>
+  <script type="module" src="/workspace/index.js"></script>
+</body>
+</html>

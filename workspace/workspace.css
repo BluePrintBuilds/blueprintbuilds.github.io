@@ -1,0 +1,63 @@
+body.workspace-body { background-size: 20px 20px; }
+.workspace-wrap { max-width: 1380px; margin: 0 auto; padding: 0 24px 72px; }
+.workspace-shell { display: grid; gap: 18px; }
+.workspace-bar { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 22px; }
+.workspace-user { color: var(--ink-muted); font-size: 14px; }
+.workspace-user strong { color: var(--ink); }
+.workspace-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+.workspace-actions .btn { width: auto; }
+.workspace-grid { display: grid; grid-template-columns: minmax(230px, 310px) minmax(0, 1fr); gap: 18px; align-items: start; }
+.workspace-panel { background: linear-gradient(180deg, var(--navy-raised), var(--navy)); border: 1px solid var(--border); border-radius: 12px; padding: 18px; }
+.workspace-panel h2 { margin: 0 0 6px; }
+.workspace-panel p { margin-top: 0; }
+.project-list { display: grid; gap: 9px; margin-top: 16px; }
+.project-button { width: 100%; text-align: left; border: 1px solid var(--border); border-radius: 9px; background: rgba(3,21,47,.75); color: var(--ink); padding: 12px; cursor: pointer; }
+.project-button:hover, .project-button.active { border-color: var(--blueprint); background: rgba(37,142,255,.10); }
+.project-button small { display: block; color: var(--ink-faint); margin-top: 3px; }
+.plan-list { display: grid; gap: 12px; margin-top: 18px; }
+.plan-row { border: 1px solid var(--border); border-radius: 10px; background: rgba(3,21,47,.72); padding: 15px; display: grid; grid-template-columns: minmax(0,1fr) auto; gap: 14px; align-items: center; }
+.plan-title { color: var(--ink); font-weight: 700; margin: 0; }
+.plan-meta { font-family: var(--mono); color: var(--ink-faint); font-size: 12px; margin: 4px 0 0; }
+.plan-open { white-space: nowrap; color: #fff; text-decoration: none; background: #1676E8; border-radius: 8px; padding: 9px 12px; font-weight: 700; font-size: 14px; }
+.empty-state { border: 1px dashed var(--border-strong); border-radius: 10px; padding: 24px; color: var(--ink-muted); }
+[hidden] { display: none !important; }
+
+.plan-desk { max-width: 1680px; margin: 0 auto; padding: 0 18px 54px; }
+.desk-header { display: flex; justify-content: space-between; gap: 16px; align-items: flex-end; flex-wrap: wrap; border-bottom: 1px solid var(--border); padding: 22px 0 16px; margin-bottom: 14px; }
+.desk-title { margin: 0; font-size: clamp(24px, 3vw, 38px); }
+.desk-sub { margin: 4px 0 0; color: var(--ink-muted); }
+.desk-layout { display: grid; grid-template-columns: minmax(0, 1fr) 330px; gap: 14px; align-items: start; }
+.desk-stage { min-width: 0; }
+.desk-sidebar { position: sticky; top: 12px; display: grid; gap: 12px; }
+.sheet-rail { display: flex; gap: 8px; overflow-x: auto; padding: 0 0 10px; }
+.sheet-tab { border: 1px solid var(--border); border-radius: 8px; padding: 8px 11px; background: var(--navy); color: var(--ink-muted); font-family: var(--mono); font-size: 12px; cursor: pointer; white-space: nowrap; }
+.sheet-tab.active { color: #fff; border-color: var(--blueprint); background: rgba(37,142,255,.18); }
+.sheet-frame { position: relative; width: 100%; min-height: 420px; border: 1px solid var(--border-strong); border-radius: 10px; overflow: hidden; background: #eef2f7; touch-action: none; }
+.sheet-media { display: block; width: 100%; height: auto; user-select: none; -webkit-user-drag: none; }
+.sheet-canvas { display: block; width: 100%; height: auto; }
+.markup-layer { position: absolute; inset: 0; z-index: 4; pointer-events: none; }
+.drawing-layer { position: absolute; inset: 0; z-index: 8; pointer-events: auto; cursor: crosshair; }
+.markup-zone { position: absolute; border: 2px solid #f04444; background: rgba(240,68,68,.10); }
+.markup-pin { position: absolute; width: 24px; height: 24px; margin: -12px 0 0 -12px; border-radius: 50%; background: #f04444; color: #fff; display: grid; place-items: center; font: 700 11px var(--mono); box-shadow: 0 2px 9px rgba(0,0,0,.35); }
+.markup-svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.markup-svg polyline { fill: none; stroke: #f04444; stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; vector-effect: non-scaling-stroke; }
+.tool-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 7px; }
+.tool { border: 1px solid var(--border); background: var(--midnight); color: var(--ink-muted); border-radius: 8px; padding: 9px 6px; cursor: pointer; font-size: 13px; }
+.tool.active { border-color: var(--blueprint); color: #fff; background: rgba(37,142,255,.14); }
+.draft-box { border-top: 1px solid var(--border); margin-top: 12px; padding-top: 12px; }
+.draft-box textarea { width: 100%; resize: vertical; min-height: 84px; background: var(--midnight); color: var(--ink); border: 1px solid var(--border-strong); border-radius: 8px; padding: 10px; font: inherit; }
+.markup-list { display: grid; gap: 8px; max-height: 430px; overflow: auto; }
+.markup-card { border: 1px solid var(--border); border-radius: 8px; padding: 10px; background: var(--midnight); }
+.markup-card.voided { opacity: .52; }
+.markup-note { margin: 0 0 5px; color: var(--ink); font-size: 14px; }
+.markup-meta { color: var(--ink-faint); font: 11px var(--mono); margin: 0; }
+.markup-withdraw { margin-top: 8px; border: 0; padding: 0; background: transparent; color: #ff8f8f; cursor: pointer; font-size: 12px; }
+.legacy-note { background: #102949; border: 1px solid #345c86; border-radius: 9px; padding: 13px; color: var(--ink-muted); margin-bottom: 10px; }
+.security-strip { font: 11px var(--mono); color: var(--ink-faint); letter-spacing: .05em; }
+
+@media (max-width: 900px) {
+  .workspace-grid, .desk-layout { grid-template-columns: 1fr; }
+  .desk-sidebar { position: static; }
+  .plan-row { grid-template-columns: 1fr; }
+  .plan-open { text-align: center; }
+}

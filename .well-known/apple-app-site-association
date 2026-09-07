@@ -6,6 +6,7 @@
         "components": [
           { "/": "/invite/*", "exclude": true, "comment": "Web-only: finishes invite emails; must never open the app" },
           { "/": "/publish/*", "exclude": true, "comment": "Web-only build-team tool" },
+          { "/": "/workspace/*", "exclude": true, "comment": "Web-only secure Builder Workspace and Plan Desk" },
           { "/": "/privacy/*", "exclude": true },
           { "/": "/terms/*", "exclude": true },
           { "/": "/support/*", "exclude": true },

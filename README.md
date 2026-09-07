@@ -9,11 +9,6 @@ Store-required legal pages (privacy, terms, support with account deletion).
 - **Design:** matches the app (`src/constants/theme.ts` palette, blueprint grid
   from `docs/design-system.md`). Static HTML/CSS, zero external requests — no
   cookies, trackers, or third-party fonts, as stated on the privacy page.
-- **Custom domain later:** buy `blueprintbuilds.app` at any registrar, set it
-  as the custom domain in the Pages repo settings (Settings → Pages), and add
-  DNS at the registrar: four A records `185.199.108.153`, `185.199.109.153`,
-  `185.199.110.153`, `185.199.111.153` on the apex, plus a CNAME
-  `www → blueprintbuilds.github.io`. Enable "Enforce HTTPS". No site changes
-  needed (`.app` requires HTTPS; GitHub issues the certificate automatically).
+- **Canonical domain:** `https://blueprintbuilds.app` is active on GitHub Pages with HTTPS enforced. The apex uses GitHub Pages A records and `www` CNAMEs to `blueprintbuilds.github.io`. Keep the Pages CNAME and Cloudflare DNS aligned.
 - **Content source:** `docs/app-store-legal-content.md` — keep the two in sync
   when the app's data practices change.
