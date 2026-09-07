@@ -1,4 +1,4 @@
-const CACHE = 'blueprint-plan-desk-shell-v2';
+const CACHE = 'blueprint-plan-desk-shell-v3';
 const SHELL = [
   '/workspace/plan/',
   '/workspace/core.js',
