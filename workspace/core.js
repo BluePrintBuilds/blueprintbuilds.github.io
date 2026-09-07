@@ -140,6 +140,16 @@ export async function loadOfflineMarkupReceipts(planId) {
   return Array.isArray(payload) ? payload : [];
 }
 
+export async function registerPdfPageCount(planId, pageCount) {
+  const count = Number(pageCount);
+  if (!Number.isInteger(count) || count < 1 || count > 999) throw new Error('Blueprint could not verify the PDF page count.');
+  if (getPlanSessionToken()) {
+    const payload = await planDeskFetch('/pdf/register-pages', { body: { pageCount: count } });
+    return payload?.data;
+  }
+  return rpc('blueprint_mobile_register_plan_page_count', { p_plan_id: planId, p_page_count: count });
+}
+
 export async function signPlanPaths(paths, token) {
   const unique = [...new Set(paths.filter(Boolean))];
   if (!unique.length) return {};

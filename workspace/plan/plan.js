@@ -1,5 +1,5 @@
 import * as pdfjsLib from '/assets/pdfjs/pdf.min.js';
-import { clearPlanSession, clearToken, formatDate, getPlanSessionToken, getToken, isStaff, loadOfflineMarkupReceipts, loadSession, revokePlanSession, rpc, signIn, signPlanPaths, syncOfflinePlanMarkup } from '../core.js';
+import { clearPlanSession, clearToken, formatDate, getPlanSessionToken, getToken, isStaff, loadOfflineMarkupReceipts, loadSession, registerPdfPageCount, revokePlanSession, rpc, signIn, signPlanPaths, syncOfflinePlanMarkup } from '../core.js';
 import { deleteQueuedMarkup, getPlanPack, listQueuedMarkups, planPackKey, queueMarkup, refreshPackMarkups, registerPlanDeskServiceWorker, requestPersistentStorage, savePlanPack, storageSnapshot } from '../offline.js';
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = '/assets/pdfjs/pdf.worker.min.js';
@@ -215,7 +215,10 @@ function setTool(tool) {
 }
 
 function canMarkupPlan() {
-  return !!plan && (plan.mimeType?.startsWith('image/') || (Array.isArray(plan.pagePaths) && plan.pagePaths.length > 0));
+  if (!plan) return false;
+  if (plan.mimeType?.startsWith('image/')) return true;
+  if (Array.isArray(plan.pagePaths) && plan.pagePaths.length > 0) return true;
+  return plan.mimeType === 'application/pdf' && (Number(plan.pageCount) > 0 || !!pdfDocument);
 }
 
 function beginDraft(next) {
@@ -604,9 +607,12 @@ async function prepareOfflineMedia() {
     if (!blob) throw new Error('This offline plan pack is missing its PDF. Refresh it while online.');
     pdfSourceBlob = blob;
     pdfDocument = await pdfjsLib.getDocument({ data: await blob.arrayBuffer(), isEvalSupported: false }).promise;
+    plan.pageCount = Number(plan.pageCount) || pdfDocument.numPages;
     $('legacy-note').hidden = false;
-    $('legacy-note').textContent = 'Offline copy · original PDF quality preserved on this device. Republish with sheet canvases when online to enable permanent markups.';
-    $('tools-panel').hidden = true;
+    $('legacy-note').textContent = isStaff(session?.role)
+      ? 'Offline copy · original PDF quality preserved. Pin, Zone and Draw stay available and will queue as pending sync.'
+      : 'Offline copy · original PDF quality preserved on this device. Client access remains read-only.';
+    applyPlanHeader();
     await renderPage();
     return;
   }
@@ -648,9 +654,17 @@ async function prepareMedia() {
       disableAutoFetch: false,
       rangeChunkSize: 131072,
     }).promise;
+    if (isStaff(session?.role) && Number(plan.pageCount) !== pdfDocument.numPages) {
+      const registered = await registerPdfPageCount(planId, pdfDocument.numPages);
+      plan.pageCount = Number(registered?.pageCount) || pdfDocument.numPages;
+    } else {
+      plan.pageCount = pdfDocument.numPages;
+    }
     $('legacy-note').hidden = false;
-    $('legacy-note').textContent = 'Blueprint is streaming this original PDF privately instead of waiting for the whole file or handing it to a generic preview. Republish from Blueprint’s web publisher to enable permanent per-sheet markups.';
-    $('tools-panel').hidden = true;
+    $('legacy-note').textContent = isStaff(session?.role)
+      ? 'Blueprint is streaming the original PDF at full quality. Pin, Zone and Draw are anchored directly to this exact PDF revision.'
+      : 'Blueprint is streaming the original PDF privately at full quality. Client access remains read-only.';
+    applyPlanHeader();
     await renderPage();
     return;
   }
