@@ -101,3 +101,20 @@ body.workspace-body { background-size: 20px 20px; }
 @media (orientation: landscape) and (max-height: 700px) {
   .sheet-frame { height: 68dvh; min-height: 360px; }
 }
+
+/* Fast/offline Plan Desk */
+.desk-state { min-width: 220px; display: grid; gap: 3px; justify-items: end; }
+.offline-state { margin: 0; min-height: 16px; color: var(--ink-faint); font: 11px/1.35 var(--mono); }
+.offline-state.ready { color: #8ee0b0; }
+.offline-state.busy { color: #ffd37a; }
+.offline-state.offline { color: #ffcf70; font-weight: 700; }
+.offline-state.err { color: #ff9a9a; }
+.view-tool.offline-save.saved { border-color: #49b779; color: #dff9e9; background: rgba(73,183,121,.12); }
+.markup-card.pending { border-style: dashed; border-color: #d5a43c; }
+.markup-card.pending .markup-meta { color: #e7be64; }
+
+@media (max-width: 699px) {
+  .desk-state { min-width: 0; justify-items: start; }
+  .offline-state { text-align: left; }
+  .view-tools { max-width: 100%; flex-wrap: wrap; }
+}

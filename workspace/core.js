@@ -123,13 +123,30 @@ export async function loadSession(token) {
   return rpc('blueprint_mobile_session', {}, token);
 }
 
+export async function syncOfflinePlanMarkup(params) {
+  if (getPlanSessionToken()) {
+    const payload = await planDeskFetch('/offline/sync', { body: params });
+    return payload?.data;
+  }
+  return rpc('blueprint_mobile_sync_offline_plan_markup', params);
+}
+
+export async function loadOfflineMarkupReceipts(planId) {
+  if (getPlanSessionToken()) {
+    const payload = await planDeskFetch('/offline/receipts', { body: {} });
+    return Array.isArray(payload?.data) ? payload.data : [];
+  }
+  const payload = await rpc('blueprint_mobile_offline_markup_receipts', { p_plan_id: planId });
+  return Array.isArray(payload) ? payload : [];
+}
+
 export async function signPlanPaths(paths, token) {
   const unique = [...new Set(paths.filter(Boolean))];
   if (!unique.length) return {};
   const planToken = inPlanDesk() ? getPlanSessionToken() : '';
   let payload;
   if (planToken) {
-    const wrapped = await planDeskFetch('/media/sign', { token: planToken });
+    const wrapped = await planDeskFetch('/media/sign', { token: planToken, body: { paths: unique } });
     payload = wrapped?.data;
   } else {
     const accessToken = token || getToken();

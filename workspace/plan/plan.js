@@ -1,5 +1,6 @@
 import * as pdfjsLib from '/assets/pdfjs/pdf.min.js';
-import { clearPlanSession, clearToken, formatDate, getPlanSessionToken, getToken, isStaff, loadSession, revokePlanSession, rpc, signIn, signPlanPaths } from '../core.js';
+import { clearPlanSession, clearToken, formatDate, getPlanSessionToken, getToken, isStaff, loadOfflineMarkupReceipts, loadSession, revokePlanSession, rpc, signIn, signPlanPaths, syncOfflinePlanMarkup } from '../core.js';
+import { deleteQueuedMarkup, getPlanPack, listQueuedMarkups, planPackKey, queueMarkup, refreshPackMarkups, registerPlanDeskServiceWorker, requestPersistentStorage, savePlanPack, storageSnapshot } from '../offline.js';
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = '/assets/pdfjs/pdf.worker.min.js';
 
@@ -18,6 +19,7 @@ let session = null;
 let plan = null;
 let markups = [];
 let pageUrls = [];
+let activePagePaths = [];
 let pdfDocument = null;
 let activePage = 1;
 let activeTool = '';
@@ -33,6 +35,16 @@ let pdfRenderTask = null;
 let pdfRenderTimer = null;
 let resizeTimer = null;
 let lastRenderedSurfaceWidth = 0;
+let projectRecord = null;
+let offlinePack = null;
+let offlineMode = false;
+let queuedMarkups = [];
+let receiptMap = new Map();
+let pdfSourceUrl = '';
+let pdfSourceBlob = null;
+let mediaPathUrls = {};
+let syncingOfflineQueue = false;
+const objectUrls = new Set();
 const activePointers = new Set();
 
 function escapeHtml(value) {
@@ -43,6 +55,63 @@ function setStatus(id, kind, text) {
   const node = $(id);
   node.className = kind ? `status show ${kind}` : 'status';
   node.textContent = text || '';
+}
+
+function setOfflineState(kind, text) {
+  const node = $('offline-state');
+  node.className = `offline-state${kind ? ` ${kind}` : ''}`;
+  node.textContent = text || '';
+}
+
+function formatDateTime(value) {
+  const date = new Date(value);
+  return Number.isNaN(date.valueOf()) ? '' : date.toLocaleString('en-AU', { dateStyle: 'medium', timeStyle: 'short' });
+}
+
+function isNetworkError(reason) {
+  const message = String(reason?.message || reason || '');
+  return !navigator.onLine || /network|fetch|offline|connection|unreachable/i.test(message);
+}
+
+function objectUrl(blob) {
+  const url = URL.createObjectURL(blob);
+  objectUrls.add(url);
+  return url;
+}
+
+function queuedToMarkup(item) {
+  return {
+    id: `local:${item.clientEventId}`,
+    clientEventId: item.clientEventId,
+    planId: item.planId,
+    page: item.page,
+    shape: item.shape,
+    x: item.x,
+    y: item.y,
+    w: item.w,
+    h: item.h,
+    points: item.points,
+    note: item.note,
+    createdAt: item.capturedAt,
+    capturedAt: item.capturedAt,
+    createdBy: 'You',
+    isYours: true,
+    pending: true,
+    voidedAt: null,
+  };
+}
+
+async function refreshQueued() {
+  queuedMarkups = await listQueuedMarkups(projectId, planId).catch(() => []);
+  return queuedMarkups;
+}
+
+function mergeMarkupState(base) {
+  const merged = (Array.isArray(base) ? base : []).map((item) => {
+    const receipt = receiptMap.get(item.id);
+    return receipt ? { ...item, ...receipt, offlineCapture: true } : item;
+  });
+  return [...merged, ...queuedMarkups.map(queuedToMarkup)];
 }
 
 function showSignin() {
@@ -243,11 +312,16 @@ function renderMarkupList() {
   }
   markups.forEach((item, index) => {
     const card = document.createElement('article');
-    card.className = `markup-card${item.voidedAt ? ' voided' : ''}`;
+    card.className = `markup-card${item.voidedAt ? ' voided' : ''}${item.pending ? ' pending' : ''}`;
     const number = index + 1;
-    const state = item.voidedAt ? 'WITHDRAWN' : `SHEET ${item.page}`;
-    const canWithdraw = !item.voidedAt && isStaff(session?.role) && (item.isYours || session?.role === 'Owner' || session?.role === 'Project manager');
-    card.innerHTML = `<p class="markup-note"><strong>${number}.</strong> ${escapeHtml(item.note)}</p><p class="markup-meta">${state} · ${escapeHtml(item.shape?.toUpperCase())} · ${escapeHtml(item.createdBy || 'Blueprint Builds user')} · ${formatDate(item.createdAt)}</p>${canWithdraw ? `<button class="markup-withdraw" type="button" data-withdraw="${escapeHtml(item.id)}">Withdraw markup</button>` : ''}`;
+    const state = item.pending ? `PENDING SYNC · SHEET ${item.page}` : item.voidedAt ? 'WITHDRAWN' : `SHEET ${item.page}`;
+    const canWithdraw = !item.pending && !item.voidedAt && isStaff(session?.role) && (item.isYours || session?.role === 'Owner' || session?.role === 'Project manager');
+    const time = item.pending
+      ? `captured offline ${formatDateTime(item.capturedAt || item.createdAt)}`
+      : item.offlineCapture
+        ? `captured offline ${formatDateTime(item.capturedAt)} · synced ${formatDateTime(item.syncedAt)}`
+        : formatDate(item.createdAt);
+    card.innerHTML = `<p class="markup-note"><strong>${number}.</strong> ${escapeHtml(item.note)}</p><p class="markup-meta">${state} · ${escapeHtml(item.shape?.toUpperCase())} · ${escapeHtml(item.createdBy || 'Blueprint Builds user')} · ${escapeHtml(time)}</p>${canWithdraw ? `<button class="markup-withdraw" type="button" data-withdraw="${escapeHtml(item.id)}">Withdraw markup</button>` : ''}`;
     card.addEventListener('click', (event) => {
       if (event.target.closest('[data-withdraw]')) return;
       activePage = Number(item.page) || 1;
@@ -269,8 +343,20 @@ function renderMarkupList() {
 }
 
 async function loadMarkups() {
-  markups = await rpc('blueprint_mobile_plan_markups', { p_plan_id: planId });
-  if (!Array.isArray(markups)) markups = [];
+  await refreshQueued();
+  if (offlineMode) {
+    receiptMap = new Map();
+    markups = mergeMarkupState(offlinePack?.markups || []);
+  } else {
+    const [base, receipts] = await Promise.all([
+      rpc('blueprint_mobile_plan_markups', { p_plan_id: planId }),
+      (getPlanSessionToken() || getToken()) ? loadOfflineMarkupReceipts(planId).catch(() => []) : Promise.resolve([]),
+    ]);
+    receiptMap = new Map((Array.isArray(receipts) ? receipts : []).map((item) => [item.markupId, item]));
+    const clean = Array.isArray(base) ? base : [];
+    markups = mergeMarkupState(clean);
+    if (offlinePack) refreshPackMarkups(projectId, planId, clean).catch(() => {});
+  }
   renderMarkupLayer();
   renderMarkupList();
 }
@@ -333,26 +419,214 @@ async function renderPage() {
     await renderPdfPage();
     return;
   }
-  const url = pageUrls[activePage - 1];
+  const url = pageUrls[activePage - 1] || await ensurePageUrl(activePage - 1);
+  if (!url) throw new Error('The secure sheet could not be prepared.');
   const image = $('sheet-image');
   $('pdf-canvas').hidden = true;
   image.hidden = false;
-  image.onload = () => { $('sheet-loading').hidden = true; renderMarkupLayer(); };
+  image.onload = () => { $('sheet-loading').hidden = true; renderMarkupLayer(); preloadAdjacentSheet(); };
   image.onerror = () => { $('sheet-loading').textContent = 'The secure sheet image could not be loaded. Refresh the Plan Desk and try again.'; };
   image.src = url;
   renderMarkupLayer();
 }
 
+async function queueCurrentDraft(note) {
+  const capturedAt = new Date().toISOString();
+  const item = {
+    planKey: planPackKey(projectId, planId),
+    projectId,
+    planId,
+    clientEventId: draft.clientEventId,
+    page: draft.page,
+    shape: draft.shape,
+    x: draft.x,
+    y: draft.y,
+    w: draft.w,
+    h: draft.h,
+    points: draft.shape === 'freehand' ? draft.points : null,
+    note,
+    capturedAt,
+  };
+  await queueMarkup(item);
+  await refreshQueued();
+  const base = markups.filter((entry) => !entry.pending);
+  markups = mergeMarkupState(base);
+  cancelDraft();
+  renderMarkupLayer();
+  renderMarkupList();
+  renderSheetRail(pdfDocument ? pdfDocument.numPages : pageUrls.length);
+  setOfflineState('offline', `${queuedMarkups.length} markup${queuedMarkups.length === 1 ? '' : 's'} waiting to sync · capture time preserved`);
+}
+
+async function syncOfflineQueue() {
+  if (syncingOfflineQueue || offlineMode || !navigator.onLine || (!getPlanSessionToken() && !getToken())) return;
+  await refreshQueued();
+  if (!queuedMarkups.length) return;
+  syncingOfflineQueue = true;
+  setOfflineState('busy', `Syncing ${queuedMarkups.length} offline markup${queuedMarkups.length === 1 ? '' : 's'}…`);
+  try {
+    for (const item of [...queuedMarkups]) {
+      await syncOfflinePlanMarkup({
+        p_plan_id: item.planId,
+        p_client_event_id: item.clientEventId,
+        p_page: item.page,
+        p_shape: item.shape,
+        p_x: item.x,
+        p_y: item.y,
+        p_w: item.w,
+        p_h: item.h,
+        p_note: item.note,
+        ...(item.points ? { p_points: item.points } : {}),
+        p_captured_at: item.capturedAt,
+      });
+      await deleteQueuedMarkup(item.clientEventId);
+    }
+    await refreshQueued();
+    await loadMarkups();
+    setOfflineState('ready', offlinePack ? `Offline copy current · ${formatDateTime(offlinePack.savedAt)}` : 'Offline markups synced into the verified drawing record.');
+  } catch (reason) {
+    await refreshQueued();
+    if (isNetworkError(reason)) setOfflineState('offline', `${queuedMarkups.length} markup${queuedMarkups.length === 1 ? '' : 's'} still waiting for connection`);
+    else if (/session|expired|sign in/i.test(reason?.message || '')) setOfflineState('err', 'Offline edits are safe. Reopen this plan from the app to refresh the secure session and sync them.');
+    else setOfflineState('err', reason?.message || 'Offline edits remain stored on this device and will retry later.');
+  } finally {
+    syncingOfflineQueue = false;
+  }
+}
+
+async function fetchOfflineBlob(url) {
+  const response = await fetch(url, { cache: 'no-store', referrerPolicy: 'no-referrer' });
+  if (!response.ok) throw new Error('One of the secure plan files could not be saved for offline use.');
+  return response.blob();
+}
+
+async function mapLimited(items, limit, worker) {
+  const result = new Array(items.length);
+  let cursor = 0;
+  async function run() {
+    while (cursor < items.length) {
+      const index = cursor++;
+      result[index] = await worker(items[index], index);
+    }
+  }
+  await Promise.all(Array.from({ length: Math.min(limit, items.length) }, run));
+  return result;
+}
+
+async function saveCurrentPlanOffline() {
+  if (offlineMode || !plan || !projectRecord) return;
+  const button = $('save-offline');
+  button.disabled = true;
+  setOfflineState('busy', 'Preparing full-quality offline plan pack…');
+  try {
+    await requestPersistentStorage();
+    const snapshot = await storageSnapshot();
+    const expected = Math.max(Number(plan.sizeBytes || 0), 8 * 1024 * 1024);
+    if (snapshot.quota && snapshot.quota - snapshot.usage < expected * 1.25) {
+      throw new Error('This device is too close to its browser storage limit for a safe offline copy. Free some space and try again.');
+    }
+    const pagePaths = Array.isArray(plan.pagePaths) ? plan.pagePaths.filter(Boolean) : [];
+    const paths = plan.mimeType?.startsWith('image/') ? [plan.storagePath] : pagePaths.length ? pagePaths : [plan.storagePath];
+    const signed = await signPlanPaths(paths);
+    let completed = 0;
+    const media = await mapLimited(paths, 3, async (path) => {
+      const url = signed[path];
+      if (!url) throw new Error('Blueprint could not prepare every sheet for offline use.');
+      const blob = await fetchOfflineBlob(url);
+      completed += 1;
+      setOfflineState('busy', `Saving full-quality plan media… ${completed}/${paths.length}`);
+      return { path, mimeType: blob.type || (path === plan.storagePath ? plan.mimeType : 'image/png'), blob };
+    });
+    const serverMarkups = markups.filter((item) => !item.pending).map(({ pending, ...item }) => item);
+    offlinePack = await savePlanPack({
+      projectId,
+      planId,
+      project: projectRecord,
+      plan,
+      role: session?.role,
+      markups: serverMarkups,
+      media,
+    });
+    button.textContent = 'Offline saved';
+    button.classList.add('saved');
+    setOfflineState('ready', `Full-quality offline copy saved until ${formatDateTime(offlinePack.expiresAt)}`);
+  } catch (reason) {
+    setOfflineState('err', reason?.message || 'Blueprint could not save this drawing offline.');
+  } finally {
+    button.disabled = false;
+  }
+}
+
+async function ensurePageUrl(index) {
+  if (pageUrls[index]) return pageUrls[index];
+  const path = activePagePaths[index];
+  if (!path || offlineMode) return '';
+  const signed = await signPlanPaths([path]);
+  const url = signed[path] || '';
+  if (url) {
+    pageUrls[index] = url;
+    mediaPathUrls[path] = url;
+  }
+  return url;
+}
+
+function preloadAdjacentSheet() {
+  if (pdfDocument || !pageUrls.length) return;
+  const candidates = [activePage, activePage - 2].filter((index) => index >= 0 && index < pageUrls.length);
+  for (const index of candidates) {
+    void ensurePageUrl(index).then((url) => {
+      if (!url) return;
+      const image = new Image();
+      image.decoding = 'async';
+      image.src = url;
+    }).catch(() => {});
+  }
+}
+
+async function prepareOfflineMedia() {
+  const media = Array.isArray(offlinePack?.media) ? offlinePack.media : [];
+  const byPath = new Map(media.map((item) => [item.path, item]));
+  const pagePaths = Array.isArray(plan.pagePaths) ? plan.pagePaths.filter(Boolean) : [];
+  if (plan.mimeType?.startsWith('image/') || pagePaths.length) {
+    const paths = plan.mimeType?.startsWith('image/') ? [plan.storagePath] : pagePaths;
+    activePagePaths = paths;
+    pageUrls = paths.map((path) => {
+      const blob = byPath.get(path)?.blob;
+      if (!blob) throw new Error('This offline plan pack is missing one or more drawing sheets. Refresh it while online.');
+      return objectUrl(blob);
+    });
+    pdfDocument = null;
+    await renderPage();
+    return;
+  }
+  if (plan.mimeType === 'application/pdf') {
+    const blob = byPath.get(plan.storagePath)?.blob;
+    if (!blob) throw new Error('This offline plan pack is missing its PDF. Refresh it while online.');
+    pdfSourceBlob = blob;
+    pdfDocument = await pdfjsLib.getDocument({ data: await blob.arrayBuffer(), isEvalSupported: false }).promise;
+    $('legacy-note').hidden = false;
+    $('legacy-note').textContent = 'Offline copy · original PDF quality preserved on this device. Republish with sheet canvases when online to enable permanent markups.';
+    $('tools-panel').hidden = true;
+    await renderPage();
+    return;
+  }
+  throw new Error('This saved drawing type cannot be rendered offline yet.');
+}
+
 async function prepareMedia() {
+  if (offlineMode) return prepareOfflineMedia();
   const isImage = plan.mimeType?.startsWith('image/');
   const pagePaths = Array.isArray(plan.pagePaths) ? plan.pagePaths.filter(Boolean) : [];
   if (isImage || pagePaths.length) {
     const paths = isImage ? [plan.storagePath] : pagePaths;
-    const signed = await signPlanPaths(paths);
-    pageUrls = paths.map((path) => signed[path]).filter(Boolean);
-    if (!pageUrls.length) throw new Error('The secure drawing sheets could not be prepared.');
+    activePagePaths = paths;
+    pageUrls = new Array(paths.length).fill('');
+    mediaPathUrls = {};
+    await ensurePageUrl(0);
+    if (!pageUrls[0]) throw new Error('The secure drawing sheet could not be prepared.');
     pdfDocument = null;
     await renderPage();
+    preloadAdjacentSheet();
     return;
   }
 
@@ -360,12 +634,22 @@ async function prepareMedia() {
     const signed = await signPlanPaths([plan.storagePath]);
     const url = signed[plan.storagePath];
     if (!url) throw new Error('The secure PDF could not be prepared.');
-    const response = await fetch(url, { cache: 'no-store' });
-    if (!response.ok) throw new Error('The secure PDF could not be loaded.');
-    const bytes = await response.arrayBuffer();
-    pdfDocument = await pdfjsLib.getDocument({ data: bytes, isEvalSupported: false }).promise;
+    activePagePaths = [];
+    mediaPathUrls = signed;
+    pdfSourceUrl = url;
+    // Give pdf.js the signed URL instead of waiting for a full ArrayBuffer.
+    // When the storage edge supports byte ranges/streaming, first-sheet work
+    // starts immediately; the original PDF remains untouched at full quality.
+    pdfDocument = await pdfjsLib.getDocument({
+      url,
+      isEvalSupported: false,
+      disableRange: false,
+      disableStream: false,
+      disableAutoFetch: false,
+      rangeChunkSize: 131072,
+    }).promise;
     $('legacy-note').hidden = false;
-    $('legacy-note').textContent = 'This older PDF did not publish with sheet canvases. Blueprint is rendering it privately here instead of handing it to a generic preview. Republish the PDF from Blueprint’s web publisher to enable permanent markups on each sheet.';
+    $('legacy-note').textContent = 'Blueprint is streaming this original PDF privately instead of waiting for the whole file or handing it to a generic preview. Republish from Blueprint’s web publisher to enable permanent per-sheet markups.';
     $('tools-panel').hidden = true;
     await renderPage();
     return;
@@ -374,40 +658,74 @@ async function prepareMedia() {
   throw new Error('This drawing type cannot be rendered in the Plan Desk yet.');
 }
 
-async function loadPlan() {
-  const plans = await rpc('blueprint_mobile_project_plans', { p_project_id: projectId });
-  plan = Array.isArray(plans) ? plans.find((item) => item.id === planId) : null;
-  if (!plan) throw new Error('This drawing is not in a project assigned to your account.');
+function applyPlanHeader() {
   $('plan-title').textContent = plan.title;
   const revision = plan.revision ? ` · Rev ${plan.revision}` : '';
   $('plan-meta').textContent = `${plan.discipline || 'Drawing'}${revision} · ${String(plan.status || 'record').toUpperCase()} · published ${formatDate(plan.uploadedAt)} by ${plan.createdBy || 'Blueprint Builds user'}`;
-  const projects = await rpc('blueprint_mobile_projects');
-  const project = Array.isArray(projects) ? projects.find((item) => item.id === projectId) : null;
-  $('project-name').textContent = project?.name || 'Plan record';
+  $('project-name').textContent = projectRecord?.name || 'Plan record';
   if (!isStaff(session?.role)) {
     $('tools-panel').hidden = true;
     $('legacy-note').hidden = false;
     $('legacy-note').textContent = 'Client view is read-only. Markups remain visible as part of the verified drawing record.';
   } else if (!canMarkupPlan()) {
     $('tools-panel').hidden = true;
+  } else {
+    $('tools-panel').hidden = false;
   }
-  await Promise.all([loadMarkups(), prepareMedia()]);
-  renderSheetRail(pdfDocument ? pdfDocument.numPages : pageUrls.length);
 }
 
+async function loadPlan() {
+  if (offlineMode) {
+    plan = offlinePack.plan;
+    projectRecord = offlinePack.project;
+  } else {
+    const [plans, projects] = await Promise.all([
+      rpc('blueprint_mobile_project_plans', { p_project_id: projectId }),
+      rpc('blueprint_mobile_projects'),
+    ]);
+    plan = Array.isArray(plans) ? plans.find((item) => item.id === planId) : null;
+    if (!plan) throw new Error('This drawing is not in a project assigned to your account.');
+    projectRecord = Array.isArray(projects) ? projects.find((item) => item.id === projectId) : null;
+  }
+  if (!plan) throw new Error('This drawing is not available on this device.');
+  applyPlanHeader();
+  await Promise.all([loadMarkups(), prepareMedia()]);
+  renderSheetRail(pdfDocument ? pdfDocument.numPages : pageUrls.length);
+  if (offlineMode) setOfflineState('offline', `OFFLINE · saved ${formatDateTime(offlinePack.savedAt)} · edits queue on this device`);
+}
+
+async function bootOfflinePack() {
+  offlineMode = true;
+  session = { role: offlinePack.role, offline: true };
+  showDesk();
+  $('signout').textContent = 'Close offline copy';
+  await loadPlan();
+}
 
 async function boot() {
+  registerPlanDeskServiceWorker().catch(() => {});
   if (!UUID.test(projectId) || !UUID.test(planId)) {
     $('signin-panel').hidden = false;
     $('signin-panel').innerHTML = '<h2>Drawing link incomplete</h2><p class="hint">Open the plan from the Builder Workspace so Blueprint can verify both the project and drawing record.</p><a class="btn" href="/workspace/">Open Builder Workspace</a>';
     return;
   }
-  if (!getToken() && !getPlanSessionToken()) return showSignin();
+  offlinePack = await getPlanPack(projectId, planId).catch(() => null);
+  if (offlinePack) {
+    $('save-offline').textContent = 'Offline saved';
+    $('save-offline').classList.add('saved');
+    setOfflineState('ready', `Saved on this device until ${formatDateTime(offlinePack.expiresAt)}`);
+  }
+  if (!getToken() && !getPlanSessionToken()) {
+    if (!navigator.onLine && offlinePack) return bootOfflinePack();
+    return showSignin();
+  }
   try {
     session = await loadSession();
     showDesk();
     await loadPlan();
+    await syncOfflineQueue();
   } catch (reason) {
+    if (offlinePack && isNetworkError(reason)) return bootOfflinePack();
     if (/session|sign in|access token/i.test(reason?.message || '')) {
       clearPlanSession();
       clearToken();
@@ -417,6 +735,7 @@ async function boot() {
     $('sheet-loading').textContent = reason?.message || 'The Plan Desk could not load this drawing.';
   }
 }
+
 
 $('signin-form').addEventListener('submit', async (event) => {
   event.preventDefault();
@@ -429,6 +748,7 @@ $('signin-form').addEventListener('submit', async (event) => {
     setStatus('signin-status', '', '');
     showDesk();
     await loadPlan();
+    await syncOfflineQueue();
   } catch (reason) {
     clearToken();
     setStatus('signin-status', 'err', reason?.message || 'Sign-in failed.');
@@ -438,15 +758,18 @@ $('signin-form').addEventListener('submit', async (event) => {
 });
 
 $('signout').addEventListener('click', async () => {
-  try { await revokePlanSession(); } catch { clearPlanSession(); }
-  clearToken();
-  location.reload();
+  if (!offlineMode) {
+    try { await revokePlanSession(); } catch { clearPlanSession(); }
+    clearToken();
+  }
+  location.href = '/workspace/';
 });
 document.querySelectorAll('[data-tool]').forEach((button) => button.addEventListener('click', () => setTool(button.dataset.tool)));
 $('cancel-markup').addEventListener('click', () => cancelDraft());
 $('fit-drawing').addEventListener('click', fitDrawing);
 $('zoom-out').addEventListener('click', () => setZoom(zoom - ZOOM_STEP));
 $('zoom-in').addEventListener('click', () => setZoom(zoom + ZOOM_STEP));
+$('save-offline').addEventListener('click', saveCurrentPlanOffline);
 updateZoomUi();
 renderToolState();
 
@@ -456,6 +779,12 @@ $('save-markup').addEventListener('click', async () => {
   if (!note) return setStatus('markup-status', 'err', 'Add a note so the mark has meaning in the record.');
   const button = $('save-markup');
   button.disabled = true;
+  if (offlineMode || !navigator.onLine) {
+    try { await queueCurrentDraft(note); }
+    catch (reason) { setStatus('markup-status', 'err', reason?.message || 'The offline markup could not be stored on this device.'); }
+    finally { button.disabled = false; }
+    return;
+  }
   setStatus('markup-status', 'busy', 'Sealing markup into the drawing record…');
   try {
     await rpc('blueprint_mobile_create_plan_markup', {
@@ -468,13 +797,14 @@ $('save-markup').addEventListener('click', async () => {
       p_w: draft.w,
       p_h: draft.h,
       p_note: note,
-      p_points: draft.shape === 'freehand' ? draft.points : null,
+      ...(draft.shape === 'freehand' ? { p_points: draft.points } : {}),
     });
     cancelDraft();
     await loadMarkups();
     renderSheetRail(pdfDocument ? pdfDocument.numPages : pageUrls.length);
   } catch (reason) {
-    setStatus('markup-status', 'err', reason?.message || 'The markup could not be recorded.');
+    if (isNetworkError(reason)) await queueCurrentDraft(note);
+    else setStatus('markup-status', 'err', reason?.message || 'The markup could not be recorded.');
   } finally {
     button.disabled = false;
   }
@@ -666,3 +996,18 @@ window.addEventListener('resize', () => {
 });
 
 boot();
+
+window.addEventListener('online', () => {
+  if (offlineMode) {
+    setOfflineState('ready', 'Connection restored · reopen this drawing from the app to refresh its secure session and sync offline edits.');
+    return;
+  }
+  void syncOfflineQueue();
+});
+window.addEventListener('offline', () => {
+  setOfflineState('offline', offlinePack ? 'OFFLINE · saved plan remains available · new markups will queue' : 'OFFLINE · keep this desk open; save a plan pack while online for future offline reopening');
+});
+window.addEventListener('beforeunload', () => {
+  for (const url of objectUrls) URL.revokeObjectURL(url);
+  objectUrls.clear();
+});

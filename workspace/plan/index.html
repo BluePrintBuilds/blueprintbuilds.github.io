@@ -46,8 +46,12 @@
                 <button class="view-tool icon" id="zoom-out" type="button" aria-label="Zoom out">−</button>
                 <output class="zoom-level" id="zoom-level" aria-live="polite">100%</output>
                 <button class="view-tool icon" id="zoom-in" type="button" aria-label="Zoom in">+</button>
+                <button class="view-tool offline-save" id="save-offline" type="button">Save offline</button>
               </div>
-              <p class="gesture-hint" id="gesture-hint">Browse mode · drag or scroll to pan · pinch, trackpad or + / − to zoom</p>
+              <div class="desk-state">
+                <p class="gesture-hint" id="gesture-hint">Browse mode · drag or scroll to pan · pinch, trackpad or + / − to zoom</p>
+                <p class="offline-state" id="offline-state" aria-live="polite"></p>
+              </div>
             </div>
             <div class="sheet-frame" id="sheet-frame" tabindex="0" aria-label="Interactive plan canvas">
               <div class="sheet-surface" id="sheet-surface">
