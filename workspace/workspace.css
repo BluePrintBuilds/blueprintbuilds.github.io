@@ -22,28 +22,41 @@ body.workspace-body { background-size: 20px 20px; }
 .empty-state { border: 1px dashed var(--border-strong); border-radius: 10px; padding: 24px; color: var(--ink-muted); }
 [hidden] { display: none !important; }
 
-.plan-desk { max-width: 1680px; margin: 0 auto; padding: 0 18px 54px; }
-.desk-header { display: flex; justify-content: space-between; gap: 16px; align-items: flex-end; flex-wrap: wrap; border-bottom: 1px solid var(--border); padding: 22px 0 16px; margin-bottom: 14px; }
-.desk-title { margin: 0; font-size: clamp(24px, 3vw, 38px); }
+.plan-desk { max-width: 2200px; margin: 0 auto; padding: 0 max(18px, env(safe-area-inset-right)) max(54px, env(safe-area-inset-bottom)) max(18px, env(safe-area-inset-left)); }
+.desk-header { display: flex; justify-content: space-between; gap: 16px; align-items: flex-end; flex-wrap: wrap; border-bottom: 1px solid var(--border); padding: max(22px, env(safe-area-inset-top)) 0 16px; margin-bottom: 14px; }
+.desk-title { margin: 0; font-size: clamp(24px, 3vw, 42px); }
 .desk-sub { margin: 4px 0 0; color: var(--ink-muted); }
-.desk-layout { display: grid; grid-template-columns: minmax(0, 1fr) 330px; gap: 14px; align-items: start; }
+.desk-layout { display: grid; grid-template-columns: minmax(0, 1fr) minmax(320px, 360px); gap: 16px; align-items: start; }
 .desk-stage { min-width: 0; }
 .desk-sidebar { position: sticky; top: 12px; display: grid; gap: 12px; }
-.sheet-rail { display: flex; gap: 8px; overflow-x: auto; padding: 0 0 10px; }
-.sheet-tab { border: 1px solid var(--border); border-radius: 8px; padding: 8px 11px; background: var(--navy); color: var(--ink-muted); font-family: var(--mono); font-size: 12px; cursor: pointer; white-space: nowrap; }
+.sheet-rail { display: flex; gap: 8px; overflow-x: auto; padding: 0 0 10px; scrollbar-width: thin; }
+.sheet-tab { min-height: 44px; border: 1px solid var(--border); border-radius: 8px; padding: 8px 11px; background: var(--navy); color: var(--ink-muted); font-family: var(--mono); font-size: 12px; cursor: pointer; white-space: nowrap; }
 .sheet-tab.active { color: #fff; border-color: var(--blueprint); background: rgba(37,142,255,.18); }
-.sheet-frame { position: relative; width: 100%; min-height: 420px; border: 1px solid var(--border-strong); border-radius: 10px; overflow: hidden; background: #eef2f7; touch-action: none; }
-.sheet-media { display: block; width: 100%; height: auto; user-select: none; -webkit-user-drag: none; }
-.sheet-canvas { display: block; width: 100%; height: auto; }
+.desk-canvas-bar { min-height: 48px; display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 0 0 8px; }
+.view-tools { display: inline-flex; align-items: center; gap: 6px; flex: 0 0 auto; }
+.view-tool { min-width: 48px; min-height: 44px; border: 1px solid var(--border); border-radius: 8px; background: var(--navy); color: var(--ink); padding: 8px 12px; cursor: pointer; font-weight: 700; }
+.view-tool.icon { min-width: 44px; padding-inline: 10px; font-size: 20px; line-height: 1; }
+.zoom-level { min-width: 58px; text-align: center; font: 12px var(--mono); color: var(--ink-muted); }
+.gesture-hint { margin: 0; text-align: right; color: var(--ink-faint); font: 11px/1.35 var(--mono); }
+.sheet-frame { position: relative; width: 100%; height: clamp(430px, 72dvh, 1180px); border: 1px solid var(--border-strong); border-radius: 10px; overflow: auto; overscroll-behavior: contain; background: #eef2f7; touch-action: pan-x pan-y; -webkit-overflow-scrolling: touch; user-select: none; -webkit-user-select: none; -webkit-tap-highlight-color: transparent; scroll-behavior: auto; outline: none; }
+.sheet-frame:focus-visible { box-shadow: 0 0 0 3px rgba(37,142,255,.35); }
+.sheet-frame.marking { touch-action: none; cursor: crosshair; }
+.sheet-surface { position: relative; width: 100%; min-height: 120px; margin-inline: auto; transform-origin: top left; background: #eef2f7; }
+.sheet-loading { margin: 18px; }
+.sheet-media { display: block; width: 100%; height: auto; user-select: none; -webkit-user-select: none; -webkit-user-drag: none; pointer-events: none; }
+.sheet-canvas { display: block; width: 100%; height: auto; pointer-events: none; }
 .markup-layer { position: absolute; inset: 0; z-index: 4; pointer-events: none; }
-.drawing-layer { position: absolute; inset: 0; z-index: 8; pointer-events: auto; cursor: crosshair; }
+.drawing-layer { position: absolute; inset: 0; z-index: 8; pointer-events: auto; cursor: crosshair; touch-action: none; }
 .markup-zone { position: absolute; border: 2px solid #f04444; background: rgba(240,68,68,.10); }
 .markup-pin { position: absolute; width: 24px; height: 24px; margin: -12px 0 0 -12px; border-radius: 50%; background: #f04444; color: #fff; display: grid; place-items: center; font: 700 11px var(--mono); box-shadow: 0 2px 9px rgba(0,0,0,.35); }
 .markup-svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
 .markup-svg polyline { fill: none; stroke: #f04444; stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; vector-effect: non-scaling-stroke; }
-.tool-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 7px; }
-.tool { border: 1px solid var(--border); background: var(--midnight); color: var(--ink-muted); border-radius: 8px; padding: 9px 6px; cursor: pointer; font-size: 13px; }
+.tool-row { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 7px; }
+.tool { min-height: 44px; border: 1px solid var(--border); background: var(--midnight); color: var(--ink-muted); border-radius: 8px; padding: 9px 6px; cursor: pointer; font-size: 13px; -webkit-tap-highlight-color: transparent; }
 .tool.active { border-color: var(--blueprint); color: #fff; background: rgba(37,142,255,.14); }
+.view-tool, .tool, .sheet-tab, .plan-open, .project-button { touch-action: manipulation; }
+.view-tool:hover, .tool:hover, .sheet-tab:hover { border-color: var(--blueprint); }
+.view-tool:focus-visible, .tool:focus-visible, .sheet-tab:focus-visible, .plan-open:focus-visible, .project-button:focus-visible { outline: 3px solid rgba(37,142,255,.42); outline-offset: 2px; }
 .draft-box { border-top: 1px solid var(--border); margin-top: 12px; padding-top: 12px; }
 .draft-box textarea { width: 100%; resize: vertical; min-height: 84px; background: var(--midnight); color: var(--ink); border: 1px solid var(--border-strong); border-radius: 8px; padding: 10px; font: inherit; }
 .markup-list { display: grid; gap: 8px; max-height: 430px; overflow: auto; }
@@ -55,9 +68,36 @@ body.workspace-body { background-size: 20px 20px; }
 .legacy-note { background: #102949; border: 1px solid #345c86; border-radius: 9px; padding: 13px; color: var(--ink-muted); margin-bottom: 10px; }
 .security-strip { font: 11px var(--mono); color: var(--ink-faint); letter-spacing: .05em; }
 
-@media (max-width: 900px) {
+@media (max-width: 1179px) {
   .workspace-grid, .desk-layout { grid-template-columns: 1fr; }
-  .desk-sidebar { position: static; }
+  .desk-sidebar { position: static; grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .plan-row { grid-template-columns: 1fr; }
   .plan-open { text-align: center; }
+  .sheet-frame { height: clamp(420px, 66dvh, 860px); }
+}
+
+@media (max-width: 699px) {
+  .workspace-wrap { padding-inline: max(12px, env(safe-area-inset-left)); }
+  .plan-desk { padding-inline: max(10px, env(safe-area-inset-left)); }
+  .desk-sidebar { grid-template-columns: 1fr; }
+  .desk-canvas-bar { align-items: flex-start; flex-direction: column; gap: 7px; }
+  .gesture-hint { text-align: left; }
+  .sheet-frame { height: clamp(360px, 62dvh, 700px); border-radius: 8px; }
+  .tool-row { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .security-strip { max-width: 90vw; }
+}
+
+@media (pointer: coarse) {
+  .view-tool, .tool, .sheet-tab, .plan-open, .project-button { min-height: 48px; }
+  .markup-withdraw { min-height: 44px; padding-block: 10px; }
+}
+
+@media (min-width: 1800px) {
+  .desk-layout { grid-template-columns: minmax(0, 1fr) 390px; gap: 20px; }
+  .sheet-frame { height: min(78dvh, 1320px); }
+  .desk-sidebar { gap: 16px; }
+}
+
+@media (orientation: landscape) and (max-height: 700px) {
+  .sheet-frame { height: 68dvh; min-height: 360px; }
 }

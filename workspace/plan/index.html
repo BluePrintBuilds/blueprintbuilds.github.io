@@ -2,7 +2,7 @@
 <html lang="en-AU">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Plan Desk — Blueprint Builds</title>
   <meta name="robots" content="noindex,nofollow">
   <link rel="stylesheet" href="/styles.css">
@@ -40,12 +40,23 @@
         <div class="desk-layout">
           <section class="desk-stage">
             <div class="sheet-rail" id="sheet-rail"></div>
-            <div class="sheet-frame" id="sheet-frame">
-              <div class="empty-state" id="sheet-loading">Preparing the secure drawing canvas…</div>
-              <img class="sheet-media" id="sheet-image" alt="Plan sheet" draggable="false" hidden>
-              <canvas class="sheet-canvas" id="pdf-canvas" hidden></canvas>
-              <div class="markup-layer" id="markup-layer"></div>
-              <div class="drawing-layer" id="drawing-layer" hidden></div>
+            <div class="desk-canvas-bar" aria-label="Drawing view controls">
+              <div class="view-tools">
+                <button class="view-tool" id="fit-drawing" type="button">Fit</button>
+                <button class="view-tool icon" id="zoom-out" type="button" aria-label="Zoom out">−</button>
+                <output class="zoom-level" id="zoom-level" aria-live="polite">100%</output>
+                <button class="view-tool icon" id="zoom-in" type="button" aria-label="Zoom in">+</button>
+              </div>
+              <p class="gesture-hint" id="gesture-hint">Browse mode · drag or scroll to pan · pinch, trackpad or + / − to zoom</p>
+            </div>
+            <div class="sheet-frame" id="sheet-frame" tabindex="0" aria-label="Interactive plan canvas">
+              <div class="sheet-surface" id="sheet-surface">
+                <div class="empty-state sheet-loading" id="sheet-loading">Preparing the secure drawing canvas…</div>
+                <img class="sheet-media" id="sheet-image" alt="Plan sheet" draggable="false" hidden>
+                <canvas class="sheet-canvas" id="pdf-canvas" hidden></canvas>
+                <div class="markup-layer" id="markup-layer"></div>
+                <div class="drawing-layer" id="drawing-layer" hidden></div>
+              </div>
             </div>
           </section>
 
@@ -53,8 +64,9 @@
             <section class="workspace-panel" id="tools-panel">
               <p class="kicker">Field markup</p>
               <h2 style="margin-top:0">Mark the drawing</h2>
-              <p id="tool-hint">Select a tool, mark the sheet, then describe what the mark means. Saved markups are permanent records.</p>
+              <p id="tool-hint">Browse is always safe. Choose Pin, Zone or Draw only when you mean to mark the sheet; saved markups are permanent records.</p>
               <div class="tool-row">
+                <button class="tool active" data-tool="browse" type="button">Browse</button>
                 <button class="tool" data-tool="pin" type="button">Pin</button>
                 <button class="tool" data-tool="zone" type="button">Zone</button>
                 <button class="tool" data-tool="freehand" type="button">Draw</button>
