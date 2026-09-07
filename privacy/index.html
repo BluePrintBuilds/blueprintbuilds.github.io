@@ -55,7 +55,7 @@
       </ul>
 
       <h2>This website</h2>
-      <p>The public marketing and legal pages are static. The optional Builder Workspace and Plan Desk use the same Blueprint Builds account and private project backend as the app. The browser keeps the access token in session storage for the current tab, does not set advertising or analytics cookies, and does not load third-party trackers or external fonts. Private plan media is delivered through short-lived signed links after workspace access is verified.</p>
+      <p>The public marketing and legal pages are static. The optional Builder Workspace and Plan Desk use the same private Blueprint Builds backend as the app. A normal web sign-in keeps its access token in session storage for the current tab. When a drawing is opened from the native app, Blueprint instead exchanges a one-use, 90-second handoff code for a short-lived session scoped to that exact project and plan; the app access and refresh tokens are never placed in the handoff URL. The site sets no advertising or analytics cookies and loads no third-party trackers or external fonts. Private plan media is delivered through short-lived signed links after access is verified.</p>
 
       <h2>Contact</h2>
       <div class="contact-block">

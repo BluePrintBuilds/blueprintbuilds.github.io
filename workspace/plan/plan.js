@@ -1,5 +1,5 @@
 import * as pdfjsLib from '/assets/pdfjs/pdf.min.js';
-import { clearToken, formatDate, getToken, isStaff, loadSession, rpc, signIn, signPlanPaths } from '../core.js';
+import { clearPlanSession, clearToken, formatDate, getPlanSessionToken, getToken, isStaff, loadSession, revokePlanSession, rpc, signIn, signPlanPaths } from '../core.js';
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = '/assets/pdfjs/pdf.worker.min.js';
 
@@ -305,13 +305,14 @@ async function boot() {
     $('signin-panel').innerHTML = '<h2>Drawing link incomplete</h2><p class="hint">Open the plan from the Builder Workspace so Blueprint can verify both the project and drawing record.</p><a class="btn" href="/workspace/">Open Builder Workspace</a>';
     return;
   }
-  if (!getToken()) return showSignin();
+  if (!getToken() && !getPlanSessionToken()) return showSignin();
   try {
     session = await loadSession();
     showDesk();
     await loadPlan();
   } catch (reason) {
     if (/session|sign in|access token/i.test(reason?.message || '')) {
+      clearPlanSession();
       clearToken();
       showSignin();
       return;
@@ -339,7 +340,11 @@ $('signin-form').addEventListener('submit', async (event) => {
   }
 });
 
-$('signout').addEventListener('click', () => { clearToken(); location.reload(); });
+$('signout').addEventListener('click', async () => {
+  try { await revokePlanSession(); } catch { clearPlanSession(); }
+  clearToken();
+  location.reload();
+});
 document.querySelectorAll('[data-tool]').forEach((button) => button.addEventListener('click', () => setTool(button.dataset.tool)));
 $('cancel-markup').addEventListener('click', () => cancelDraft());
 
