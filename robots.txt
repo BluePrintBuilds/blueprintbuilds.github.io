@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /workspace/
+Disallow: /invite/
+Disallow: /publish/
+Sitemap: https://blueprintbuilds.app/sitemap.xml
