@@ -229,6 +229,36 @@ section:not(.hero) { position: relative; padding: 94px 0; }
 .system-card p { color: var(--dim); font-size: .85rem; line-height: 1.55; }
 .system-card small { position: absolute; left: 20px; bottom: 18px; font: 700 7px var(--mono); color: #4D6E83; letter-spacing: .09em; }
 
+.live-record { border-top: 1px solid rgba(31,62,83,.5); background: radial-gradient(circle at 76% 18%,rgba(45,168,255,.055),transparent 32%),linear-gradient(180deg,rgba(7,17,27,.25),rgba(8,19,29,.46)); }
+.cockpit-demo { margin: 2px 0 20px; display: grid; flex: 1; grid-template-rows: auto repeat(3,minmax(72px,1fr)) auto; gap: 9px; padding: 14px; border: 1px solid #24465B; border-radius: 14px; background: #06111A; box-shadow: inset 0 1px rgba(255,255,255,.025); }
+.cockpit-status { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 2px 2px 8px; color: #557286; font: 700 7.5px var(--mono); letter-spacing: .1em; }
+.cockpit-status span { color: #75DDB7; display: flex; align-items: center; gap: 7px; }
+.cockpit-status i { width: 7px; height: 7px; border-radius: 50%; background: var(--green); box-shadow: 0 0 0 4px rgba(69,212,155,.08); }
+.cockpit-signal { display: flex; flex-direction: column; justify-content: center; padding: 13px 14px; border: 1px solid #1B425B; border-radius: 10px; background: linear-gradient(145deg,#0A2030,#081722); }
+.cockpit-signal.warning { border-color: rgba(240,179,75,.36); background: linear-gradient(145deg,rgba(240,179,75,.07),#0A1821); }
+.cockpit-signal.next { border-color: rgba(45,168,255,.42); }
+.cockpit-signal small, .cockpit-signal strong, .cockpit-signal span { display: block; }
+.cockpit-signal small { color: #5E7E93; font: 750 7px var(--mono); letter-spacing: .09em; }
+.cockpit-signal strong { margin-top: 5px; color: #D6E5EE; font-size: 13px; }
+.cockpit-signal span { margin-top: 4px; color: #688598; font: 600 7.5px var(--mono); }
+.cockpit-brief { display: grid; grid-template-columns: auto 1fr; gap: 12px; align-items: center; padding: 11px 13px; border-top: 1px solid #17374B; color: #728EA0; font-size: 11px; line-height: 1.5; }
+.cockpit-brief small { color: #56BFFF; font: 750 7px var(--mono); letter-spacing: .09em; }
+.flight-track { display: flex; align-items: center; margin: 34px 0 25px; }
+.flight-track i { flex: 1; height: 1px; background: #264A61; }
+.flight-node { width: 34px; height: 34px; flex: none; display: grid; place-items: center; border: 1px solid #315A73; border-radius: 50%; background: #091925; color: #5C798D; font: 800 7px var(--mono); }
+.flight-node.done { border-color: #2A6B5B; color: #6DDDB1; background: #0B2526; }
+.flight-node.current { width: 40px; height: 40px; border-color: #2DA8FF; color: #BFE9FF; background: #0B3150; box-shadow: 0 0 0 5px rgba(45,168,255,.08); }
+.story-reveal-demo { position: relative; height: 122px; display: grid; grid-template-columns: 1fr 1fr; margin: 24px 0 18px; overflow: hidden; border: 1px solid #264A61; border-radius: 13px; background: #081722; }
+.story-half { padding: 12px; display: flex; flex-direction: column; justify-content: space-between; }
+.story-half.then { background: linear-gradient(145deg,#102535,#0A1721); }
+.story-half.now { background: linear-gradient(145deg,#113656,#0A2030); }
+.story-half small { color: #58BDF8; font: 800 7px var(--mono); letter-spacing: .1em; }
+.story-half span { max-width: 92px; color: #8BA5B5; font: 650 7px/1.45 var(--mono); }
+.story-divider { position: absolute; left: 50%; top: 50%; width: 34px; height: 34px; margin: -17px 0 0 -17px; display: grid; place-items: center; border: 1px solid #B8D8E9; border-radius: 50%; background: #0A2233; color: #E2F3FC; font-size: 13px; }
+.site-record-stamp { display: inline-flex; flex-direction: column; gap: 2px; margin-top: 23px; padding: 7px 9px; border: 1px solid #2A6B5B; border-radius: 7px; background: #0B2D31; }
+.site-record-stamp small { color: #62D9AD; font: 800 6.5px var(--mono); letter-spacing: .12em; }
+.site-record-stamp b { color: #DCE9E5; font: 800 9px var(--mono); letter-spacing: .04em; }
+
 .offline-demo { border-block: 1px solid rgba(34,67,88,.6); background: #07121B; overflow: hidden; }
 .offline-demo::before { content: ""; position: absolute; width: 560px; height: 560px; border-radius: 50%; right: -210px; top: -300px; background: radial-gradient(circle,rgba(240,179,75,.075),transparent 68%); }
 .offline-layout { display: grid; grid-template-columns: .73fr 1.27fr; gap: 70px; align-items: center; }

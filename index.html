@@ -4,13 +4,13 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Blueprint Builds — Construction Plan Desk & Field Proof</title>
-<meta name="description" content="Blueprint Builds connects construction plans, offline markups, field evidence, decisions, milestones and role-scoped client access in one auditable project record." />
+<meta name="description" content="Blueprint Builds connects plans, field evidence, decisions, live build gates, verified Build Stories and role-scoped access in one auditable construction record." />
 <meta name="theme-color" content="#050A10" />
 <meta name="robots" content="index,follow,max-image-preview:large" />
 <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
 <link rel="canonical" href="https://blueprintbuilds.app/" />
 <meta property="og:title" content="Blueprint Builds — Build from the drawing. Prove it from the field." />
-<meta property="og:description" content="Construction plans, offline markups, field evidence and decisions connected in one verifiable project record." />
+<meta property="og:description" content="Plans, field evidence, live build gates and verified handover stories connected in one verifiable project record." />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://blueprintbuilds.app/" />
 <meta property="og:image" content="https://blueprintbuilds.app/assets/og-blueprint-builds.png" />
@@ -24,13 +24,15 @@
   "url": "https://blueprintbuilds.app/",
   "applicationCategory": "BusinessApplication",
   "operatingSystem": "Web, iOS",
-  "description": "Construction delivery software connecting plans, offline markups, field evidence, decisions, milestones and role-scoped access in an auditable project record.",
+  "description": "Construction delivery software connecting plans, field evidence, decisions, live build gates, verified handover stories and role-scoped access in an auditable project record.",
   "featureList": [
     "Adaptive construction Plan Desk",
     "Offline PDF viewing and markups",
     "Time-stamped field evidence",
     "Auditable decisions and variations",
-    "Milestone tracking",
+    "Record-derived Build Flight Tracker",
+    "Live Today cockpit",
+    "Verified Build Story and secure workspace handoff",
     "Role-scoped client access",
     "Evidence bundle export"
   ]
@@ -47,10 +49,11 @@
     <a class="brand" href="/" data-testid="nav-logo" aria-label="Blueprint Builds home">
       <span class="brand-mark"><img src="/favicon.svg" alt="" width="30" height="30" /></span>
       <span>Blueprint <b>Builds</b></span>
-      <span class="brand-version">BETA</span>
+      <span class="brand-version">PILOT</span>
     </a>
     <nav class="nav-links" aria-label="Primary">
       <a href="#plan-desk">Plan Desk</a>
+      <a href="#live-record">Live record</a>
       <a href="#proof-system">Proof system</a>
       <a href="#roles">Access</a>
       <a href="#security">Security</a>
@@ -66,6 +69,7 @@
   </div>
   <div class="mobile-menu" data-testid="mobile-menu">
     <a href="#plan-desk">Plan Desk</a>
+    <a href="#live-record">Live record</a>
     <a href="#proof-system">Proof system</a>
     <a href="#roles">Access</a>
     <a href="#security">Security</a>
@@ -239,7 +243,49 @@
         <article class="system-card reveal"><span>02</span><div class="system-glyph">◉</div><h3>Field</h3><p>Photos, voice notes and attributed site evidence.</p><small>CAPTURE</small></article>
         <article class="system-card reveal"><span>03</span><div class="system-glyph">✓</div><h3>Decisions</h3><p>Cost and time impact attached to the answer, not buried in a thread.</p><small>ON THE RECORD</small></article>
         <article class="system-card reveal"><span>04</span><div class="system-glyph">◇</div><h3>Milestones</h3><p>Progress grounded in recorded work instead of a hopeful percentage.</p><small>PROGRESS</small></article>
-        <article class="system-card reveal"><span>05</span><div class="system-glyph">▤</div><h3>Proof</h3><p>Evidence bundles turn the project history into a portable record.</p><small>EVIDENCE BUNDLE</small></article>
+        <article class="system-card reveal"><span>05</span><div class="system-glyph">▤</div><h3>Story + proof</h3><p>Verified Build Stories carry the narrative; Evidence Bundles carry the sealed record.</p><small>HANDOVER / EVIDENCE</small></article>
+      </div>
+    </div>
+  </section>
+
+  <section class="live-record" id="live-record">
+    <div class="shell">
+      <div class="section-heading reveal">
+        <div><span class="section-kicker">FROM TODAY TO HANDOVER</span><h2>The record tells you what matters next.</h2></div>
+        <p>Blueprint does more than store what happened. It turns the same verified records into a live cockpit, a build-flight sequence and a handover story — without asking the team to maintain three versions of the truth.</p>
+      </div>
+      <div class="feature-grid">
+        <article class="feature-card feature-wide reveal">
+          <div class="feature-number">04 / TODAY COCKPIT</div>
+          <div class="cockpit-demo" aria-label="Illustration of the Blueprint Builds Today cockpit">
+            <div class="cockpit-status"><span><i></i> LIVE RECORD</span><b>FIELD OVERVIEW</b></div>
+            <div class="cockpit-signal"><small>WHAT MOVED</small><strong>Arena base proof landed</strong><span>3 verified field records · source ›</span></div>
+            <div class="cockpit-signal warning"><small>WHAT IS WAITING</small><strong>Drainage outlet decision</strong><span>Client response holding next work · source ›</span></div>
+            <div class="cockpit-signal next"><small>NEXT GATE</small><strong>Arena base inspection</strong><span>G06 · target 10 Sep · source ›</span></div>
+            <div class="cockpit-brief"><small>BUILDER BRIEF</small><span>One screen for movement, blockers and the next gate — all derived from the record.</span></div>
+          </div>
+          <div class="feature-copy"><h3>Open the app and know what changed.</h3><p>Today is not a generic dashboard. What moved, what is waiting and the next gate are pulled from project records and jump back to their source.</p></div>
+        </article>
+        <article class="feature-card reveal">
+          <div class="feature-number">05 / BUILD FLIGHT TRACKER</div>
+          <div class="flight-track" aria-label="Build Flight Tracker gate sequence">
+            <span class="flight-node done">G01</span><i></i><span class="flight-node done">G02</span><i></i><span class="flight-node done">G03</span><i></i><span class="flight-node current">G06</span><i></i><span class="flight-node">G08</span>
+          </div>
+          <h3>Scrub the build sequence, not a hopeful percentage.</h3>
+          <p>Completed, current, overdue and upcoming gates come from the milestone record. Clients get calmer stage language without missed targets being hidden.</p>
+          <div class="micro-status"><span class="status status-live"></span> RECORD-DERIVED GATES</div>
+        </article>
+        <article class="feature-card reveal">
+          <div class="feature-number">06 / VERIFIED BUILD STORY</div>
+          <div class="story-reveal-demo" aria-label="Illustration of verified then and now evidence">
+            <div class="story-half then"><small>THEN</small><span>FIRST VERIFIED RECORD</span></div>
+            <div class="story-half now"><small>NOW</small><span>LATEST VERIFIED RECORD</span></div>
+            <div class="story-divider">↔</div>
+          </div>
+          <h3>Handover becomes a story with receipts.</h3>
+          <p>The photo arc, Then / Now reveal, milestones and reviews trace back to source records. Stories stay private by default; a secure workspace handoff never grants access by itself.</p>
+          <div class="site-record-stamp"><small>PROJECT RECORD</small><b>HANDED OVER</b></div>
+        </article>
       </div>
     </div>
   </section>
@@ -309,9 +355,9 @@
     <div class="shell access-panel reveal">
       <div class="access-grid"></div>
       <div class="access-copy">
-        <span class="section-kicker">BLUEPRINT BUILDS // PRIVATE BETA</span>
+        <span class="section-kicker">BLUEPRINT BUILDS // FOUNDER PILOT</span>
         <h2>The build should leave proof behind.</h2>
-        <p>Blueprint Builds is currently being hardened through real construction workflows before wider release.</p>
+        <p>Blueprint Builds is being hardened through founder-led construction workflows and physical-device acceptance before wider release. The product is live in pilot; App Store release gates remain deliberate.</p>
       </div>
       <div class="access-actions">
         <a class="btn btn-primary btn-large" href="/workspace/">Open Builder Workspace →</a>
@@ -324,7 +370,7 @@
 <footer class="site-footer">
   <div class="shell footer-grid">
     <div class="footer-brand"><a class="brand" href="/"><span class="brand-mark"><img src="/favicon.svg" alt="" width="28" height="28" /></span><span>Blueprint <b>Builds</b></span></a><p>Plans, field evidence and decisions connected into a verifiable construction record.</p></div>
-    <div><h4>Product</h4><a href="#plan-desk">Plan Desk</a><a href="#proof-system">Proof system</a><a href="/workspace/">Builder Workspace</a><a href="/publish/">Drawing Publisher</a></div>
+    <div><h4>Product</h4><a href="#plan-desk">Plan Desk</a><a href="#live-record">Live record</a><a href="#proof-system">Proof system</a><a href="/workspace/">Builder Workspace</a><a href="/publish/">Drawing Publisher</a></div>
     <div><h4>Trust</h4><a href="/privacy/">Privacy</a><a href="/terms/">Terms</a><a href="/support/">Support</a></div>
   </div>
   <div class="shell footer-bottom"><span>© <span data-testid="footer-year"></span> Blueprint Builds</span><span>Built for the field. Proven on the record.</span></div>

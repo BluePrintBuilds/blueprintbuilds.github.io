@@ -58,10 +58,16 @@
                 <div class="empty-state sheet-loading" id="sheet-loading">Preparing the secure drawing canvas…</div>
                 <img class="sheet-media" id="sheet-image" alt="Plan sheet" draggable="false" hidden>
                 <canvas class="sheet-canvas" id="pdf-canvas" hidden></canvas>
+                <div class="pdf-tile-layer" id="pdf-tile-layer" hidden aria-hidden="true"></div>
                 <div class="markup-layer" id="markup-layer"></div>
                 <div class="drawing-layer" id="drawing-layer" hidden></div>
               </div>
             </div>
+            <button class="plan-navigator" id="plan-navigator" type="button" hidden aria-label="Plan overview navigator. Choose a point to move the drawing viewport.">
+              <canvas id="navigator-canvas" aria-hidden="true"></canvas>
+              <span class="navigator-viewport" id="navigator-viewport" aria-hidden="true"></span>
+              <span class="navigator-label" aria-hidden="true">OVERVIEW</span>
+            </button>
           </section>
 
           <aside class="desk-sidebar">

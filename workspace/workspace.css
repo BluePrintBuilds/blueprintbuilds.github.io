@@ -27,7 +27,7 @@ body.workspace-body { background-size: 20px 20px; }
 .desk-title { margin: 0; font-size: clamp(24px, 3vw, 42px); }
 .desk-sub { margin: 4px 0 0; color: var(--ink-muted); }
 .desk-layout { display: grid; grid-template-columns: minmax(0, 1fr) minmax(320px, 360px); gap: 16px; align-items: start; }
-.desk-stage { min-width: 0; }
+.desk-stage { min-width: 0; position: relative; }
 .desk-sidebar { position: sticky; top: 12px; display: grid; gap: 12px; }
 .sheet-rail { display: flex; gap: 8px; overflow-x: auto; padding: 0 0 10px; scrollbar-width: thin; }
 .sheet-tab { min-height: 44px; border: 1px solid var(--border); border-radius: 8px; padding: 8px 11px; background: var(--navy); color: var(--ink-muted); font-family: var(--mono); font-size: 12px; cursor: pointer; white-space: nowrap; }
@@ -41,10 +41,16 @@ body.workspace-body { background-size: 20px 20px; }
 .sheet-frame { position: relative; width: 100%; height: clamp(430px, 72dvh, 1180px); border: 1px solid var(--border-strong); border-radius: 10px; overflow: auto; overscroll-behavior: contain; background: #eef2f7; touch-action: pan-x pan-y; -webkit-overflow-scrolling: touch; user-select: none; -webkit-user-select: none; -webkit-tap-highlight-color: transparent; scroll-behavior: auto; outline: none; }
 .sheet-frame:focus-visible { box-shadow: 0 0 0 3px rgba(37,142,255,.35); }
 .sheet-frame.marking { touch-action: none; cursor: crosshair; }
+.plan-navigator { position: absolute; z-index: 20; right: 12px; bottom: 12px; width: min(190px, 30%); min-width: 132px; padding: 0; overflow: hidden; border: 1px solid rgba(83,150,255,.72); border-radius: 9px; background: rgba(3,21,47,.92); box-shadow: 0 10px 28px rgba(0,0,0,.28); cursor: crosshair; touch-action: manipulation; }
+.plan-navigator canvas { display: block; width: 100%; height: auto; max-height: 132px; object-fit: contain; background: #eef2f7; opacity: .86; }
+.navigator-viewport { position: absolute; min-width: 12px; min-height: 12px; border: 2px solid #F3C969; background: rgba(243,201,105,.11); box-shadow: 0 0 0 1px rgba(3,21,47,.55); pointer-events: none; }
+.navigator-label { position: absolute; left: 6px; bottom: 5px; padding: 3px 5px; border-radius: 4px; background: rgba(3,21,47,.82); color: #dce8f7; font: 700 9px var(--mono); letter-spacing: .08em; pointer-events: none; }
 .sheet-surface { position: relative; width: 100%; min-height: 120px; margin-inline: auto; transform-origin: top left; background: #eef2f7; }
 .sheet-loading { margin: 18px; }
 .sheet-media { display: block; width: 100%; height: auto; user-select: none; -webkit-user-select: none; -webkit-user-drag: none; pointer-events: none; }
 .sheet-canvas { display: block; width: 100%; height: auto; pointer-events: none; }
+.pdf-tile-layer { position: absolute; inset: 0; z-index: 2; pointer-events: none; overflow: hidden; }
+.pdf-tile { position: absolute; display: block; background: #eef2f7; pointer-events: none; }
 .markup-layer { position: absolute; inset: 0; z-index: 4; pointer-events: none; }
 .drawing-layer { position: absolute; inset: 0; z-index: 8; pointer-events: auto; cursor: crosshair; touch-action: none; }
 .markup-zone { position: absolute; border: 2px solid #f04444; background: rgba(240,68,68,.10); }

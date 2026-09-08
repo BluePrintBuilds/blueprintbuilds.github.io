@@ -3,4 +3,5 @@ Allow: /
 Disallow: /workspace/
 Disallow: /invite/
 Disallow: /publish/
+Disallow: /story/
 Sitemap: https://blueprintbuilds.app/sitemap.xml

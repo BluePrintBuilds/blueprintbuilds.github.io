@@ -11,6 +11,7 @@
           { "/": "/terms/*", "exclude": true },
           { "/": "/support/*", "exclude": true },
           { "/": "/", "exclude": true, "comment": "Marketing home opens in the browser" },
+          { "/": "/story/*", "comment": "Secure Build Story handoff; content still requires authenticated project access" },
           { "/": "/project/*", "comment": "Deep link into a project (app route exists)" },
           { "/": "/plan/*", "comment": "Deep link into a drawing's markup record (app route exists)" }
         ]

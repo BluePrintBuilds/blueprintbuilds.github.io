@@ -29,6 +29,7 @@ const panels = ['panel-wait', 'panel-gate', 'panel-expired', 'panel-form', 'pane
 let accessToken = '';
 let account = null;
 let continuationLink = '';
+let activationType = 'invite';
 
 function show(id) {
   for (const name of panels) $(name)?.classList.toggle('hidden', name !== id);
@@ -70,14 +71,21 @@ function decodeContinuation(value) {
 function applyProfile(user) {
   const meta = user?.user_metadata && typeof user.user_metadata === 'object' ? user.user_metadata : {};
   const role = safeRole(meta.blueprint_invite_role);
-  const profile = ROLE_PROFILE[role];
+  const reviewer = role === 'Site lead' && meta.blueprint_client_preview === true;
+  const profile = reviewer ? {
+    ...ROLE_PROFILE[role],
+    eyebrow: 'SPECIAL REVIEW ACCESS',
+    title: 'See both sides of the build.',
+    copy: 'Your Site Lead access includes a controlled Client View Preview for product review.',
+    unlocks: ['Build Team View', 'Client View Preview', 'Field capture + plans', 'One authoritative project record'],
+  } : ROLE_PROFILE[role];
   document.documentElement.style.setProperty('--accent', profile.accent);
   document.documentElement.style.setProperty('--accent-rgb', profile.rgb);
   $('role-eyebrow').textContent = profile.eyebrow;
   $('hero-title').textContent = profile.title;
   $('hero-copy').textContent = profile.copy;
   $('pass-email').textContent = user?.email || 'Verified account';
-  $('pass-role').textContent = role;
+  $('pass-role').textContent = reviewer ? 'Site Lead + Client View Preview' : role;
   $('pass-workspace').textContent = typeof meta.blueprint_invite_workspace === 'string' && meta.blueprint_invite_workspace ? meta.blueprint_invite_workspace : 'Blueprint workspace';
   $('pass-inviter').textContent = typeof meta.blueprint_invited_by === 'string' && meta.blueprint_invited_by ? meta.blueprint_invited_by : 'Blueprint Builds';
   $('unlock-grid').replaceChildren(...profile.unlocks.map((item) => {
@@ -86,8 +94,8 @@ function applyProfile(user) {
     node.textContent = item;
     return node;
   }));
-  $('who').textContent = `Verified as ${user?.email || 'this account'} · ${role} access.`;
-  return { role, meta };
+  $('who').textContent = `Verified as ${user?.email || 'this account'} · ${reviewer ? 'special review access' : `${role} access`}.`;
+  return { role, meta, reviewer };
 }
 
 async function fetchAccount() {
@@ -143,6 +151,7 @@ async function boot() {
   }
 
   accessToken = fragment.get('access_token') || '';
+  activationType = fragment.get('type') === 'recovery' ? 'recovery' : 'invite';
   if (!accessToken) { show('panel-wait'); return; }
 
   // Remove auth credentials from browser history before any user interaction.
@@ -151,8 +160,14 @@ async function boot() {
   try {
     account = await fetchAccount();
     const { meta } = applyProfile(account);
+    if (activationType === 'recovery') {
+      $('role-eyebrow').textContent = 'SECURE RECOVERY';
+      $('hero-title').textContent = 'Choose a new password.';
+      $('hero-copy').textContent = 'Your verified Blueprint account is ready for a credential reset.';
+      $('who').textContent = `Verified as ${account?.email || 'this account'}. Choose your new password.`;
+    }
     const invitationExpiry = Date.parse(typeof meta.blueprint_invite_expires_at === 'string' ? meta.blueprint_invite_expires_at : '');
-    if (Number.isFinite(invitationExpiry) && Date.now() > invitationExpiry) { show('panel-expired'); return; }
+    if (activationType === 'invite' && Number.isFinite(invitationExpiry) && Date.now() > invitationExpiry) { show('panel-expired'); return; }
     show('panel-form');
   } catch {
     show('panel-expired');
@@ -177,8 +192,12 @@ $('form').addEventListener('submit', async (event) => {
   try {
     await savePassword(password);
     let auditRecorded = true;
-    try { await recordAcceptance(); } catch { auditRecorded = false; }
-    $('done-copy').textContent = `Your Blueprint account is ready. Sign in as ${account?.email || 'the email on this pass'} with the password you just created.${auditRecorded ? '' : ' Your access is active; Blueprint will reconcile the activation record when you next sign in.'}`;
+    if (activationType === 'invite') {
+      try { await recordAcceptance(); } catch { auditRecorded = false; }
+    }
+    $('done-copy').textContent = activationType === 'recovery'
+      ? `Your Blueprint password has been updated. Sign in as ${account?.email || 'your verified account'} with the password you just created.`
+      : `Your Blueprint account is ready. Sign in as ${account?.email || 'the email on this pass'} with the password you just created.${auditRecorded ? '' : ' Your access is active; Blueprint will reconcile the activation record when you next sign in.'}`;
     show('panel-done');
   } catch (reason) {
     if (reason?.status === 401 || reason?.status === 403) show('panel-expired');

@@ -14,6 +14,9 @@ const ZOOM_MAX = 4;
 const ZOOM_STEP = 0.25;
 const TAP_MOVE_PX = 12;
 const MARK_MIN_PX = 8;
+const PDF_TILE_ZOOM = 1.5;
+const PDF_TILE_CSS_SIZE = 640;
+const PDF_TILE_OVERSCAN = 1;
 
 let session = null;
 let plan = null;
@@ -33,6 +36,9 @@ let panState = null;
 let gestureAborted = false;
 let pdfRenderTask = null;
 let pdfRenderTimer = null;
+let pdfTileTimer = null;
+let pdfTileSignature = '';
+let pdfTileRun = 0;
 let resizeTimer = null;
 let lastRenderedSurfaceWidth = 0;
 let projectRecord = null;
@@ -46,6 +52,7 @@ let mediaPathUrls = {};
 let syncingOfflineQueue = false;
 const objectUrls = new Set();
 const activePointers = new Set();
+const pdfTileTasks = new Map();
 
 function escapeHtml(value) {
   return String(value ?? '').replace(/[&<>'"]/g, (char) => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', "'":'&#39;', '"':'&quot;' }[char]));
@@ -150,9 +157,130 @@ function updateZoomUi() {
   $('zoom-in').disabled = zoom >= ZOOM_MAX - 0.001;
 }
 
+function updateNavigatorViewport() {
+  const nav = $('plan-navigator');
+  const frame = $('sheet-frame');
+  const viewport = $('navigator-viewport');
+  if (nav.hidden || !frame.scrollWidth || !frame.scrollHeight) return;
+  viewport.style.left = `${Math.min(100, (frame.scrollLeft / frame.scrollWidth) * 100)}%`;
+  viewport.style.top = `${Math.min(100, (frame.scrollTop / frame.scrollHeight) * 100)}%`;
+  viewport.style.width = `${Math.min(100, (frame.clientWidth / frame.scrollWidth) * 100)}%`;
+  viewport.style.height = `${Math.min(100, (frame.clientHeight / frame.scrollHeight) * 100)}%`;
+}
+
+function updateNavigatorPreview() {
+  const nav = $('plan-navigator');
+  const target = $('navigator-canvas');
+  const source = pdfDocument ? $('pdf-canvas') : $('sheet-image');
+  const width = source.naturalWidth || source.width || 0;
+  const height = source.naturalHeight || source.height || 0;
+  if (!width || !height) { nav.hidden = true; return; }
+  target.width = 240;
+  target.height = Math.max(90, Math.round(240 * height / width));
+  target.getContext('2d').drawImage(source, 0, 0, target.width, target.height);
+  const frame = $('sheet-frame');
+  nav.hidden = zoom <= 1.001 && frame.scrollWidth <= frame.clientWidth + 2 && frame.scrollHeight <= frame.clientHeight + 2;
+  requestAnimationFrame(updateNavigatorViewport);
+}
+
+function clearPdfTiles() {
+  clearTimeout(pdfTileTimer);
+  pdfTileTimer = null;
+  pdfTileRun += 1;
+  for (const task of pdfTileTasks.values()) { try { task.cancel(); } catch { /* settled */ } }
+  pdfTileTasks.clear();
+  pdfTileSignature = '';
+  const layer = $('pdf-tile-layer');
+  layer.replaceChildren();
+  layer.hidden = true;
+}
+
+function schedulePdfTiles(delay = 70) {
+  if (!pdfDocument) return;
+  clearTimeout(pdfTileTimer);
+  pdfTileTimer = setTimeout(() => {
+    void renderPdfTiles().catch(() => { $('pdf-tile-layer').hidden = true; });
+  }, delay);
+}
+
+async function renderPdfTiles() {
+  if (!pdfDocument || zoom < PDF_TILE_ZOOM) { clearPdfTiles(); return; }
+  const run = ++pdfTileRun;
+  const frame = $('sheet-frame');
+  const surface = $('sheet-surface');
+  const layer = $('pdf-tile-layer');
+  const surfaceWidth = surface.clientWidth;
+  const surfaceHeight = surface.clientHeight;
+  if (!surfaceWidth || !surfaceHeight) return;
+  const page = await pdfDocument.getPage(activePage);
+  if (run !== pdfTileRun) return;
+  const base = page.getViewport({ scale: 1 });
+  const deviceScale = Math.min(2.5, Math.max(1, window.devicePixelRatio || 1));
+  const renderScale = Math.min(10, Math.max(1, (surfaceWidth / base.width) * deviceScale));
+  const viewport = page.getViewport({ scale: renderScale });
+  const pixelsPerCss = viewport.width / surfaceWidth;
+  const signature = `${activePage}:${Math.round(surfaceWidth)}:${Math.round(renderScale * 100)}`;
+  if (signature !== pdfTileSignature) {
+    for (const task of pdfTileTasks.values()) { try { task.cancel(); } catch { /* settled */ } }
+    pdfTileTasks.clear();
+    layer.replaceChildren();
+    pdfTileSignature = signature;
+  }
+  layer.hidden = false;
+  const pad = PDF_TILE_CSS_SIZE * PDF_TILE_OVERSCAN;
+  const left = Math.max(0, frame.scrollLeft - pad);
+  const top = Math.max(0, frame.scrollTop - pad);
+  const right = Math.min(surfaceWidth, frame.scrollLeft + frame.clientWidth + pad);
+  const bottom = Math.min(surfaceHeight, frame.scrollTop + frame.clientHeight + pad);
+  const startX = Math.floor(left / PDF_TILE_CSS_SIZE);
+  const endX = Math.max(startX, Math.floor(Math.max(0, right - 1) / PDF_TILE_CSS_SIZE));
+  const startY = Math.floor(top / PDF_TILE_CSS_SIZE);
+  const endY = Math.max(startY, Math.floor(Math.max(0, bottom - 1) / PDF_TILE_CSS_SIZE));
+  const needed = new Set();
+  const renders = [];
+  for (let tileY = startY; tileY <= endY; tileY += 1) {
+    for (let tileX = startX; tileX <= endX; tileX += 1) {
+      const key = `${tileX}:${tileY}`;
+      needed.add(key);
+      if (layer.querySelector(`[data-tile-key="${key}"]`)) continue;
+      const cssX = tileX * PDF_TILE_CSS_SIZE;
+      const cssY = tileY * PDF_TILE_CSS_SIZE;
+      const cssWidth = Math.min(PDF_TILE_CSS_SIZE, surfaceWidth - cssX);
+      const cssHeight = Math.min(PDF_TILE_CSS_SIZE, surfaceHeight - cssY);
+      if (cssWidth <= 0 || cssHeight <= 0) continue;
+      const canvas = document.createElement('canvas');
+      canvas.className = 'pdf-tile';
+      canvas.dataset.tileKey = key;
+      canvas.style.left = `${cssX}px`; canvas.style.top = `${cssY}px`;
+      canvas.style.width = `${cssWidth}px`; canvas.style.height = `${cssHeight}px`;
+      canvas.width = Math.max(1, Math.ceil(cssWidth * pixelsPerCss));
+      canvas.height = Math.max(1, Math.ceil(cssHeight * pixelsPerCss));
+      layer.appendChild(canvas);
+      const task = page.render({
+        canvasContext: canvas.getContext('2d', { alpha: false }), viewport,
+        transform: [1, 0, 0, 1, -cssX * pixelsPerCss, -cssY * pixelsPerCss],
+      });
+      pdfTileTasks.set(key, task);
+      renders.push(task.promise.catch((reason) => { if (reason?.name !== 'RenderingCancelledException') throw reason; }).finally(() => {
+        if (pdfTileTasks.get(key) === task) pdfTileTasks.delete(key);
+      }));
+    }
+  }
+  layer.querySelectorAll('.pdf-tile').forEach((tile) => {
+    const key = tile.dataset.tileKey || '';
+    if (needed.has(key)) return;
+    try { pdfTileTasks.get(key)?.cancel(); } catch { /* settled */ }
+    pdfTileTasks.delete(key); tile.remove();
+  });
+  await Promise.all(renders);
+  if (run === pdfTileRun) updateNavigatorViewport();
+}
+
 function schedulePdfRerender(delay = 140) {
   if (!pdfDocument) return;
   clearTimeout(pdfRenderTimer);
+  pdfRenderTimer = null;
+  if (zoom >= PDF_TILE_ZOOM && lastRenderedSurfaceWidth > 0) { schedulePdfTiles(Math.min(delay, 90)); return; }
   pdfRenderTimer = setTimeout(() => { void renderPdfPage(); }, delay);
 }
 
@@ -174,6 +302,8 @@ function setZoom(next, focalClientX = null, focalClientY = null, rerenderPdf = t
     frame.scrollLeft = Math.max(0, contentX * ratio - localX);
     frame.scrollTop = Math.max(0, contentY * ratio - localY);
     renderMarkupLayer();
+    updateNavigatorPreview();
+    schedulePdfTiles();
     if (rerenderPdf) schedulePdfRerender();
   });
 }
@@ -184,6 +314,8 @@ function fitDrawing() {
   $('sheet-frame').scrollTo({ left: 0, top: 0, behavior: 'auto' });
   updateZoomUi();
   renderMarkupLayer();
+  updateNavigatorPreview();
+  clearPdfTiles();
   schedulePdfRerender(0);
 }
 
@@ -388,7 +520,8 @@ async function renderPdfPage() {
   const page = await pdfDocument.getPage(activePage);
   const base = page.getViewport({ scale: 1 });
   const surfaceWidth = Math.max(280, $('sheet-surface').clientWidth || $('sheet-frame').clientWidth || 1000);
-  const cssScale = surfaceWidth / base.width;
+  const qualitySurfaceWidth = zoom >= PDF_TILE_ZOOM ? surfaceWidth / zoom : surfaceWidth;
+  const cssScale = qualitySurfaceWidth / base.width;
   const deviceScale = Math.min(2.5, Math.max(1, window.devicePixelRatio || 1));
   const dimensionCap = 4096 / Math.max(base.width, base.height);
   const renderScale = Math.min(4, dimensionCap, Math.max(0.5, cssScale * deviceScale));
@@ -411,9 +544,12 @@ async function renderPdfPage() {
   lastRenderedSurfaceWidth = surfaceWidth;
   $('sheet-loading').hidden = true;
   renderMarkupLayer();
+  updateNavigatorPreview();
+  schedulePdfTiles(0);
 }
 
 async function renderPage() {
+  clearPdfTiles();
   const count = pdfDocument ? pdfDocument.numPages : pageUrls.length;
   activePage = Math.max(1, Math.min(count || 1, activePage));
   renderSheetRail(count || 1);
@@ -427,7 +563,7 @@ async function renderPage() {
   const image = $('sheet-image');
   $('pdf-canvas').hidden = true;
   image.hidden = false;
-  image.onload = () => { $('sheet-loading').hidden = true; renderMarkupLayer(); preloadAdjacentSheet(); };
+  image.onload = () => { $('sheet-loading').hidden = true; renderMarkupLayer(); updateNavigatorPreview(); preloadAdjacentSheet(); };
   image.onerror = () => { $('sheet-loading').textContent = 'The secure sheet image could not be loaded. Refresh the Plan Desk and try again.'; };
   image.src = url;
   renderMarkupLayer();
@@ -932,7 +1068,20 @@ $('drawing-layer').addEventListener('pointercancel', (event) => {
   if (pointerStart?.pointerId === event.pointerId) resetPointerGesture();
 });
 
+$('plan-navigator').addEventListener('click', (event) => {
+  const nav = $('plan-navigator');
+  const rect = nav.getBoundingClientRect();
+  if (!rect.width || !rect.height) return;
+  const x = Math.max(0, Math.min(1, (event.clientX - rect.left) / rect.width));
+  const y = Math.max(0, Math.min(1, (event.clientY - rect.top) / rect.height));
+  const frame = $('sheet-frame');
+  frame.scrollLeft = Math.max(0, x * frame.scrollWidth - frame.clientWidth / 2);
+  frame.scrollTop = Math.max(0, y * frame.scrollHeight - frame.clientHeight / 2);
+  updateNavigatorViewport();
+});
+
 const frame = $('sheet-frame');
+frame.addEventListener('scroll', () => { updateNavigatorViewport(); schedulePdfTiles(); }, { passive: true });
 
 frame.addEventListener('wheel', (event) => {
   if (activeTool || !event.ctrlKey) return;
@@ -1006,6 +1155,8 @@ window.addEventListener('resize', () => {
     const surfaceWidth = $('sheet-surface').clientWidth;
     if (pdfDocument && Math.abs(surfaceWidth - lastRenderedSurfaceWidth) > 3) schedulePdfRerender(0);
     else renderMarkupLayer();
+    updateNavigatorPreview();
+    schedulePdfTiles();
   }, 220);
 });
 
@@ -1022,6 +1173,7 @@ window.addEventListener('offline', () => {
   setOfflineState('offline', offlinePack ? 'OFFLINE · saved plan remains available · new markups will queue' : 'OFFLINE · keep this desk open; save a plan pack while online for future offline reopening');
 });
 window.addEventListener('beforeunload', () => {
+  clearPdfTiles();
   for (const url of objectUrls) URL.revokeObjectURL(url);
   objectUrls.clear();
 });
