@@ -53,6 +53,16 @@ function decodeContinuation(value) {
     const link = new TextDecoder().decode(bytes);
     const url = new URL(link);
     if (url.protocol !== 'https:' || url.hostname !== 'mxjuknqwzbvvmmdrvkql.supabase.co' || url.pathname !== '/auth/v1/verify') return '';
+    const token = url.searchParams.get('token') || '';
+    const type = url.searchParams.get('type') || '';
+    const redirectValue = url.searchParams.get('redirect_to') || '';
+    if (!token || !['invite', 'recovery'].includes(type) || !redirectValue) return '';
+    const redirect = new URL(redirectValue);
+    const allowedRedirects = new Set([
+      new URL('/invite/', location.origin).toString(),
+      'https://blueprintbuilds.app/invite/',
+    ]);
+    if (!allowedRedirects.has(redirect.toString())) return '';
     return url.toString();
   } catch { return ''; }
 }
@@ -117,7 +127,13 @@ async function boot() {
   const fragment = new URLSearchParams((location.hash || '').replace(/^#/, ''));
   if (fragment.get('error') || fragment.get('error_code')) { show('panel-expired'); return; }
 
-  continuationLink = decodeContinuation(fragment.get('continue') || '');
+  const encodedContinuation = fragment.get('continue') || '';
+  continuationLink = decodeContinuation(encodedContinuation);
+  if (encodedContinuation && !continuationLink) {
+    try { history.replaceState(null, '', `${location.pathname}${location.search}`); } catch { /* cosmetic */ }
+    show('panel-expired');
+    return;
+  }
   if (continuationLink) {
     // Fragments never reach the web server. Scrub the encoded auth target from
     // local browser history too; keep it only in memory until the human clicks.
