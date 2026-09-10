@@ -25,11 +25,13 @@ const ROLE_PROFILE = {
 };
 
 const $ = (id) => document.getElementById(id);
-const panels = ['panel-wait', 'panel-gate', 'panel-expired', 'panel-form', 'panel-done'];
+const panels = ['panel-wait', 'panel-gate', 'panel-checking', 'panel-network', 'panel-expired', 'panel-form', 'panel-done'];
 let accessToken = '';
 let account = null;
 let continuationLink = '';
 let activationType = 'invite';
+let verifying = false;
+let submitting = false;
 
 function show(id) {
   for (const name of panels) $(name)?.classList.toggle('hidden', name !== id);
@@ -84,6 +86,7 @@ function applyProfile(user) {
   $('role-eyebrow').textContent = profile.eyebrow;
   $('hero-title').textContent = profile.title;
   $('hero-copy').textContent = profile.copy;
+  $('pass-state').textContent = 'IDENTITY VERIFIED';
   $('pass-email').textContent = user?.email || 'Verified account';
   $('pass-role').textContent = reviewer ? 'Site Lead + Client View Preview' : role;
   $('pass-workspace').textContent = typeof meta.blueprint_invite_workspace === 'string' && meta.blueprint_invite_workspace ? meta.blueprint_invite_workspace : 'Blueprint workspace';
@@ -98,54 +101,105 @@ function applyProfile(user) {
   return { role, meta, reviewer };
 }
 
+async function requestJson(url, options = {}) {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 12_000);
+  try {
+    const response = await fetch(url, {
+      ...options, signal: controller.signal, cache: 'no-store', referrerPolicy: 'no-referrer',
+    });
+    const body = await response.json().catch(() => ({}));
+    if (!response.ok) {
+      const error = new Error(body?.msg || body?.message || body?.error_description || 'request_failed');
+      error.status = response.status;
+      throw error;
+    }
+    return body;
+  } finally { clearTimeout(timeout); }
+}
+
 async function fetchAccount() {
-  const response = await fetch(`${SUPABASE_URL}/auth/v1/user`, {
+  const user = await requestJson(`${SUPABASE_URL}/auth/v1/user`, {
     headers: { apikey: ANON_KEY, Authorization: `Bearer ${accessToken}` },
-    cache: 'no-store', referrerPolicy: 'no-referrer',
   });
-  if (!response.ok) throw new Error('activation_session_invalid');
-  return response.json();
+  if (!user?.email) throw new Error('verification_unavailable');
+  return user;
 }
 
 async function savePassword(password) {
-  const response = await fetch(`${SUPABASE_URL}/auth/v1/user`, {
+  await requestJson(`${SUPABASE_URL}/auth/v1/user`, {
     method: 'PUT',
     headers: { apikey: ANON_KEY, Authorization: `Bearer ${accessToken}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ password }), cache: 'no-store', referrerPolicy: 'no-referrer',
+    body: JSON.stringify({ password }),
   });
-  if (!response.ok) {
-    const body = await response.json().catch(() => ({}));
-    const error = new Error(body?.msg || body?.message || body?.error_description || 'password_update_failed');
-    error.status = response.status;
-    throw error;
-  }
 }
 
 async function recordAcceptance() {
-  const response = await fetch(`${SUPABASE_URL}/rest/v1/rpc/blueprint_mobile_accept_invite`, {
+  return requestJson(`${SUPABASE_URL}/rest/v1/rpc/blueprint_mobile_accept_invite`, {
     method: 'POST',
     headers: { apikey: ANON_KEY, Authorization: `Bearer ${accessToken}`, 'Content-Type': 'application/json' },
-    body: '{}', cache: 'no-store', referrerPolicy: 'no-referrer',
+    body: '{}',
   });
-  if (!response.ok) throw new Error('acceptance_audit_failed');
-  return response.json().catch(() => ({}));
+}
+
+function closeLink() {
+  accessToken = '';
+  continuationLink = '';
+  $('password').value = '';
+  $('confirm').value = '';
+  $('pass-state').textContent = 'LINK CLOSED';
+  show('panel-expired');
+}
+
+async function verifyAccount() {
+  if (verifying || !accessToken) return;
+  verifying = true;
+  $('retry-verification').disabled = true;
+  $('pass-state').textContent = 'CHECKING IDENTITY';
+  show('panel-checking');
+  try {
+    account = await fetchAccount();
+    const { meta } = applyProfile(account);
+    if (activationType === 'recovery') {
+      $('role-eyebrow').textContent = 'SECURE RECOVERY';
+      $('hero-title').textContent = 'Choose a new password.';
+      $('hero-copy').textContent = 'Your verified Blueprint account is ready for a password reset.';
+      $('who').textContent = `Verified as ${account.email}. Choose your new password.`;
+      $('form-title').textContent = 'Reset your password.';
+      $('submit').textContent = 'SAVE NEW PASSWORD →';
+    }
+    const invitationExpiry = Date.parse(typeof meta.blueprint_invite_expires_at === 'string' ? meta.blueprint_invite_expires_at : '');
+    if (activationType === 'invite' && Number.isFinite(invitationExpiry) && Date.now() > invitationExpiry) {
+      closeLink();
+      return;
+    }
+    show('panel-form');
+  } catch (reason) {
+    if (reason?.status === 401 || reason?.status === 403) closeLink();
+    else {
+      $('pass-state').textContent = 'VERIFICATION PAUSED';
+      show('panel-network');
+    }
+  } finally {
+    verifying = false;
+    $('retry-verification').disabled = false;
+  }
 }
 
 async function boot() {
   const fragment = new URLSearchParams((location.hash || '').replace(/^#/, ''));
-  if (fragment.get('error') || fragment.get('error_code')) { show('panel-expired'); return; }
+  // Auth fragments, including failed verification responses, stay out of history.
+  // Keep usable credentials only in memory; retry does not reload or store them.
+  if (location.hash) {
+    try { history.replaceState(null, '', `${location.pathname}${location.search}`); } catch { /* cosmetic */ }
+  }
+  if (fragment.get('error') || fragment.get('error_code')) { closeLink(); return; }
 
   const encodedContinuation = fragment.get('continue') || '';
   continuationLink = decodeContinuation(encodedContinuation);
-  if (encodedContinuation && !continuationLink) {
-    try { history.replaceState(null, '', `${location.pathname}${location.search}`); } catch { /* cosmetic */ }
-    show('panel-expired');
-    return;
-  }
+  if (encodedContinuation && !continuationLink) { closeLink(); return; }
   if (continuationLink) {
-    // Fragments never reach the web server. Scrub the encoded auth target from
-    // local browser history too; keep it only in memory until the human clicks.
-    try { history.replaceState(null, '', `${location.pathname}${location.search}`); } catch { /* cosmetic */ }
+    $('pass-state').textContent = 'AWAITING VERIFICATION';
     show('panel-gate');
     return;
   }
@@ -153,59 +207,53 @@ async function boot() {
   accessToken = fragment.get('access_token') || '';
   activationType = fragment.get('type') === 'recovery' ? 'recovery' : 'invite';
   if (!accessToken) { show('panel-wait'); return; }
-
-  // Remove auth credentials from browser history before any user interaction.
-  try { history.replaceState(null, '', `${location.pathname}${location.search}`); } catch { /* cosmetic */ }
-
-  try {
-    account = await fetchAccount();
-    const { meta } = applyProfile(account);
-    if (activationType === 'recovery') {
-      $('role-eyebrow').textContent = 'SECURE RECOVERY';
-      $('hero-title').textContent = 'Choose a new password.';
-      $('hero-copy').textContent = 'Your verified Blueprint account is ready for a credential reset.';
-      $('who').textContent = `Verified as ${account?.email || 'this account'}. Choose your new password.`;
-    }
-    const invitationExpiry = Date.parse(typeof meta.blueprint_invite_expires_at === 'string' ? meta.blueprint_invite_expires_at : '');
-    if (activationType === 'invite' && Number.isFinite(invitationExpiry) && Date.now() > invitationExpiry) { show('panel-expired'); return; }
-    show('panel-form');
-  } catch {
-    show('panel-expired');
-  }
+  await verifyAccount();
 }
 
 $('continue').addEventListener('click', () => {
-  if (!continuationLink) { show('panel-expired'); return; }
+  if (!continuationLink) { closeLink(); return; }
   location.assign(continuationLink);
 });
+$('retry-verification').addEventListener('click', () => { void verifyAccount(); });
 
 $('form').addEventListener('submit', async (event) => {
   event.preventDefault();
+  if (submitting || !accessToken || !account) return;
   const password = $('password').value;
   const confirm = $('confirm').value;
   if (password.length < 8) { status('err', 'Use at least 8 characters.'); return; }
   if (password !== confirm) { status('err', 'The two passwords do not match.'); return; }
 
   const button = $('submit');
+  submitting = true;
   button.disabled = true;
-  status('busy', 'Activating your Blueprint access…');
+  status('busy', activationType === 'recovery' ? 'Saving your new password…' : 'Activating your Blueprint access…');
   try {
     await savePassword(password);
     let auditRecorded = true;
     if (activationType === 'invite') {
       try { await recordAcceptance(); } catch { auditRecorded = false; }
     }
+    $('done-title').textContent = activationType === 'recovery' ? 'Password updated.' : 'Access activated.';
     $('done-copy').textContent = activationType === 'recovery'
-      ? `Your Blueprint password has been updated. Sign in as ${account?.email || 'your verified account'} with the password you just created.`
-      : `Your Blueprint account is ready. Sign in as ${account?.email || 'the email on this pass'} with the password you just created.${auditRecorded ? '' : ' Your access is active; Blueprint will reconcile the activation record when you next sign in.'}`;
+      ? `Your Blueprint password has been updated. Sign in as ${account.email} with the password you just created.`
+      : `Your Blueprint account is ready. Sign in as ${account.email} with the password you just created.${auditRecorded ? '' : ' Your access is active; Blueprint will reconcile the activation record when you next sign in.'}`;
+    $('hero-title').textContent = activationType === 'recovery' ? 'Your account is ready again.' : 'Your Blueprint access is ready.';
+    $('hero-copy').textContent = 'Open Blueprint Builds and sign in to continue to your workspace.';
+    $('password').value = '';
+    $('confirm').value = '';
+    accessToken = '';
     show('panel-done');
   } catch (reason) {
-    if (reason?.status === 401 || reason?.status === 403) show('panel-expired');
+    if (reason?.status === 401 || reason?.status === 403) closeLink();
     else {
-      status('err', reason?.message && reason.message !== 'password_update_failed' ? reason.message : 'The password could not be saved. Check your connection and try again.');
+      const message = reason?.status && reason.status < 500 && reason.message !== 'request_failed'
+        ? reason.message
+        : 'We could not confirm your password was saved. Check your connection, then try again on this page.';
+      status('err', message);
       button.disabled = false;
     }
-  }
+  } finally { submitting = false; }
 });
 
 void boot();

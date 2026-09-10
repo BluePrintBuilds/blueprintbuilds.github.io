@@ -8,7 +8,7 @@
   <meta name="robots" content="noindex,nofollow,noarchive">
   <meta name="referrer" content="no-referrer">
   <link rel="canonical" href="https://blueprintbuilds.app/invite/">
-  <link rel="stylesheet" href="/invite/invite.css">
+  <link rel="stylesheet" href="/invite/invite.css?v=20260910-onboarding">
 </head>
 <body>
   <div class="shell">
@@ -26,9 +26,9 @@
           <p class="lede" id="hero-copy">This invitation is tied to a private Blueprint workspace and the role issued to your account.</p>
 
           <div class="pass" aria-label="Blueprint access pass">
-            <div class="pass-head"><span>BLUEPRINT ACCESS PASS</span><span class="pass-id">VERIFIED ROLE</span></div>
+            <div class="pass-head"><span>BLUEPRINT ACCESS PASS</span><span class="pass-id" id="pass-state">INVITATION REQUIRED</span></div>
             <div class="pass-grid">
-              <div class="pass-cell"><span class="pass-label">ACCOUNT</span><span class="pass-value" id="pass-email">Verifying…</span></div>
+              <div class="pass-cell"><span class="pass-label">ACCOUNT</span><span class="pass-value" id="pass-email">Open your invitation</span></div>
               <div class="pass-cell"><span class="pass-label">ACCESS LEVEL</span><span class="pass-value role" id="pass-role">Pending</span></div>
               <div class="pass-cell"><span class="pass-label">WORKSPACE</span><span class="pass-value" id="pass-workspace">Private workspace</span></div>
               <div class="pass-cell"><span class="pass-label">ISSUED BY</span><span class="pass-value" id="pass-inviter">Blueprint Builds</span></div>
@@ -54,19 +54,34 @@
         <section class="card hidden" id="panel-gate">
           <div class="state-tag"><span class="state-dot"></span>ACCESS PASS RECEIVED</div>
           <h2>Continue to verification.</h2>
-          <p class="hint">This first-party checkpoint protects one-use activation links from automated email scanners. Nothing is consumed until <strong>you</strong> press the button below.</p>
+          <p class="hint">Your secure invitation is ready. Continue to verify your account, then choose the password you will use in Blueprint Builds.</p>
           <button class="btn" id="continue" type="button">CONTINUE SECURELY →</button>
+        </section>
+
+
+        <section class="card hidden" id="panel-checking" aria-live="polite">
+          <div class="state-tag"><span class="state-dot"></span>CHECKING YOUR INVITATION</div>
+          <h2>Verifying your account.</h2>
+          <p class="hint">Keep this page open while we check your secure link.</p>
+        </section>
+
+        <section class="card hidden" id="panel-network" aria-live="polite">
+          <div class="state-tag"><span class="state-dot"></span>VERIFICATION PAUSED</div>
+          <h2>Let’s reconnect.</h2>
+          <p class="hint">We could not reach Blueprint to verify your account. Check your connection, then try again here. Keep this page open so you can continue with the same link.</p>
+          <button class="btn" id="retry-verification" type="button">TRY VERIFICATION AGAIN →</button>
         </section>
 
         <section class="card hidden" id="panel-expired">
           <div class="state-tag"><span class="state-dot"></span>LINK CLOSED</div>
-          <h2>This access link has expired.</h2>
-          <p class="hint">Activation links are deliberately short-lived and one-use. Ask the person who invited you to issue a fresh Blueprint access pass.</p>
+          <h2>This link is no longer available.</h2>
+          <p class="hint">It may have expired or already been used. If you have already activated your account, open Blueprint and sign in. Otherwise, ask the person who invited you for a fresh access link.</p>
+          <a class="btn secondary" href="/support/">GET HELP WITH ACCESS</a>
         </section>
 
         <section class="card hidden" id="panel-form">
           <div class="state-tag"><span class="state-dot"></span>IDENTITY VERIFIED</div>
-          <h2>Secure your account.</h2>
+          <h2 id="form-title">Secure your account.</h2>
           <p class="hint" id="who">Your invitation has been verified. Choose the password you will use to sign in to Blueprint Builds.</p>
           <form id="form">
             <label class="field"><span>New password</span><input autocomplete="new-password" id="password" minlength="8" required type="password"></label>
@@ -78,9 +93,10 @@
 
         <section class="card hidden" id="panel-done">
           <div class="done-mark">✓</div>
-          <h2>Access activated.</h2>
+          <h2 id="done-title">Access activated.</h2>
           <p class="hint" id="done-copy">Your Blueprint account is ready. Sign in with the email address on this access pass and the password you just created.</p>
-          <a class="btn secondary" href="/workspace/">OPEN BUILDER WORKSPACE</a>
+          <p class="hint next-step">Already have Blueprint Builds installed? Open the app and sign in. You can also continue on the web.</p>
+          <a class="btn secondary" href="/workspace/">OPEN BLUEPRINT ON THE WEB</a>
         </section>
 
         <section class="card">
@@ -91,6 +107,6 @@
 
     <footer class="footer"><div>© 2026 Blueprint Builds · Private build truth, made usable.</div><div class="footer-links"><a href="/support/">Support</a><a href="/privacy/">Privacy</a><a href="/terms/">Terms</a></div></footer>
   </div>
-  <script type="module" src="/invite/activate.js"></script>
+  <script type="module" src="/invite/activate.js?v=20260910-onboarding"></script>
 </body>
 </html>
