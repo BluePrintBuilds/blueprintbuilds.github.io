@@ -353,14 +353,23 @@ function canMarkupPlan() {
   return plan.mimeType === 'application/pdf' && (Number(plan.pageCount) > 0 || !!pdfDocument);
 }
 
+function dismissDraftNoteKeyboard() {
+  // Drawing gestures must never summon the software keyboard. The note editor
+  // only receives focus after an explicit tap/click from the user. This keeps
+  // iPad/iPhone/Android drawing fluid and makes desktop behaviour consistent.
+  const note = $('draft-note');
+  if (document.activeElement === note) note.blur();
+}
+
 function beginDraft(next) {
+  dismissDraftNoteKeyboard();
   draft = { ...next, clientEventId: crypto.randomUUID(), page: activePage };
   $('draft-box').hidden = false;
-  $('draft-note').focus();
   renderDraftPreview();
 }
 
 function cancelDraft(resetTool = true) {
+  dismissDraftNoteKeyboard();
   draft = null;
   pointerStart = null;
   strokePoints = [];
