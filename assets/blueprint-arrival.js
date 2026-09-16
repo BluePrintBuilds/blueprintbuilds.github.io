@@ -26,13 +26,14 @@
   const animations = [];
   let finished = false;
   let expiry;
-  function finish() {
+  function finish(reason) {
     if (finished) return;
     finished = true;
     clearTimeout(expiry);
     animations.forEach(animation => animation.cancel());
     root.classList.remove('is-active');
     root.dataset.state = 'finished';
+    root.dataset.finishReason = typeof reason === 'string' ? reason : 'interaction';
     image.onload = image.onerror = null;
     events.forEach(event => window.removeEventListener(event, onInteraction, true));
     window.removeEventListener('scroll', onScroll, true);
@@ -45,8 +46,10 @@
     animations.push(animation);
     return animation;
   }
-  async function start() {
-    try { await image.decode(); } catch { finish(); return; }
+  function start() {
+    // onload already confirms a usable image; a second asynchronous decode can
+    // miss the optional-art deadline on WebKit even after the request succeeds.
+    if (!image.naturalWidth) { finish('image-error'); return; }
     if (finished || motion.matches || document.hidden) return;
     clearTimeout(expiry);
     artwork.style.backgroundImage = 'url("' + image.src + '")';
@@ -81,9 +84,10 @@
   root.querySelector('[data-arrival-skip]').addEventListener('click', finish);
   // Optional art is requested only after preference/session checks. It never
   // delays the document and a slow image never produces a late interruption.
-  expiry = setTimeout(finish, 450);
+  expiry = setTimeout(() => finish('image-deadline'), 450);
   image.decoding = 'async';
+  image.fetchPriority = 'high';
   image.onload = start;
-  image.onerror = finish;
+  image.onerror = () => finish('image-error');
   image.src = '/assets/blueprint-identity-master.webp';
 })();
