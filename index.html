@@ -3,19 +3,26 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Blueprint Builds — Construction Plan Desk & Field Proof</title>
-<meta name="description" content="Blueprint Builds connects plans, field evidence, decisions, live build gates, verified Build Stories and role-scoped access in one auditable construction record." />
+<title>Blueprint Builds — Plans, Site Proof & Client Decisions</title>
+<meta name="description" content="Keep current drawings, site records, variations, approvals and progress connected from the first day on site to handover." />
 <meta name="theme-color" content="#050A10" />
 <meta name="robots" content="index,follow,max-image-preview:large" />
-<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+<link rel="icon" href="/assets/blueprint-fingerprint.png" type="image/png" />
 <link rel="canonical" href="https://blueprintbuilds.app/" />
 <meta property="og:title" content="Blueprint Builds — Build from the drawing. Prove it from the field." />
-<meta property="og:description" content="Plans, field evidence, live build gates and verified handover stories connected in one verifiable project record." />
+<meta property="og:description" content="Current drawings, site proof, client decisions and progress kept together from site start to handover." />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://blueprintbuilds.app/" />
 <meta property="og:image" content="https://blueprintbuilds.app/assets/og-blueprint-builds.png" />
 <meta name="twitter:card" content="summary_large_image" />
 <link rel="stylesheet" href="/assets/home.css" />
+<link rel="stylesheet" href="/assets/blueprint-pulse.css" />
+<link rel="stylesheet" href="/assets/blueprint-pulse-home.css" />
+<link rel="stylesheet" href="/assets/blueprint-product-media.css" />
+<link rel="stylesheet" href="/assets/blueprint-motion-system.css" />
+<link rel="stylesheet" href="/assets/blueprint-client-experience.css" />
+<link rel="stylesheet" href="/assets/blueprint-build-story.css" />
+<link rel="stylesheet" href="/assets/blueprint-arrival.css" />
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -24,7 +31,7 @@
   "url": "https://blueprintbuilds.app/",
   "applicationCategory": "BusinessApplication",
   "operatingSystem": "Web, iOS",
-  "description": "Construction delivery software connecting plans, field evidence, decisions, live build gates, verified handover stories and role-scoped access in an auditable project record.",
+  "description": "Construction delivery software that keeps current plans, site records, decisions, approvals and progress connected for build teams and clients.",
   "featureList": [
     "Adaptive construction Plan Desk",
     "Offline PDF viewing and markups",
@@ -40,6 +47,21 @@
 </script>
 </head>
 <body>
+<div class="bp-arrival" data-blueprint-arrival>
+  <div class="bp-arrival-sheet" aria-hidden="true" inert>
+    <div class="bp-arrival-register"><strong>BLUEPRINT BUILDS</strong><span>FROM DRAWING<br>TO BUILD RECORD</span></div>
+    <div class="bp-arrival-rule"></div>
+    <div class="bp-arrival-composition">
+      <div class="bp-arrival-art" data-arrival-art></div>
+      <div class="bp-arrival-copy">
+        <p class="bp-arrival-caption">Every build. A clear record.</p>
+        <p class="bp-arrival-detail">Plans. Site evidence. Client decisions.</p>
+      </div>
+    </div>
+    <div class="bp-arrival-titleblock"><span>THE BLUEPRINT SIGNATURE</span><b>BUILT ON EVIDENCE</b></div>
+  </div>
+  <button class="bp-arrival-skip" type="button" data-arrival-skip>Skip intro</button>
+</div>
 <div class="blueprint-field" aria-hidden="true"></div>
 <div class="ambient ambient-a" aria-hidden="true"></div>
 <div class="ambient ambient-b" aria-hidden="true"></div>
@@ -47,7 +69,7 @@
 <header class="nav">
   <div class="shell nav-inner">
     <a class="brand" href="/" data-testid="nav-logo" aria-label="Blueprint Builds home">
-      <span class="brand-mark"><img src="/favicon.svg" alt="" width="30" height="30" /></span>
+      <span class="brand-mark"><img src="/assets/blueprint-fingerprint.png" alt="" width="30" height="30" /></span>
       <span>Blueprint <b>Builds</b></span>
       <span class="brand-version">PILOT</span>
     </a>
@@ -61,7 +83,7 @@
     </nav>
     <div class="nav-actions">
       <a class="btn btn-quiet" href="/workspace/">Sign in</a>
-      <a class="btn btn-primary" href="#access">Get access</a>
+      <a class="btn btn-primary" href="#access">Founder Access</a>
       <button class="nav-toggle" data-testid="nav-menu-toggle" type="button" aria-label="Open menu" aria-expanded="false">
         <span></span><span></span><span></span>
       </button>
@@ -74,7 +96,7 @@
     <a href="#roles">Access</a>
     <a href="#security">Security</a>
     <a href="/workspace/">Builder Workspace</a>
-    <a class="btn btn-primary" href="#access">Get access</a>
+    <a class="btn btn-primary" href="#access">Founder Access</a>
   </div>
 </header>
 
@@ -82,94 +104,43 @@
   <section class="hero">
     <div class="shell hero-grid">
       <div class="hero-copy reveal">
-        <div class="eyebrow"><span class="pulse"></span> CONSTRUCTION DELIVERY SYSTEM <span>//</span> PLAN → FIELD → PROOF</div>
+        <div class="eyebrow"><span class="pulse"></span> BUILT FOR THE JOB <span>//</span> CLEAR FOR THE CLIENT</div>
         <h1>Build from the drawing.<br><span>Prove it from the field.</span></h1>
-        <p class="hero-lead">Blueprint Builds connects the current plan, field evidence, decisions, milestones and client access into one verifiable project record. The drawing is no longer a file you open. It becomes part of the build.</p>
+        <p class="hero-lead">Keep the current drawing, what happened on site, what needs a decision and where the job is up to in one place. Builders get a cleaner job. Clients get a clearer build.</p>
         <div class="hero-actions">
-          <a class="btn btn-primary btn-large" href="/workspace/">Open Builder Workspace <span aria-hidden="true">→</span></a>
-          <a class="btn btn-quiet btn-large" href="#plan-desk">Explore the system</a>
+          <a class="btn btn-primary btn-large" href="#access">Builders: join the Founder Pilot <span aria-hidden="true">→</span></a>
+          <a class="btn btn-quiet btn-large" href="/workspace/">Already invited? Open workspace</a>
         </div>
         <div class="hero-facts" aria-label="Blueprint Builds product facts">
-          <span><i class="status status-live"></i> Live Plan Desk</span>
-          <span><i class="status status-offline"></i> Works offline</span>
-          <span><i class="status status-proof"></i> Auditable record</span>
-          <span><i class="status status-secure"></i> Role-scoped access</span>
+          <span><i class="status status-live"></i> Current drawings</span>
+          <span><i class="status status-offline"></i> Works without signal</span>
+          <span><i class="status status-proof"></i> Photo + voice proof</span>
+          <span><i class="status status-secure"></i> Clear client approvals</span>
+        </div>
+        <div class="hero-audiences" aria-label="Blueprint Builds for builders and clients">
+          <div><span>BUILD TEAM</span><p>Plans, site updates and decisions.</p><a href="#access">I run building projects <span aria-hidden="true">&rarr;</span></a></div>
+          <div><span>CLIENT</span><p>Your progress, changes and next steps.</p><a href="#client-clarity">I am having something built <span aria-hidden="true">&rarr;</span></a></div>
         </div>
       </div>
 
-      <div class="hero-system reveal" aria-label="Blueprint Builds product interface illustration">
-        <div class="system-halo"></div>
-        <div class="command-frame">
-          <div class="command-topbar">
-            <div class="command-brand"><span class="mini-mark">▦</span> BLUEPRINT BUILDS</div>
-            <div class="command-path">PROJECT / ARENA BUILD / <strong>A-204 · R3</strong></div>
-            <div class="command-state"><span class="live-dot"></span> SYNCED</div>
-          </div>
-          <div class="command-body">
-            <aside class="command-rail" aria-hidden="true">
-              <span class="rail-active">⌂</span><span>⌗</span><span>◫</span><span>✓</span><span>≡</span>
-            </aside>
-            <div class="drawing-stage">
-              <div class="drawing-toolbar">
-                <span class="tool-active">BROWSE</span><span>PIN</span><span>ZONE</span><span>DRAW</span>
-                <span class="toolbar-gap"></span><span>−</span><span>FIT</span><span>+</span>
-              </div>
-              <div class="drawing-canvas">
-                <svg viewBox="0 0 720 440" role="img" aria-label="Stylised construction plan with markup">
-                  <defs>
-                    <pattern id="minorGrid" width="16" height="16" patternUnits="userSpaceOnUse"><path d="M16 0H0V16" fill="none" stroke="rgba(92,151,196,.12)" stroke-width=".7"/></pattern>
-                    <pattern id="majorGrid" width="80" height="80" patternUnits="userSpaceOnUse"><rect width="80" height="80" fill="url(#minorGrid)"/><path d="M80 0H0V80" fill="none" stroke="rgba(92,151,196,.23)" stroke-width="1"/></pattern>
-                  </defs>
-                  <rect width="720" height="440" fill="url(#majorGrid)"/>
-                  <g fill="none" stroke="#7593A8" stroke-width="2" opacity=".88">
-                    <rect x="82" y="84" width="480" height="250" rx="2"/>
-                    <rect x="112" y="114" width="208" height="92"/><rect x="342" y="114" width="190" height="92"/>
-                    <rect x="112" y="228" width="420" height="76"/>
-                    <path d="M82 78V54M562 78V54M82 61H562M72 84H48M72 334H48M56 84V334"/>
-                    <path d="M124 228v76M184 228v76M244 228v76M304 228v76M364 228v76M424 228v76M484 228v76" opacity=".65"/>
-                    <path d="M320 84v250M332 84v250" opacity=".45"/>
-                    <path d="M96 97h452v220H96z" stroke-dasharray="5 5" opacity=".38"/>
-                    <circle cx="615" cy="126" r="42"/><path d="M573 126h84M615 84v84" opacity=".45"/>
-                  </g>
-                  <g fill="#86A7BE" font-family="monospace" font-size="10" opacity=".78">
-                    <text x="83" y="48">24 000</text><text x="28" y="214" transform="rotate(-90 28 214)">12 500</text>
-                    <text x="123" y="137">VIEWING / SERVICES</text><text x="355" y="137">STABLE BLOCK</text><text x="125" y="255">ARENA EDGE / DRAINAGE RUN</text>
-                    <text x="580" y="190">N</text>
-                  </g>
-                  <g class="plan-markup">
-                    <path d="M126 280C184 250 228 290 288 260s118 22 170-10" fill="none" stroke="#2DA8FF" stroke-width="5" stroke-linecap="round" opacity=".9"/>
-                    <circle cx="458" cy="250" r="9" fill="#2DA8FF"/><circle cx="458" cy="250" r="18" fill="none" stroke="#2DA8FF" stroke-width="2" opacity=".45"/>
-                    <rect x="448" y="268" width="142" height="42" rx="9" fill="#081522" stroke="#2DA8FF"/>
-                    <text x="460" y="286" fill="#EAF6FF" font-family="system-ui" font-size="11" font-weight="700">DRAINAGE REVISION</text>
-                    <text x="460" y="300" fill="#7F9BB0" font-family="monospace" font-size="9">MARKUP · SYNCED</text>
-                  </g>
-                </svg>
-                <div class="sheet-chip">SHEET A-204 <span>R3 · CURRENT</span></div>
-                <div class="offline-chip"><span>↓</span> SAVED OFFLINE</div>
-              </div>
-            </div>
-            <aside class="truth-panel">
-              <div class="truth-head"><span>PROJECT RECORD</span><b>LIVE</b></div>
-              <div class="truth-card emphasis"><small>PLAN</small><strong>A-204 · R3</strong><span>Current drawing</span></div>
-              <div class="truth-card"><small>EVIDENCE</small><strong>18 records</strong><span>3 captured today</span></div>
-              <div class="truth-card"><small>DECISION</small><strong>Drainage outlet</strong><span class="warning">Awaiting response</span></div>
-              <div class="truth-card"><small>MILESTONE</small><strong>Portal frames</strong><span>Due Friday</span></div>
-            </aside>
-          </div>
-        </div>
-        <div class="mobile-capture">
-          <div class="phone-bar"><span>9:41</span><span>● ● ●</span></div>
-          <div class="phone-brand">BLUEPRINT <b>CAPTURE</b></div>
-          <div class="capture-photo"><div class="camera-ring">＋</div></div>
-          <strong>Drainage trench · west edge</strong>
-          <span class="capture-meta">10:42 · GPS attached</span>
-          <div class="capture-state"><span></span> QUEUED OFFLINE</div>
-        </div>
-        <div class="access-float">
-          <small>SECURE ACCESS</small>
-          <strong>Site Lead</strong>
-          <span>Plan + field record</span>
-        </div>
+      <div class="hero-system reveal" aria-label="Architectural drawing sequence">
+        <figure class="command-frame building-frame" data-building-sequence>
+          <figcaption class="building-heading"><span>FROM THE GROUND UP</span><b>A build, taking shape.</b></figcaption>
+<svg class="building-scene" viewBox="0 0 800 500" role="img" aria-labelledby="building-title building-description">
+  <title id="building-title">An arena building taking shape from set-out to site detail</title>
+  <desc id="building-description">An illustrative building with a ground plan, repeated portal frames, a pitched roof and a highlighted drainage route. This is not a construction drawing or a live project record.</desc>
+  <defs><pattern id="building-grid" width="28" height="28" patternUnits="userSpaceOnUse"><path d="M28 0H0V28" fill="none" stroke="currentColor" stroke-width=".5"/></pattern></defs>
+  <rect width="800" height="500" fill="url(#building-grid)" class="building-grid"/>
+  <g data-building-stage="setout"><path class="building-trace boundary" pathLength="1" d="M165.8 318.0L453.8 401.2L639.8 305.2L351.8 222.0L165.8 318.0"/><path class="building-trace slab" pathLength="1" d="M190.0 320.0L442.0 392.8L615.6 303.2L363.6 230.4L190.0 320.0"/><path class="building-trace datum" pathLength="1" d="M154.0 309.6L478.0 403.2"/><path class="building-trace datum" pathLength="1" d="M197.4 287.2L521.4 380.8"/><path class="building-trace datum" pathLength="1" d="M240.8 264.8L564.8 358.4"/><path class="building-trace datum" pathLength="1" d="M284.2 242.4L608.2 336.0"/><path class="building-trace datum" pathLength="1" d="M327.6 220.0L651.6 313.6"/><path class="building-trace datum" pathLength="1" d="M171.4 329.6L382.2 220.8"/><path class="building-trace datum" pathLength="1" d="M297.4 366.0L508.2 257.2"/><path class="building-trace datum" pathLength="1" d="M423.4 402.4L634.2 293.6"/></g>
+  <g data-building-stage="structure"><path class="building-trace portal" pathLength="1" d="M363.6 230.4L363.6 130.4L489.6 86.8L615.6 203.2L615.6 303.2"/><path class="building-trace portal" pathLength="1" d="M320.2 252.8L320.2 152.8L446.2 109.2L572.2 225.6L572.2 325.6"/><path class="building-trace portal" pathLength="1" d="M276.8 275.2L276.8 175.2L402.8 131.6L528.8 248.0L528.8 348.0"/><path class="building-trace portal" pathLength="1" d="M233.4 297.6L233.4 197.6L359.4 154.0L485.4 270.4L485.4 370.4"/><path class="building-trace portal" pathLength="1" d="M190.0 320.0L190.0 220.0L316.0 176.4L442.0 292.8L442.0 392.8"/><path class="building-trace eave" pathLength="1" d="M190.0 220.0L363.6 130.4"/><path class="building-trace eave" pathLength="1" d="M442.0 292.8L615.6 203.2"/><path class="building-trace ridge" pathLength="1" d="M316.0 176.4L489.6 86.8"/></g>
+  <g data-building-stage="roof"><path class="building-trace purlin" pathLength="1" d="M232.0 205.5L405.6 115.9"/><path class="building-trace purlin" pathLength="1" d="M274.0 190.9L447.6 101.3"/><path class="building-trace purlin" pathLength="1" d="M358.0 215.2L531.6 125.6"/><path class="building-trace purlin" pathLength="1" d="M400.0 254.0L573.6 164.4"/><path class="building-trace bracing" pathLength="1" d="M442.0 392.8L485.4 270.4L442.0 292.8L485.4 370.4"/><path class="building-trace bracing" pathLength="1" d="M485.4 370.4L528.8 248.0L485.4 270.4L528.8 348.0"/><path class="building-trace bracing" pathLength="1" d="M528.8 348.0L572.2 225.6L528.8 248.0L572.2 325.6"/><path class="building-trace bracing" pathLength="1" d="M572.2 325.6L615.6 203.2L572.2 225.6L615.6 303.2"/></g>
+  <g data-building-stage="detail"><path class="building-trace door" pathLength="1" d="M271.0 343.4L271.0 258.4L361.0 284.4L361.0 369.4"/><path class="building-trace stalls" pathLength="1" d="M485.4 370.4L485.4 312.9L516.4 296.9L516.4 354.4"/><path class="building-trace stalls" pathLength="1" d="M528.8 348.0L528.8 290.5L559.8 274.5L559.8 332.0"/><path class="building-trace stalls" pathLength="1" d="M572.2 325.6L572.2 268.1L603.2 252.1L603.2 309.6"/><path class="building-trace drain" pathLength="1" d="M471.8 406.4L571.0 355.2L601.4 354.0L675.8 315.6"/><circle class="building-outlet" cx="675.8" cy="315.6" r="5"/></g>
+  <g class="building-annotations" aria-hidden="true"><path d="M675.8 315.6V406H574"/><text x="575" y="427">SITE DETAIL</text><text x="575" y="444">Drainage route</text><path d="M278 177H160V143"/><text x="65" y="124">STRUCTURE</text><text x="65" y="141">Portal frames</text></g>
+  <text x="30" y="472" class="building-caption">ILLUSTRATIVE CONCEPT / NOT FOR CONSTRUCTION</text>
+</svg>
+          <div class="building-sequence-steps" aria-label="Drawing stages"><span>01 <b>Set-out</b></span><span>02 <b>Structure</b></span><span>03 <b>Roof</b></span><span>04 <b>Site detail</b></span></div>
+          <div class="building-controls"><span>Example drawing. Real construction language.</span><button type="button" data-building-pause aria-pressed="false" hidden>Pause drawing</button><button type="button" data-building-replay hidden>Replay</button></div>
+        </figure>
       </div>
     </div>
     <div class="shell truth-rail" aria-label="Blueprint Builds connected workflow">
@@ -177,18 +148,53 @@
     </div>
   </section>
 
+  <section class="pulse-principles" id="principles">
+    <div class="shell">
+      <div class="pulse-principles-heading reveal">
+        <div><span class="section-kicker">FOR THE TEAM // FOR THE CLIENT</span><h2>Run the job once. Keep everyone on the same page.</h2></div>
+        <p>Builders should not be rebuilding the job from texts, calls and email. Clients should not have to chase the builder just to understand their own project.</p>
+      </div>
+      <div class="ppp-system reveal">
+        <svg class="ppp-connectors" viewBox="0 0 1000 250" aria-hidden="true">
+          <path d="M160 126H840"/>
+          <path d="M160 126V92H500V126M500 126V160H840V126"/>
+          <path class="ppp-datum-ticks" d="M160 116V136M500 116V136M840 116V136"/>
+          <circle cx="160" cy="126" r="4"/><circle cx="500" cy="126" r="4"/><circle cx="840" cy="126" r="4"/>
+        </svg>
+        <article class="ppp-card ppp-people">
+          <div class="ppp-index"><span>01 // BUILD TEAM</span><i></i></div>
+          <h3>The site team gets the tools. Clients get the clarity.</h3>
+          <p>Builders capture, mark up and act. Clients see the progress, plans and decisions that matter to them — without the site admin.</p>
+          <small>ONE JOB // TWO CLEAR VIEWS</small>
+        </article>
+        <article class="ppp-card ppp-proof">
+          <div class="ppp-index"><span>02 // SITE RECORD</span><i></i></div>
+          <h3>If it matters, keep it with the job.</h3>
+          <p>Photos, voice notes, marked-up plans and approvals stay on the project instead of disappearing into phones, inboxes and memory.</p>
+          <small>PHOTO // VOICE // PLAN // DECISION</small>
+        </article>
+        <article class="ppp-card ppp-progress">
+          <div class="ppp-index"><span>03 // CLIENT CLARITY</span><i></i></div>
+          <h3>Less chasing. Fewer “where are we at?” calls.</h3>
+          <p>The team records the work once. Clients can see where the build is up to, what needs them and what comes next.</p>
+          <small>PROGRESS // DECISIONS // NEXT STEP</small>
+        </article>
+      </div>
+    </div>
+  </section>
+
   <section class="positioning" id="proof-system">
     <div class="shell">
       <div class="positioning-grid">
-        <div class="section-kicker reveal">WHERE BLUEPRINT BUILDS FITS</div>
+        <div class="section-kicker reveal">WHERE IT FITS</div>
         <div class="positioning-copy reveal">
-          <h2>Not CAD. Not another bloated project-management suite.</h2>
-          <p>Architects and engineers already have powerful tools to <em>author</em> drawings. Blueprint Builds starts at the moment those drawings become real work: on site, under pressure, with revisions, evidence, decisions and people who need the right truth at the right time.</p>
+          <h2>Your CAD draws it. Blueprint helps you build it.</h2>
+          <p>Keep the design tools you already trust. Blueprint picks up when work hits site: the current drawing, what happened, what changed, what needs approval and what can move next.</p>
         </div>
         <div class="positioning-bands reveal">
-          <div class="band muted"><span>01</span><b>DESIGN AUTHORING</b><small>CAD · BIM · engineering</small></div>
-          <div class="band active"><span>02</span><b>BUILD DELIVERY</b><small>Blueprint Builds lives here</small></div>
-          <div class="band muted"><span>03</span><b>HANDOVER / RECORD</b><small>proof carried forward</small></div>
+          <div class="band muted"><span>01</span><b>DESIGN</b><small>CAD · BIM · engineering</small></div>
+          <div class="band active"><span>02</span><b>DELIVERY</b><small>plans · site · decisions · progress</small></div>
+          <div class="band muted"><span>03</span><b>HANDOVER</b><small>the job record carried forward</small></div>
         </div>
       </div>
     </div>
@@ -197,8 +203,8 @@
   <section class="plan-desk" id="plan-desk">
     <div class="shell">
       <div class="section-heading reveal">
-        <div><span class="section-kicker">UNIVERSAL PLAN DESK</span><h2>The drawing becomes a workspace.</h2></div>
-        <p>Open a raw PDF or a published sheet. Browse, zoom, pin, zone and draw. Save the full-quality plan for offline use. Move from an iPad on site to a laptop in the office without changing the way the desk behaves.</p>
+        <div><span class="section-kicker">PLAN DESK // SITE READY</span><h2>The plan your team can actually use on site.</h2></div>
+        <p>Open the issued drawing, pinch and zoom, pin a detail, draw over it and keep it available when signal disappears. Same Plan Desk on the iPad, phone and office screen.</p>
       </div>
       <div class="feature-grid">
         <article class="feature-card feature-wide reveal">
@@ -207,27 +213,68 @@
             <div class="mini-toolbar"><span>BROWSE</span><span class="selected">PIN</span><span>ZONE</span><span>DRAW</span><i></i><span>FIT</span><span>125%</span></div>
             <div class="mini-sheet">
               <div class="mini-grid"></div>
-              <div class="mini-building"><span></span><span></span><span></span></div>
+              <svg class="mini-issued-plan" viewBox="0 0 720 300" aria-hidden="true">
+                <g class="mini-plan-lines">
+                  <rect x="84" y="60" width="470" height="174"/>
+                  <rect x="112" y="88" width="184" height="58"/><rect x="320" y="88" width="206" height="58"/>
+                  <rect x="112" y="166" width="414" height="42"/>
+                  <path d="M296 60V234M308 60V234M84 48V30M554 48V30M84 38H554"/>
+                  <path d="M106 222H526M150 166V208M214 166V208M278 166V208M342 166V208M406 166V208M470 166V208"/>
+                  <path class="mini-centre" d="M70 147H566M302 50V244"/>
+                </g>
+                <g class="mini-plan-refs">
+                  <circle cx="132" cy="42" r="10"/><text x="132" y="45">A</text>
+                  <circle cx="300" cy="42" r="10"/><text x="300" y="45">B</text>
+                  <circle cx="468" cy="42" r="10"/><text x="468" y="45">C</text>
+                </g>
+                <g class="mini-plan-copy">
+                  <text x="90" y="24">24 000</text><text x="122" y="106">VIEWING / SERVICES</text><text x="336" y="106">STABLE BLOCK</text>
+                  <text x="122" y="184">ARENA EDGE / DRAINAGE</text><text x="116" y="258">FALL 1:100 → D-04</text>
+                </g>
+                <g class="mini-plan-titleblock">
+                  <rect x="568" y="188" width="126" height="82"/><path d="M568 216H694M568 240H694M632 188V270"/>
+                  <text x="576" y="205">ARENA / STABLE</text><text x="576" y="232">A-204</text><text x="640" y="232">R3</text><text x="576" y="258">CURRENT</text>
+                </g>
+              </svg>
               <div class="mini-pin">7</div>
               <div class="mini-note"><b>Footing detail</b><small>Site lead · 11:06</small></div>
             </div>
           </div>
-          <div class="feature-copy"><h3>Full-resolution plans. Deliberate markups.</h3><p>Touch is safe by default. Browse mode moves the sheet; marking modes require intentional gestures. Offline packs keep the original PDF or sheet media on the device without downgrading the source.</p></div>
+          <div class="feature-copy"><h3>Full-size plans. Markups that mean something.</h3><p>Pin the detail. Mark the area. Draw the change. Every markup stays tied to that exact drawing revision, while Browse mode keeps touch safe when you are simply moving around the sheet.</p></div>
         </article>
         <article class="feature-card reveal">
           <div class="feature-number">02 / OFFLINE</div>
-          <div class="feature-icon">↯</div>
-          <h3>Zero signal is a state, not a failure.</h3>
-          <p>Plans reopen offline. Field captures queue. Markups show <b>PENDING SYNC</b> and preserve the original capture time until a secure connection returns.</p>
+          <div class="feature-icon bp-feature-icon" aria-hidden="true"><svg viewBox="0 0 36 36"><path d="M5 12h8l3-4h7l3 4h5v16H5z"/><path d="M9 22h8M9 26h12"/><path class="accent" d="M24 18h7M28 14l3 4-3 4"/><path class="slash" d="M7 5l23 26"/></svg></div>
+          <h3>No signal? Keep working.</h3>
+          <p>Plans still open. Photos, notes and markups queue on the device. When signal returns, Blueprint syncs them with the original capture time intact.</p>
           <div class="micro-status"><span class="status status-offline"></span> OFFLINE PACK READY</div>
         </article>
         <article class="feature-card reveal">
           <div class="feature-number">03 / ANY SCREEN</div>
           <div class="device-row" aria-hidden="true"><span class="device-phone"></span><span class="device-tablet"></span><span class="device-laptop"></span><span class="device-wall"></span></div>
-          <h3>One desk. Every practical screen.</h3>
-          <p>The web Plan Desk adapts its rails, canvas and controls across phone, tablet, laptop, desktop and large-display layouts.</p>
+          <h3>iPad on site. Laptop in the office. Same drawing.</h3>
+          <p>The controls adapt to the screen without changing the job: browse, zoom, mark up and review the same current plan.</p>
           <div class="micro-status"><span class="status status-live"></span> RESPONSIVE + TOUCH SAFE</div>
         </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="offline-demo" id="offline-demo">
+    <div class="shell offline-layout">
+      <div class="offline-copy reveal">
+        <span class="section-kicker">OFFLINE, PROVEN</span>
+        <h2>Drop the signal.<br>Keep the record.</h2>
+        <p>Try it here. Turn the simulated connection off and capture a record. Blueprint keeps the time it happened and queues the update instead of losing it.</p>
+        <div class="network-control">
+          <div class="switch" data-testid="offline-simulator-toggle" role="switch" tabindex="0" aria-checked="false" aria-label="Toggle network connectivity"><div class="knob"></div></div>
+          <p data-testid="sim-network-label"><span class="dot sync"></span> 5G Sync — connected</p>
+        </div>
+        <button class="btn btn-primary" data-testid="sim-capture-button" type="button">Capture evidence <span>＋</span></button>
+      </div>
+      <div class="terminal reveal" data-testid="sim-capture-output">
+        <div class="terminal-top"><span></span><span></span><span></span><b>BLUEPRINT / LOCAL RECORD</b></div>
+        <div class="log-line"><span class="k">ready</span> — capture a record to generate a local audit event</div>
       </div>
     </div>
   </section>
@@ -235,15 +282,96 @@
   <section class="connected-system">
     <div class="shell">
       <div class="section-heading reveal">
-        <div><span class="section-kicker">ONE PROJECT RECORD</span><h2>Five surfaces. One build truth.</h2></div>
-        <p>Blueprint is strongest when the parts stop acting like separate apps. The plan, the field, the decision and the proof stay connected to the same project and the same people.</p>
+        <div><span class="section-kicker">ONE JOB // ONE RECORD</span><h2>No second version for the client.</h2></div>
+        <p>The team records the job once. Current plans, site proof, client decisions, progress and handover all pull from that same project record.</p>
       </div>
       <div class="system-cards">
-        <article class="system-card reveal"><span>01</span><div class="system-glyph">⌗</div><h3>Plans</h3><p>Current drawings, revisions, markups and offline packs.</p><small>PLAN DESK</small></article>
-        <article class="system-card reveal"><span>02</span><div class="system-glyph">◉</div><h3>Field</h3><p>Photos, voice notes and attributed site evidence.</p><small>CAPTURE</small></article>
-        <article class="system-card reveal"><span>03</span><div class="system-glyph">✓</div><h3>Decisions</h3><p>Cost and time impact attached to the answer, not buried in a thread.</p><small>ON THE RECORD</small></article>
-        <article class="system-card reveal"><span>04</span><div class="system-glyph">◇</div><h3>Milestones</h3><p>Progress grounded in recorded work instead of a hopeful percentage.</p><small>PROGRESS</small></article>
-        <article class="system-card reveal"><span>05</span><div class="system-glyph">▤</div><h3>Story + proof</h3><p>Verified Build Stories carry the narrative; Evidence Bundles carry the sealed record.</p><small>HANDOVER / EVIDENCE</small></article>
+        <article class="system-card reveal"><span>01</span><div class="system-glyph bp-line-icon" aria-hidden="true"><svg viewBox="0 0 32 32"><path d="M6 4h15l5 5v19H6zM21 4v5h5M10 14h12M10 19h8M10 24h10"/><path class="accent" d="M3 11h6M4 9v4M23 17h6M26 14v6"/></svg></div><h3>Plans</h3><p>The current drawing, its revisions and the markups made against it.</p><small>PLAN DESK</small></article>
+        <article class="system-card reveal"><span>02</span><div class="system-glyph bp-line-icon" aria-hidden="true"><svg viewBox="0 0 32 32"><path d="M5 10h5l2-3h8l2 3h5v15H5z"/><rect x="11" y="13" width="10" height="8" rx="1"/><path class="accent" d="M7 27h18M9 24v3M13 23v4M17 25v2M21 22v5M25 24v3"/></svg></div><h3>Field</h3><p>Photos, voice notes and site records captured while the work is happening.</p><small>CAPTURE</small></article>
+        <article class="system-card reveal"><span>03</span><div class="system-glyph bp-line-icon" aria-hidden="true"><svg viewBox="0 0 32 32"><rect x="5" y="4" width="22" height="24" rx="1"/><path d="M10 10h12M10 15h8M10 21l3 3 7-8"/><path class="accent" d="M22 21h4M24 19v4"/></svg></div><h3>Decisions</h3><p>What changed, any cost or time impact, and the answer that lets work move.</p><small>CLIENT DECISION</small></article>
+        <article class="system-card reveal"><span>04</span><div class="system-glyph bp-line-icon" aria-hidden="true"><svg viewBox="0 0 32 32"><path d="M4 22h24M7 22V9M16 22V6M25 22V12"/><circle cx="7" cy="9" r="2"/><circle cx="16" cy="6" r="2"/><circle cx="25" cy="12" r="2"/><path class="accent" d="M7 17h9v-5h9"/></svg></div><h3>Progress</h3><p>Real build stages and next work, grounded in what has actually been recorded.</p><small>BUILD GATES</small></article>
+        <article class="system-card reveal"><span>05</span><div class="system-glyph bp-line-icon" aria-hidden="true"><svg viewBox="0 0 32 32"><path d="M5 7h16l6 6v14H5zM21 7v6h6M9 18h14M9 23h10"/><path class="accent" d="M7 4h16M4 10V5h5"/></svg></div><h3>Handover</h3><p>The finished job already has the photos, decisions and milestones behind it.</p><small>BUILD STORY + RECORD</small></article>
+      </div>
+    </div>
+  </section>
+
+  <section class="record-convergence" id="one-record">
+    <div class="shell">
+      <div class="convergence-heading reveal">
+        <span class="section-kicker">STOP CHASING THE PAPER TRAIL</span>
+        <h2>The job should not live in six different places.</h2>
+        <p>A photo in Messages. A revision in email. A decision on the phone. A variation in a PDF. Blueprint puts those moments back on the job they belong to.</p>
+      </div>
+      <div class="convergence-stage reveal">
+        <div class="fragment-cloud" aria-label="Fragmented project information illustration">
+          <div class="fragment-label">BEFORE // SCATTERED PROJECT SIGNALS</div>
+          <span class="fragment-chip chip-a"><b>EMAIL</b>drawing revision attached</span>
+          <span class="fragment-chip chip-b"><b>PLAN R3</b>A-204 current?</span>
+          <span class="fragment-chip chip-c"><b>SITE PHOTO</b>west drainage trench</span>
+          <span class="fragment-chip chip-d"><b>PHONE CALL</b>client decision</span>
+          <span class="fragment-chip chip-e"><b>VARIATION PDF</b>cost + time impact</span>
+          <span class="fragment-chip chip-f"><b>CLIENT TEXT</b>approved — proceed</span>
+        </div>
+        <svg class="convergence-flow" viewBox="0 0 420 360" aria-hidden="true">
+          <path d="M8 44H108V180H268H412"/>
+          <path d="M8 118H148V180H268"/>
+          <path d="M8 260H148V180H268"/>
+          <path d="M8 326H108V180H268"/>
+          <path class="convergence-datum-ticks" d="M98 44H118M138 118H158M138 260H158M98 326H118M258 170V190"/>
+          <circle cx="268" cy="180" r="5"/>
+        </svg>
+        <div class="record-core">
+          <div class="record-core-head"><span>BLUEPRINT // PROJECT RECORD</span><b>LIVE + ATTRIBUTABLE</b></div>
+          <div class="record-row"><small>PLAN</small><strong>A-204 · R3</strong><em>CURRENT DRAWING</em></div>
+          <div class="record-row"><small>EVIDENCE</small><strong>18 field records</strong><em>3 CAPTURED TODAY</em></div>
+          <div class="record-row"><small>DECISION</small><strong>Drainage outlet</strong><em>AWAITING CLIENT</em></div>
+          <div class="record-row"><small>MILESTONE</small><strong>Portal frames</strong><em>NEXT GATE</em></div>
+          <div class="record-row"><small>HANDOVER</small><strong>Build Story + Evidence Bundle</strong><em>SOURCE-LINKED</em></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="product-reality" id="product-reality">
+    <div class="shell">
+      <div class="section-heading product-reality-heading reveal">
+        <div><span class="section-kicker">THE ACTUAL PRODUCT // 1.0.3</span><h2>This is Blueprint running, not a mock-up.</h2></div>
+        <p>These are current Blueprint screens from the release workspace. The data is demo data. The interface is the real product.</p>
+      </div>
+      <div class="product-reality-stage reveal">
+        <svg class="product-reality-wires" viewBox="0 0 1200 760" preserveAspectRatio="none" aria-hidden="true">
+          <path d="M105 590H290V472H455V380H600" />
+          <path d="M1095 575H914V468H748V380H600" />
+          <path d="M270 115V212H430V298H600V380" />
+          <path d="M930 120V214H770V300H600V380" />
+          <path class="product-wire-ticks" d="M280 580V600M904 565V585M260 202H280M920 204H940M590 370V390" />
+        </svg>
+        <figure class="product-shot product-shot-capture">
+          <figcaption class="product-shot-label"><span>01 // FIELD</span><b>CAPTURE</b></figcaption>
+          <div class="product-device">
+            <div class="product-viewport"><img src="/assets/product-media/capture-product.png" width="860" height="1560" loading="lazy" alt="Blueprint Builds Capture screen showing photo, voice, site diary and variation record paths" /></div>
+            <div class="product-device-footer"><span>FIELD RECORD</span><b>DEMO DATA</b></div>
+          </div>
+        </figure>
+        <figure class="product-shot product-shot-primary">
+          <figcaption class="product-shot-label"><span>02 // PROJECT</span><b>COMMAND BOARD</b></figcaption>
+          <div class="product-device">
+            <div class="product-viewport"><img src="/assets/product-media/project-command-product.png" width="860" height="1400" loading="lazy" alt="Blueprint Builds Project Command Board showing measured progress, Build Flight Tracker and a blocking decision" /></div>
+            <div class="product-device-footer"><span>MEASURED FROM THE RECORD</span><b>LIVE SURFACE</b></div>
+          </div>
+        </figure>
+        <figure class="product-shot product-shot-inbox">
+          <figcaption class="product-shot-label"><span>03 // DECISION</span><b>INBOX</b></figcaption>
+          <div class="product-device">
+            <div class="product-viewport"><img src="/assets/product-media/inbox-product.png" width="860" height="1560" loading="lazy" alt="Blueprint Builds Inbox showing blocking decisions and approvals ordered by what they hold up" /></div>
+            <div class="product-device-footer"><span>WORK WAITING</span><b>DEMO DATA</b></div>
+          </div>
+        </figure>
+        <div class="product-release-note"><strong>REAL UI</strong> // SAFE DEMO WORKSPACE // CURRENT RELEASE SURFACE</div>
+      </div>
+      <div class="product-swipe-hint" aria-hidden="true">SWIPE // PROJECT -> CAPTURE -> INBOX</div>
+      <div class="product-reality-rail" aria-label="Current product proof points">
+        <span><i></i> REAL INTERFACE</span><span><i></i> NON-PRODUCTION DATA</span><span><i></i> OFFLINE-FIRST FIELD FLOW</span><span><i></i> ROLE-SCOPED RECORD</span>
       </div>
     </div>
   </section>
@@ -251,8 +379,8 @@
   <section class="live-record" id="live-record">
     <div class="shell">
       <div class="section-heading reveal">
-        <div><span class="section-kicker">FROM TODAY TO HANDOVER</span><h2>The record tells you what matters next.</h2></div>
-        <p>Blueprint does more than store what happened. It turns the same verified records into a live cockpit, a build-flight sequence and a handover story — without asking the team to maintain three versions of the truth.</p>
+        <div><span class="section-kicker">OPEN IT. KNOW WHAT MOVED.</span><h2>See what changed, what is stuck and what happens next.</h2></div>
+        <p>The same job record drives the daily view, the build sequence and the handover story. The team does not maintain a separate update just to keep everyone informed.</p>
       </div>
       <div class="feature-grid">
         <article class="feature-card feature-wide reveal">
@@ -271,8 +399,8 @@
           <div class="flight-track" aria-label="Build Flight Tracker gate sequence">
             <span class="flight-node done">G01</span><i></i><span class="flight-node done">G02</span><i></i><span class="flight-node done">G03</span><i></i><span class="flight-node current">G06</span><i></i><span class="flight-node">G08</span>
           </div>
-          <h3>Scrub the build sequence, not a hopeful percentage.</h3>
-          <p>Completed, current, overdue and upcoming gates come from the milestone record. Clients get calmer stage language without missed targets being hidden.</p>
+          <h3>Follow the build by real gates, not guesswork.</h3>
+          <p>Completed, current, overdue and upcoming stages come from the milestone record. Clients see a simpler version without hiding a missed target.</p>
           <div class="micro-status"><span class="status status-live"></span> RECORD-DERIVED GATES</div>
         </article>
         <article class="feature-card reveal">
@@ -282,29 +410,10 @@
             <div class="story-half now"><small>NOW</small><span>LATEST VERIFIED RECORD</span></div>
             <div class="story-divider">↔</div>
           </div>
-          <h3>Handover becomes a story with receipts.</h3>
-          <p>The photo arc, Then / Now reveal, milestones and reviews trace back to source records. Stories stay private by default; a secure workspace handoff never grants access by itself.</p>
+          <h3>Handover already has a record behind it.</h3>
+          <p>Photos, milestones, decisions and reviews can become a clean Build Story without losing the source record underneath. It stays private until sharing is deliberately enabled.</p>
           <div class="site-record-stamp"><small>PROJECT RECORD</small><b>HANDED OVER</b></div>
         </article>
-      </div>
-    </div>
-  </section>
-
-  <section class="offline-demo" id="offline-demo">
-    <div class="shell offline-layout">
-      <div class="offline-copy reveal">
-        <span class="section-kicker">TRY THE PRINCIPLE</span>
-        <h2>Kill the signal.<br>The record keeps moving.</h2>
-        <p>This local demo never sends anything anywhere. Switch the simulated connection off, capture a record, and watch Blueprint preserve the timestamp and queue it instead of failing.</p>
-        <div class="network-control">
-          <div class="switch" data-testid="offline-simulator-toggle" role="switch" tabindex="0" aria-checked="false" aria-label="Toggle network connectivity"><div class="knob"></div></div>
-          <p data-testid="sim-network-label"><span class="dot sync"></span> 5G Sync — connected</p>
-        </div>
-        <button class="btn btn-primary" data-testid="sim-capture-button" type="button">Capture evidence <span>＋</span></button>
-      </div>
-      <div class="terminal reveal" data-testid="sim-capture-output">
-        <div class="terminal-top"><span></span><span></span><span></span><b>BLUEPRINT / LOCAL RECORD</b></div>
-        <div class="log-line"><span class="k">ready</span> — capture a record to generate a local audit event</div>
       </div>
     </div>
   </section>
@@ -312,8 +421,8 @@
   <section class="roles" id="roles">
     <div class="shell">
       <div class="section-heading reveal">
-        <div><span class="section-kicker">ACCESS WITHOUT THE MESS</span><h2>Same build. Different authority.</h2></div>
-        <p>Access is issued as a real server-owned role, not a decorative label. Owners, project managers, site leads and clients enter different versions of the same project truth.</p>
+        <div><span class="section-kicker">ONE JOB // RIGHT VIEW</span><h2>Everyone sees the same build. Not the same controls.</h2></div>
+        <p>The build team gets the tools to run the job. Clients get the plans, progress and decisions they need. Nobody gets controls they should not have.</p>
       </div>
       <div class="role-layout reveal">
         <div class="role-tabs" role="tablist" aria-label="Role view">
@@ -324,7 +433,7 @@
         </div>
         <div class="role-screen">
           <div class="role-screen-top"><span>BLUEPRINT ACCESS PASS</span><b>SERVER ENFORCED</b></div>
-          <div class="role-item" data-role-visible="owner super sub client"><i>✓</i><div><b>Current plans + verified progress</b><small>Shared project truth</small></div></div>
+          <div class="role-item" data-role-visible="owner super sub client"><i>✓</i><div><b>Current plans + recorded progress</b><small>Same job record</small></div></div>
           <div class="role-item" data-role-visible="owner super sub client"><i>✓</i><div><b>Decisions that require this role</b><small>Scoped to the person who should answer</small></div></div>
           <div class="role-item" data-role-visible="owner super sub"><i>✓</i><div><b>Field capture + plan markup</b><small>Build team authoring</small></div></div>
           <div class="role-item" data-role-visible="owner super"><i>✓</i><div><b>Commercial + workspace control</b><small>Never exposed to Client access</small></div></div>
@@ -334,12 +443,57 @@
     </div>
   </section>
 
+  <section class="client-clarity" id="client-clarity">
+    <div class="shell client-clarity-layout">
+      <div class="client-calm-line" aria-hidden="true"></div>
+      <div class="client-copy reveal">
+        <span class="section-kicker">BUILT FOR THE CLIENT TOO</span>
+        <h2>Your build should make sense without a site meeting.</h2>
+        <p>Clients see the current stage, the people on the job, decisions that need an answer and what comes next. Site tools and internal admin stay out of the way.</p>
+        <div class="client-signals">
+          <article class="client-signal"><span>01</span><div><h3>Where it is.</h3><p>The current stage and progress in plain language, without making the client decode site jargon.</p></div></article>
+          <article class="client-signal"><span>02</span><div><h3>What needs your answer.</h3><p>Approvals show the change, any cost or time impact and what the answer unlocks.</p></div></article>
+          <article class="client-signal"><span>03</span><div><h3>What happens next.</h3><p>The next stage stays visible without exposing the build team’s internal controls.</p></div></article>
+        </div>
+        <p class="client-invite-note">Already building? Ask your builder for an invite. <a href="/workspace/">Already invited? Open your workspace.</a></p>
+        <div class="client-boundary"><i></i> CLIENT VIEW // READ ONLY // SITE TOOLS HIDDEN</div>
+      </div>
+      <figure class="client-proof reveal">
+        <figcaption class="client-proof-label"><span>CURRENT PRODUCT // CLIENT HOME</span><b>DEMO DATA</b></figcaption>
+        <div class="client-screen"><img src="/assets/client-media/client-home-product.png" width="860" height="1560" loading="lazy" alt="Blueprint Builds client Home showing a client approval, project pulse and simplified client navigation" /></div>
+        <div class="client-proof-footer" aria-label="Client navigation"><span>HOME</span><span>PROJECT</span><span>DECISIONS</span><span>ACCOUNT</span></div>
+      </figure>
+    </div>
+  </section>
+
+  <section class="build-story-cinematic" id="build-story">
+    <div class="shell">
+      <div class="story-cinema-intro reveal">
+        <div><span class="section-kicker">FROM SITE RECORD TO HANDOVER</span><h2>The job builds its own story.</h2></div>
+        <div><p>Photos, milestones, decisions and handover moments are already being captured while the job runs. Build Story turns that record into something worth keeping without giving the builder another marketing job.</p><div class="story-contract"><span>PRIVATE BY DEFAULT</span><span>RECORD-DERIVED</span><span>SOURCE-LINKED</span><span>PUBLIC OFF UNTIL CONSENT</span></div></div>
+      </div>
+      <div class="story-film reveal">
+        <div class="story-track" aria-label="Illustrative record-derived Build Story flow">
+          <article class="story-moment"><span class="story-no">01</span><small>FIRST RECORD</small><h3>The build begins.</h3><p>The story starts when evidence starts — not when somebody sits down later to remember what happened.</p><span class="story-source">SOURCE // FIELD RECORD</span></article>
+          <article class="story-moment"><span class="story-no">02</span><small>MILESTONE</small><h3>Progress gains structure.</h3><p>Recorded gates give the story an honest sequence instead of a highlight reel with no project context.</p><span class="story-source">SOURCE // MILESTONE REGISTER</span></article>
+          <article class="story-moment"><span class="story-no">03</span><small>DECISION</small><h3>The hard moments stay visible.</h3><p>Resolved approvals and decisions remain part of the arc because trust comes from what actually happened.</p><span class="story-source">SOURCE // DECISION RECORD</span></article>
+          <article class="story-moment"><span class="story-no">04</span><small>HANDOVER</small><h3>The record becomes a story.</h3><p>At handover, the same job record can become a private Build Story with every moment still traceable to source.</p><span class="story-source">SOURCE // PROJECT RECORD</span></article>
+        </div>
+        <div class="story-finale">
+          <div><span class="story-finale-eyebrow">BUILD STORY // PRIVATE WORKSPACE</span><h3>A clean handover story, backed by the job.</h3><p>The polished story never replaces the site record underneath it. Every included moment can still lead back to the project source.</p></div>
+          <div class="story-title-block" aria-label="Build Story record contract"><div class="story-title-cell"><span>RECORD CLASS</span><b>BUILD STORY</b></div><div class="story-title-cell"><span>SOURCE</span><b>LIVE PROJECT RECORD</b></div><div class="story-title-cell"><span>VISIBILITY</span><b>PRIVATE WORKSPACE</b></div></div>
+          <div class="story-public-lock"><span>SECURE WORKSPACE LINKS DO NOT GRANT ACCESS.</span><b>PUBLIC STORY // LOCKED UNTIL CONSENT IS RECORDED</b></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <section class="security" id="security">
     <div class="shell security-grid">
       <div class="security-copy reveal">
-        <span class="section-kicker">PROOF NEEDS A STRONG SPINE</span>
-        <h2>Private by default. Traceable by design.</h2>
-        <p>Blueprint does not need ad-tech to be useful. The public site runs without third-party trackers. Project media stays private. Plan handoffs use short-lived, scoped credentials rather than putting an app session in a browser URL.</p>
+        <span class="section-kicker">PRIVATE PROJECT // CLEAR ACCESS</span>
+        <h2>The job stays private. Access stays deliberate.</h2>
+        <p>There are no advertising trackers on the public site. Project photos, voice and plans stay private, and drawing links use short-lived access instead of exposing an app session.</p>
         <div class="security-links"><a href="/privacy/">Privacy policy →</a><a href="/support/">Security & support →</a></div>
       </div>
       <div class="security-stack reveal">
@@ -355,13 +509,13 @@
     <div class="shell access-panel reveal">
       <div class="access-grid"></div>
       <div class="access-copy">
-        <span class="section-kicker">BLUEPRINT BUILDS // FOUNDER PILOT</span>
-        <h2>The build should leave proof behind.</h2>
-        <p>Blueprint Builds is being hardened through founder-led construction workflows and physical-device acceptance before wider release. The product is live in pilot; App Store release gates remain deliberate.</p>
+        <span class="section-kicker">FOR BUILDERS WHO WANT LESS CHASING</span>
+        <h2>Built with builders. Clear enough for clients.</h2>
+        <p>The Founder Pilot is for real jobs with real teams and clients. We are refining Blueprint around what saves time on site and what gives clients confidence off it.</p>
       </div>
       <div class="access-actions">
-        <a class="btn btn-primary btn-large" href="/workspace/">Open Builder Workspace →</a>
-        <a class="btn btn-quiet btn-large" href="/support/">Request access</a>
+        <a class="btn btn-primary btn-large" href="/support/">Builders: request Founder Access →</a>
+        <a class="btn btn-quiet btn-large" href="/workspace/">Already invited? Open your workspace</a>
       </div>
     </div>
   </section>
@@ -369,14 +523,18 @@
 
 <footer class="site-footer">
   <div class="shell footer-grid">
-    <div class="footer-brand"><a class="brand" href="/"><span class="brand-mark"><img src="/favicon.svg" alt="" width="28" height="28" /></span><span>Blueprint <b>Builds</b></span></a><p>Plans, field evidence and decisions connected into a verifiable construction record.</p></div>
+    <div class="footer-brand"><a class="brand" href="/"><span class="brand-mark"><img src="/assets/blueprint-fingerprint.png" alt="" width="28" height="28" /></span><span>Blueprint <b>Builds</b></span></a><p>Current drawings, site proof, client decisions and progress — kept with the job.</p></div>
     <div><h4>Product</h4><a href="#plan-desk">Plan Desk</a><a href="#live-record">Live record</a><a href="#proof-system">Proof system</a><a href="/workspace/">Builder Workspace</a><a href="/publish/">Drawing Publisher</a></div>
     <div><h4>Trust</h4><a href="/privacy/">Privacy</a><a href="/terms/">Terms</a><a href="/support/">Support</a></div>
   </div>
-  <div class="shell footer-bottom"><span>© <span data-testid="footer-year"></span> Blueprint Builds</span><span>Built for the field. Proven on the record.</span></div>
+  <div class="shell footer-bottom"><span>© <span data-testid="footer-year"></span> Blueprint Builds</span><span>Built for the job. Clear for the client.</span></div>
 </footer>
 <div class="toast" data-testid="toast" role="status" aria-live="polite"></div>
+<script src="/assets/blueprint-arrival.js"></script>
 <script src="/assets/landing.js"></script>
 <script src="/assets/home.js"></script>
+<script src="/assets/blueprint-building.js"></script>
+<script src="/assets/blueprint-pulse.js"></script>
+<script src="/assets/blueprint-motion-system.js"></script>
 </body>
 </html>

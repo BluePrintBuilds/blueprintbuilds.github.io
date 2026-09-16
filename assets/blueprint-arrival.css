@@ -1,0 +1,50 @@
+/* Approved fingerprint artwork; a quiet drawing-sheet introduction.
+ * The document loads normally. No scroll lock, focus trap or required wait. */
+.brand .brand-mark { width: 40px; height: 40px; border: 0; background: transparent; box-shadow: none; overflow: visible; flex: 0 0 40px; }
+.brand .brand-mark img { display: block; width: 56px; height: 56px; max-width: none; margin: -8px; }
+.hero-copy { position: relative; z-index: 1; }
+.hero .eyebrow .pulse, .hero-facts .status { background: #68b5ff; box-shadow: none; animation: none; }
+.hero-facts { color: #b5c5d6; }
+.hero-audiences > div { background: rgba(12, 24, 38, .64); }
+.bp-arrival { display: none; position: fixed; inset: 0; z-index: 100; pointer-events: none; background: #030c1b; color: #dce9f5; contain: layout style; }
+.bp-arrival.is-active { display: grid; place-items: center; animation: bp-arrival-safety 5200ms step-end both; }
+.bp-arrival::before { content: ""; position: absolute; inset: 0; background-image: linear-gradient(rgba(97, 160, 213, .045) 1px, transparent 1px), linear-gradient(90deg, rgba(97, 160, 213, .045) 1px, transparent 1px); background-size: 44px 44px; }
+.bp-arrival-sheet { position: relative; width: min(82vw, 880px); }
+.bp-arrival-register { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; color: #7394b2; font: 600 10px/1.5 var(--mono); letter-spacing: .13em; }
+.bp-arrival-register strong { color: #d7e7f5; font-weight: 600; }
+.bp-arrival-register span { text-align: right; }
+.bp-arrival-rule { height: 1px; margin-top: 17px; background: #31516a; transform-origin: left; }
+.bp-arrival-composition { position: relative; margin: 0 auto; padding: 14px 0 32px; text-align: center; }
+.bp-arrival-art {
+  /* 1024 source pixels / <=336 CSS pixels supports a full 3x display. */
+  width: min(60vmin, 336px); aspect-ratio: 1; margin: 0 auto 12px;
+  background: center / contain no-repeat;
+  mask-image: linear-gradient(to right, transparent, #000 12%, #000 88%, transparent), linear-gradient(to bottom, transparent, #000 10%, #000 90%, transparent);
+  mask-composite: intersect;
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 12%, #000 88%, transparent), linear-gradient(to bottom, transparent, #000 10%, #000 90%, transparent);
+  -webkit-mask-composite: source-in;
+}
+.bp-arrival-caption { margin: 0; color: #edf5fc; font: 500 clamp(20px, 3vw, 32px)/1.2 var(--sans); letter-spacing: -.025em; }
+.bp-arrival-detail { margin: 14px 0 0; color: #8aa7bf; font: 500 11px/1.6 var(--mono); letter-spacing: .07em; }
+.bp-arrival-titleblock { display: flex; justify-content: space-between; align-items: center; gap: 20px; padding-top: 14px; border-top: 1px solid #223d53; color: #7995ac; font: 500 9px/1.5 var(--mono); letter-spacing: .1em; }
+.bp-arrival-titleblock b { color: #b8d3e9; font-weight: 500; }
+.bp-arrival-skip { position: absolute; right: max(24px, env(safe-area-inset-right)); bottom: max(20px, env(safe-area-inset-bottom)); min-width: 100px; min-height: 44px; padding: 10px 14px; border: 1px solid #38536b; border-radius: 6px; color: #c7d9e9; background: #0b1928; font: 500 12px/1.4 var(--sans); pointer-events: auto; cursor: pointer; }
+.bp-arrival-skip:hover { background: #132a3e; border-color: #81b8df; }
+.bp-arrival-skip:focus-visible { outline: 2px solid #8dcfff; outline-offset: 4px; }
+@keyframes bp-arrival-safety { 0% { visibility: visible; } 100% { visibility: hidden; } }
+@media (max-width: 600px) {
+  .bp-arrival-sheet { width: calc(100% - 48px); }
+  .bp-arrival-register { font-size: 8px; gap: 12px; letter-spacing: .08em; }
+  .bp-arrival-register span { max-width: 110px; }
+  .bp-arrival-composition { padding: 24px 0 28px; }
+  .bp-arrival-titleblock { font-size: 8px; }
+  .bp-arrival-detail { font-size: 9px; letter-spacing: .02em; }
+}
+@media (max-height: 520px) {
+  .bp-arrival-sheet { width: min(76vw, 880px); }
+  .bp-arrival-composition { display: grid; grid-template-columns: min(42vmin, 180px) 1fr; align-items: center; gap: 28px; padding: 8px 0; text-align: left; }
+  .bp-arrival-art { width: 100%; margin: 0; }
+  .bp-arrival-caption { font-size: 22px; }
+  .bp-arrival-skip { bottom: 8px; right: 12px; }
+}
+@media (prefers-reduced-motion: reduce) { .bp-arrival, .bp-arrival.is-active { display: none !important; } }

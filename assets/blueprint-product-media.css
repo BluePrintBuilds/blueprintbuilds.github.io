@@ -1,0 +1,170 @@
+/* Blueprint Pulse — truthful current-product media layer. */
+.product-reality {
+  overflow: hidden;
+  border-block: 1px solid rgba(31, 66, 90, .62);
+  background:
+    radial-gradient(circle at 50% 28%, rgba(37, 142, 255, .10), transparent 35%),
+    linear-gradient(180deg, rgba(4, 14, 25, .98), rgba(5, 10, 16, .96));
+}
+.product-reality::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(55, 112, 151, .05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(55, 112, 151, .05) 1px, transparent 1px);
+  background-size: 64px 64px;
+  mask-image: linear-gradient(90deg, transparent, #000 18%, #000 82%, transparent);
+}
+.product-reality-heading { position: relative; z-index: 2; }
+.product-reality-heading h2 { max-width: 830px; }
+.product-reality-heading > p { max-width: 570px; }
+
+.product-reality-stage {
+  position: relative;
+  z-index: 1;
+  min-height: 760px;
+  display: grid;
+  grid-template-columns: .82fr 1.16fr .82fr;
+  gap: clamp(16px, 2.2vw, 34px);
+  align-items: center;
+  padding: 54px clamp(18px, 3.4vw, 52px);
+  border: 1px solid rgba(39, 87, 131, .78);
+  border-radius: 26px;
+  background: rgba(3, 17, 35, .72);
+  box-shadow: inset 0 1px rgba(255, 255, 255, .025), 0 48px 110px -70px #000;
+}
+.product-reality-stage::after {
+  content: "CURRENT RELEASE SURFACE";
+  position: absolute;
+  right: 20px;
+  top: 16px;
+  color: #4e7593;
+  font: 700 7px/1 var(--mono);
+  letter-spacing: .16em;
+}
+.product-reality-wires { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; opacity: .56; }
+.product-reality-wires path { fill: none; stroke: #258EFF; stroke-width: 1; stroke-dasharray: 5 13; animation: productSignal 10s linear infinite; }
+@keyframes productSignal { to { stroke-dashoffset: -144; } }
+
+.product-shot { position: relative; z-index: 2; min-width: 0; }
+.product-shot-primary { transform: translateY(-16px); }
+.product-shot-capture { transform: translateY(42px) rotate(-1.35deg); }
+.product-shot-inbox { transform: translateY(20px) rotate(1.35deg); }
+.product-shot-label {
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  gap: 12px;
+  margin: 0 5px 10px;
+}
+.product-shot-label span { color: #5f8198; font: 700 7px/1 var(--mono); letter-spacing: .14em; }
+.product-shot-label b { color: #a8d9f7; font: 760 9px/1 var(--mono); letter-spacing: .08em; }
+.product-device {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid #275783;
+  border-radius: 26px;
+  background: #03152F;
+  box-shadow: 0 34px 65px -38px #000, inset 0 1px rgba(255,255,255,.045);
+}
+.product-shot-primary .product-device { border-color: rgba(53, 167, 255, .64); box-shadow: 0 48px 90px -40px #000, 0 0 60px -38px rgba(37,142,255,.72); }
+.product-viewport { overflow: hidden; background: #03152F; }
+.product-shot-primary .product-viewport { height: 660px; }
+.product-shot:not(.product-shot-primary) .product-viewport { height: 520px; }
+.product-device img { display: block; width: 100%; height: auto; }
+
+.product-device-footer {
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 13px;
+  border-top: 1px solid #1c426c;
+  background: #061f46;
+}
+.product-device-footer span { color: #6f89a5; font: 700 7px/1 var(--mono); letter-spacing: .09em; }
+.product-device-footer b { color: #40c799; font: 760 7px/1 var(--mono); letter-spacing: .08em; }
+.product-release-note {
+  position: absolute;
+  left: 50%;
+  bottom: 22px;
+  z-index: 3;
+  transform: translateX(-50%);
+  min-width: 250px;
+  padding: 10px 14px;
+  border: 1px solid rgba(64, 199, 153, .34);
+  border-radius: 999px;
+  background: rgba(3, 21, 47, .90);
+  color: #9bb1c9;
+  text-align: center;
+  font: 700 7px/1 var(--mono);
+  letter-spacing: .09em;
+  backdrop-filter: blur(14px);
+}
+.product-release-note strong { color: #40c799; }
+
+.product-swipe-hint { display: none; }
+
+.product-reality-rail {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 13px 24px;
+  flex-wrap: wrap;
+  margin-top: 24px;
+  color: #6f89a5;
+  font: 700 8px/1 var(--mono);
+  letter-spacing: .1em;
+}
+.product-reality-rail span { display: inline-flex; align-items: center; gap: 8px; }
+.product-reality-rail i { width: 6px; height: 6px; border-radius: 50%; background: #258eff; box-shadow: 0 0 15px rgba(37,142,255,.5); }
+.product-reality-rail span:nth-child(2) i { background: #40c799; box-shadow: 0 0 15px rgba(64,199,153,.45); }
+.product-reality-rail span:nth-child(3) i { background: #f4b860; box-shadow: 0 0 15px rgba(244,184,96,.4); }
+.product-reality-rail span:nth-child(4) i { background: #8f9cff; box-shadow: 0 0 15px rgba(143,156,255,.42); }
+
+@media (max-width: 1050px) {
+  .product-reality-stage { grid-template-columns: 1fr 1fr; min-height: 0; }
+  .product-shot-primary { grid-column: 1 / -1; width: min(460px, 60vw); margin-inline: auto; }
+  .product-shot-capture, .product-shot-inbox { transform: none; }
+  .product-shot-primary .product-viewport { height: 610px; }
+  .product-shot:not(.product-shot-primary) .product-viewport { height: 470px; }
+  .product-reality-wires { opacity: .25; }
+}
+
+@media (max-width: 700px) {
+  .product-reality-stage {
+    display: flex;
+    min-height: 0;
+    overflow-x: auto;
+    gap: 14px;
+    padding: 42px 17px 26px;
+    border-radius: 18px;
+    scroll-snap-type: x mandatory;
+    overscroll-behavior-x: contain;
+    scrollbar-width: none;
+  }
+  .product-reality-stage::-webkit-scrollbar { display: none; }
+  .product-reality-stage::after { right: 14px; top: 13px; font-size: 6px; }
+  .product-reality-wires { display: none; }
+  .product-shot { flex: 0 0 min(82vw, 330px); width: min(82vw, 330px); margin: 0; transform: none; scroll-snap-align: center; }
+  .product-shot-primary { order: 1; }
+  .product-shot-capture { order: 2; }
+  .product-shot-inbox { order: 3; }
+  .product-shot-primary .product-viewport { height: 520px; }
+  .product-shot:not(.product-shot-primary) .product-viewport { height: 520px; }
+  .product-shot-label { margin-inline: 3px; }
+  .product-device { border-radius: 20px; }
+  .product-release-note { display: none; }
+  .product-swipe-hint { display: block; margin: 12px 2px 0; color: #6f89a5; font: 700 7px/1 var(--mono); letter-spacing: .1em; }
+  .product-reality-rail { justify-content: flex-start; gap: 12px 18px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .product-reality-wires path { animation: none; }
+  .product-shot { transform: none; }
+}

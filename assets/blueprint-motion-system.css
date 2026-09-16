@@ -1,0 +1,116 @@
+/* Blueprint Pulse reusable motion primitives. Progressive enhancement only. */
+.bp-trace-card { position: relative; }
+.bp-trace-frame {
+  position: absolute;
+  inset: -1px;
+  z-index: 20;
+  pointer-events: none;
+  border-radius: inherit;
+  opacity: 0;
+  background:
+    linear-gradient(90deg, rgba(53,167,255,.05), rgba(53,167,255,.82), rgba(53,167,255,.05)) top left / 0 1px no-repeat,
+    linear-gradient(180deg, rgba(53,167,255,.04), rgba(53,167,255,.56), rgba(53,167,255,.04)) top right / 1px 0 no-repeat,
+    linear-gradient(270deg, rgba(53,167,255,.04), rgba(53,167,255,.48), rgba(53,167,255,.04)) bottom right / 0 1px no-repeat,
+    linear-gradient(0deg, rgba(53,167,255,.04), rgba(53,167,255,.42), rgba(53,167,255,.04)) bottom left / 1px 0 no-repeat;
+  transition: opacity .28s ease, background-size .78s cubic-bezier(.2,.75,.25,1);
+}
+.bp-motion-in > .bp-trace-frame,
+.bp-trace-card:hover > .bp-trace-frame,
+.bp-trace-card:focus-within > .bp-trace-frame {
+  opacity: .78;
+  background-size: 100% 1px, 1px 100%, 100% 1px, 1px 100%;
+}
+
+.bp-section-measure {
+  position: relative;
+  z-index: 4;
+  display: grid;
+  grid-template-columns: auto minmax(48px, 1fr) auto;
+  align-items: center;
+  gap: 14px;
+  margin: -24px 0 34px;
+  color: #58758b;
+  font: 700 7px/1 var(--mono);
+  letter-spacing: .14em;
+  text-transform: uppercase;
+}
+.bp-section-measure > span { color: #71c8fb; }
+.bp-section-measure > b { color: #49677d; font: inherit; white-space: nowrap; }
+.bp-section-measure > i {
+  position: relative;
+  height: 1px;
+  overflow: hidden;
+  background: linear-gradient(90deg, rgba(39,87,131,.78), rgba(39,87,131,.18));
+}
+.bp-section-measure > i::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 14%;
+  background: linear-gradient(90deg, transparent, #35a7ff, transparent);
+  transform: translateX(-120%);
+}
+
+.bp-section-measure.bp-motion-visible > i::before { animation: bpMeasureScan 7s linear infinite; }
+@keyframes bpMeasureScan { to { transform: translateX(830%); } }
+
+.bp-signal-chain { position: relative; }
+.bp-signal-runner {
+  position: absolute;
+  z-index: 8;
+  left: 2.5%;
+  right: 2.5%;
+  top: 76px;
+  height: 1px;
+  pointer-events: none;
+  overflow: hidden;
+  background: rgba(37,142,255,.12);
+}
+.bp-signal-runner::after {
+  content: "";
+  position: absolute;
+  top: -2px;
+  left: 0;
+  width: 56px;
+  height: 5px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, transparent, rgba(53,167,255,.88), transparent);
+  box-shadow: 0 0 18px rgba(37,142,255,.38);
+  transform: translateX(-70px);
+}
+.bp-signal-chain.bp-motion-visible .bp-signal-runner::after { animation: bpSignalRunner 8.5s linear infinite; }
+@keyframes bpSignalRunner { to { transform: translateX(calc(95vw + 70px)); } }
+
+.bp-live-state { transform-origin: center; animation: bpLiveBreath 3.8s ease-in-out infinite; }
+@keyframes bpLiveBreath {
+  0%, 100% { transform: scale(1); filter: brightness(1); }
+  50% { transform: scale(1.12); filter: brightness(1.18); }
+}
+
+.bp-section-active .section-kicker { text-shadow: 0 0 18px rgba(53,167,255,.12); }
+.bp-section-active .section-kicker::after {
+  content: "";
+  display: inline-block;
+  width: 20px;
+  height: 1px;
+  margin-left: 9px;
+  vertical-align: middle;
+  background: linear-gradient(90deg, #35a7ff, transparent);
+}
+.bp-page-hidden .bp-live-state,
+.bp-page-hidden .bp-section-measure > i::before,
+.bp-page-hidden .bp-signal-runner::after { animation-play-state: paused !important; }
+
+@media (max-width: 720px) {
+  .bp-section-measure { grid-template-columns: auto 1fr; margin: -18px 0 28px; gap: 10px; }
+  .bp-section-measure > b { display: none; }
+  .bp-signal-runner { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bp-trace-frame { opacity: .45; background-size: 100% 1px, 1px 100%, 100% 1px, 1px 100%; transition: none; }
+  .bp-section-measure > i::before,
+  .bp-signal-runner::after,
+  .bp-live-state { animation: none !important; }
+  .bp-live-state { transform: none; filter: none; }
+}
