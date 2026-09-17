@@ -7,7 +7,6 @@
 
   var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   var traceSelectors = [
-    '.ppp-card',
     '.feature-card',
     '.system-card',
     '.product-device',
@@ -36,14 +35,13 @@
   });
 
   var sectionDefs = [
-    ['.pulse-principles', '01 // PEOPLE / PROOF / PROGRESS'],
-    ['.plan-desk', '02 // PLAN DESK'],
-    ['.record-convergence', '03 // ONE TRUSTED RECORD'],
-    ['.product-reality', '04 // CURRENT PRODUCT'],
-    ['.live-record', '05 // LIVE BUILD RECORD'],
-    ['.roles', '06 // ROLE-SCOPED ACCESS'],
-    ['.client-clarity', '07 // CLIENT CLARITY'],
-    ['.build-story-cinematic', '08 // BUILD STORY']
+    ['.plan-desk', '01 // PLAN DESK'],
+    ['.record-convergence', '02 // ONE TRUSTED RECORD'],
+    ['.product-reality', '03 // CURRENT PRODUCT'],
+    ['.live-record', '04 // LIVE BUILD RECORD'],
+    ['.roles', '05 // ROLE-SCOPED ACCESS'],
+    ['.client-clarity', '06 // CLIENT CLARITY'],
+    ['.build-story-cinematic', '07 // BUILD STORY']
   ];
   var measures = [];
   var sections = [];
@@ -77,7 +75,7 @@
     chain.appendChild(runner);
   }
 
-  document.querySelectorAll('.status-live, .live-dot, .ppp-index i, .product-reality-rail i').forEach(function (element) {
+  document.querySelectorAll('.status-live, .live-dot, .product-reality-rail i').forEach(function (element) {
     element.classList.add('bp-live-state');
   });
 

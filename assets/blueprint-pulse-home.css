@@ -1,72 +1,4 @@
 /* Blueprint Pulse — homepage system expansion. */
-.pulse-principles {
-  border-top: 1px solid rgba(31,63,84,.52);
-  border-bottom: 1px solid rgba(31,63,84,.52);
-  background:
-    radial-gradient(circle at 50% 0%, rgba(37,142,255,.07), transparent 38%),
-    linear-gradient(180deg, rgba(6,18,29,.76), rgba(5,10,16,.42));
-  overflow: hidden;
-}
-.pulse-principles-heading {
-  display: grid;
-  grid-template-columns: minmax(0,.9fr) minmax(320px,.58fr);
-  gap: 70px;
-  align-items: end;
-  margin-bottom: 54px;
-}
-.pulse-principles-heading h2 {
-  margin-top: 12px;
-  max-width: 900px;
-  font-size: clamp(2.35rem, 4.6vw, 4.9rem);
-  line-height: .96;
-  letter-spacing: -.055em;
-  font-weight: 840;
-}
-.pulse-principles-heading p { color: var(--dim); font-size: 1rem; line-height: 1.7; }
-.ppp-system { position: relative; display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; }
-.ppp-connectors { position: absolute; inset: 12% 8% auto; width: 84%; height: 76%; pointer-events: none; }
-
-.ppp-connectors path {
-  fill: none;
-  stroke: rgba(53,167,255,.28);
-  stroke-width: 1;
-  vector-effect: non-scaling-stroke;
-  stroke-dasharray: 5 10;
-  animation: blueprint-signal-flow 9s linear infinite;
-}
-.ppp-connectors circle { fill: #258EFF; opacity: .62; }
-.ppp-card {
-  position: relative;
-  z-index: 2;
-  min-height: 270px;
-  padding: 27px 26px 25px;
-  border: 1px solid #1C426C;
-  border-radius: 18px;
-  background: linear-gradient(145deg, rgba(10,41,79,.72), rgba(6,31,70,.52) 34%, rgba(3,21,47,.9));
-  box-shadow: inset 0 1px rgba(255,255,255,.025), 0 28px 65px -52px #000;
-  transition: transform .2s ease, border-color .2s ease, background .2s ease;
-  overflow: hidden;
-}
-.ppp-card:hover { transform: translateY(-3px); border-color: #275783; background: linear-gradient(145deg, rgba(16,47,86,.78), rgba(6,31,70,.64), rgba(3,21,47,.94)); }
-.ppp-card::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  opacity: .36;
-  background-image: linear-gradient(rgba(39,87,131,.12) 1px,transparent 1px),linear-gradient(90deg,rgba(39,87,131,.12) 1px,transparent 1px);
-  background-size: 24px 24px;
-  mask-image: linear-gradient(145deg,#000,transparent 72%);
-}
-
-.ppp-card > * { position: relative; z-index: 1; }
-.ppp-index { display: flex; align-items: center; justify-content: space-between; gap: 12px; color: #5D7A91; font: 750 8px var(--mono); letter-spacing: .12em; }
-.ppp-index i { width: 8px; height: 8px; border-radius: 50%; background: var(--blue); box-shadow: 0 0 0 6px rgba(37,142,255,.07), 0 0 20px rgba(37,142,255,.34); }
-.ppp-card h3 { margin: 58px 0 12px; font-size: clamp(1.5rem, 2.35vw, 2.25rem); letter-spacing: -.04em; }
-.ppp-card p { max-width: 360px; color: #9BB1C9; line-height: 1.65; font-size: .94rem; }
-.ppp-card small { display: block; margin-top: 34px; color: #4E718C; font: 700 8px var(--mono); letter-spacing: .11em; }
-.ppp-proof .ppp-index i { background: var(--green); box-shadow: 0 0 0 6px rgba(64,199,153,.07), 0 0 20px rgba(64,199,153,.3); }
-.ppp-progress .ppp-index i { background: var(--violet); box-shadow: 0 0 0 6px rgba(143,156,255,.07), 0 0 20px rgba(143,156,255,.3); }
-
 .connected-system { overflow: hidden; }
 .connected-system::before {
   content: "";
@@ -138,19 +70,13 @@
 }
 
 @media (max-width: 980px) {
-  .pulse-principles-heading { grid-template-columns: 1fr; gap: 22px; }
-  .ppp-system { grid-template-columns: 1fr; }
-  .ppp-connectors { display: none; }
-  .ppp-card { min-height: 220px; }
-  .ppp-card h3 { margin-top: 38px; }
   .convergence-stage { grid-template-columns: 1fr; gap: 18px; }
   .convergence-flow { display: none; }
   .fragment-cloud { min-height: 330px; }
 }
 
 @media (max-width: 640px) {
-  .pulse-principles-heading h2, .convergence-heading h2 { font-size: clamp(2.15rem,11vw,3.25rem); }
-  .ppp-card { padding: 22px 20px; }
+  .convergence-heading h2 { font-size: clamp(2.15rem,11vw,3.25rem); }
   .fragment-cloud { min-height: 300px; }
   .fragment-chip { min-width: 96px; padding: 8px 9px; font-size: 7px; }
   .record-core { padding: 16px; }
@@ -159,10 +85,9 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .ppp-connectors path, .convergence-flow path, .fragment-chip { animation: none !important; }
+  .convergence-flow path, .fragment-chip { animation: none !important; }
 }
 
-.ppp-connectors .ppp-datum-ticks,
 .convergence-flow .convergence-datum-ticks,
 .product-reality-wires .product-wire-ticks {
   stroke: rgba(124,200,255,.34);
