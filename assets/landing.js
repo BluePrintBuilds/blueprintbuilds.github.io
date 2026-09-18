@@ -63,6 +63,12 @@
         ? "<span class='dot on'></span> Zero Signal — offline capture active"
         : "<span class='dot sync'></span> 5G Sync — connected";
     }
+    if (!offline && capOut) {
+      capOut.querySelectorAll("[data-sim-record] .v-wait").forEach(function (state) {
+        state.className = "v-ok";
+        state.textContent = "synced — audit event recorded";
+      });
+    }
   }
   if (sw) {
     sw.addEventListener("click", function () { offline = !offline; renderNetState(); });
@@ -82,6 +88,7 @@
       var short = hash.slice(0, 40);
       var line = document.createElement("div");
       line.className = "log-line reveal in";
+      line.setAttribute("data-sim-record", id);
       line.innerHTML =
         "<div><span class='k'>id</span> " + id +
         " &nbsp; <span class='k'>ts</span> " + ts + "</div>" +
@@ -89,8 +96,13 @@
         "<div><span class='k'>state</span> " + (offline
           ? "<span class='v-wait'>queued offline — will sync when online</span>"
           : "<span class='v-ok'>synced — audit event recorded</span>") + "</div>";
-      capOut.prepend(line);
-      while (capOut.children.length > 4) { capOut.removeChild(capOut.lastChild); }
+      var empty = capOut.querySelector(".log-line:not([data-sim-record])");
+      if (empty) empty.remove();
+      var firstRecord = capOut.querySelector("[data-sim-record]");
+      if (firstRecord) capOut.insertBefore(line, firstRecord);
+      else capOut.appendChild(line);
+      var records = capOut.querySelectorAll("[data-sim-record]");
+      if (records.length > 3) records[records.length - 1].remove();
       toast(offline ? "Evidence " + id + " captured offline & queued." : "Evidence " + id + " captured & recorded.");
     });
   }
