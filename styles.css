@@ -410,6 +410,7 @@ body.landing .card .glyph {
 /* Explicit keyboard focus for public/legal/workspace utility surfaces. */
 a:focus-visible,
 button:focus-visible,
+summary:focus-visible,
 input:focus-visible,
 select:focus-visible,
 textarea:focus-visible,

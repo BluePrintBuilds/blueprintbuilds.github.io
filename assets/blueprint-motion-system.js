@@ -35,13 +35,11 @@
   });
 
   var sectionDefs = [
-    ['.plan-desk', '01 // PLAN DESK'],
-    ['.record-convergence', '02 // ONE TRUSTED RECORD'],
-    ['.product-reality', '03 // CURRENT PRODUCT'],
-    ['.live-record', '04 // LIVE BUILD RECORD'],
-    ['.roles', '05 // ROLE-SCOPED ACCESS'],
-    ['.client-clarity', '06 // CLIENT CLARITY'],
-    ['.build-story-cinematic', '07 // BUILD STORY']
+    ['.product-reality', '01 // CURRENT PRODUCT'],
+    ['.plan-desk', '02 // PLAN DESK'],
+    ['.live-record', '03 // LIVE BUILD RECORD'],
+    ['.client-clarity', '04 // CLIENT CLARITY'],
+    ['.security', '05 // PRIVATE BY DESIGN']
   ];
   var measures = [];
   var sections = [];

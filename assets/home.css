@@ -434,6 +434,7 @@ section:not(.hero) { position: relative; padding: 94px 0; }
 /* Explicit keyboard focus: keep Blueprint's technical accent visible across browsers. */
 a:focus-visible,
 button:focus-visible,
+summary:focus-visible,
 [role="button"]:focus-visible,
 [role="switch"]:focus-visible,
 [tabindex]:not([tabindex="-1"]):focus-visible {
@@ -623,3 +624,20 @@ button:focus-visible,
   .building-controls { padding: 10px 14px; }
   .building-controls > span { flex-basis: 100%; }
 }
+
+/* Focused homepage: concise source-linked record summary and optional role detail. */
+.record-summary { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:24px; }
+.record-summary article { border-top:1px solid rgba(107,184,255,.3); padding-top:22px; }
+.record-summary h3 { margin:12px 0; font-size:21px; line-height:1.3; }
+.record-summary p { color:var(--dim); line-height:1.65; }
+.record-help { display:inline-block; margin-top:24px; padding:10px 0; }
+.role-details { margin:24px 0; border-top:1px solid rgba(107,184,255,.3); border-bottom:1px solid rgba(107,184,255,.3); }
+.role-details summary { cursor:pointer; padding:18px 0; font-weight:700; }
+.role-details .role-layout { grid-template-columns:1fr; margin-bottom:18px; }
+.role-details .role-tabs { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); }
+@media(max-width:760px) {
+  .record-summary { grid-template-columns:1fr; gap:20px; }
+  .record-summary article { padding-top:18px; }
+}
+
+.security-grid > .bp-section-measure { grid-column:1 / -1; margin-bottom:0; }
