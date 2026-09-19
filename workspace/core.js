@@ -1,5 +1,5 @@
 const SUPABASE_URL = 'https://mxjuknqwzbvvmmdrvkql.supabase.co';
-const ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJteGp1a253d3pidnZtbWRydmtxbCIsInJlZiI6Im14anVrbnF3emJ2dm1tZHJ2a3FsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU5ODU4MjcsImV4cCI6MjEwMTU2MTgyN30.RNrDixA6B1TgVHqoswkMDSYlwywGYfcC0P7SYY8A_lY';
+const ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im14anVrbnF3emJ2dm1tZHJ2a3FsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU5ODU4MjcsImV4cCI6MjEwMTU2MTgyN30.RNrDixA6B1TgVHqoswkMDSYlwywGYfcC0P7SYY8A_lY';
 const PLAN_DESK_EDGE = `${SUPABASE_URL}/functions/v1/blueprint-plan-desk-v1`;
 const TOKEN_KEY = 'blueprint.workspace.token';
 const PLAN_SESSION_KEY = 'blueprint.plan.desk.session';
@@ -49,6 +49,9 @@ function planSessionHeaders(token, json = true) {
 
 async function responseError(response, fallback) {
   const body = await response.json().catch(() => ({}));
+  const configurationError = [body?.message, body?.msg, body?.error_description]
+    .some(value => typeof value === 'string' && /invalid api key/i.test(value));
+  if (configurationError) return 'Blueprint sign-in configuration needs attention. Your password has not been checked.';
   const edgeMessage = body?.error?.message;
   if (typeof edgeMessage === 'string' && edgeMessage) return edgeMessage;
   if (response.status === 401) return 'Your Blueprint Builds session expired. Sign in again.';
