@@ -1,0 +1,185 @@
+/* Blueprint readability contract: real copy is not miniature interface decoration.
+   Relative units preserve browser text enlargement; no zoom restrictions. */
+:root {
+  --bp-copy: 1.0625rem;
+  --bp-control: 1rem;
+  --bp-meta: .9375rem;
+  --bp-caption: .9375rem;
+  --bp-readable-muted: #b3c5d7;
+  --bp-readable-secondary: #a8bed2;
+}
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+body.bp-readable { font-size: var(--bp-copy); line-height: 1.65; }
+.bp-readable :where(p, li, label, figcaption, button, summary) { overflow-wrap: anywhere; }
+.bp-readable :where(a, button, input, textarea, select, summary):focus-visible { outline: 3px solid #72c9ff; outline-offset: 4px; }
+.bp-readable .brand { display: inline-flex; align-items: center; gap: .65rem; min-height: 44px; max-width: 100%; }
+.bp-readable .bp-brand-symbol { display: inline-flex; flex: 0 0 2.5rem; width: 2.5rem; height: 2.5rem; align-items: center; justify-content: center; }
+.bp-readable .bp-brand-symbol img { display: block; width: 100%; height: 100%; object-fit: contain; }
+.bp-readable .bp-screen-link { display: block; color: #d9edff; font-size: var(--bp-control); line-height: 1.5; min-height: 44px; padding: .65rem 0; text-decoration: underline; text-underline-offset: .2em; }
+.bp-readable .bp-screen-link:hover { color: #fff; }
+
+/* Public homepage: retain the architectural composition, not its microprint. */
+.bp-home { --faint: #a8bed2; }
+.bp-home .eyebrow, .bp-home .section-kicker, .bp-home .feature-number,
+.bp-home .building-heading > span, .bp-home .micro-status,
+.bp-home .client-boundary, .bp-home .role-screen-top,
+.bp-home .terminal-top b, .bp-home .footer-grid h4, .bp-home .footer-bottom,
+.bp-home .product-shot-label, .bp-home .product-device-footer,
+.bp-home .product-release-note, .bp-home .product-reality-rail,
+.bp-home .client-proof-label, .bp-home .client-proof-footer,
+.bp-home .hero-audiences > div > span, .bp-home .brand-version {
+  font-size: var(--bp-caption); line-height: 1.5; letter-spacing: .045em;
+}
+.bp-home .eyebrow { flex-wrap: wrap; }
+.bp-home .hero-lead, .bp-home .feature-card p, .bp-home .record-summary p,
+.bp-home .client-copy > p, .bp-home .section-heading p,
+.bp-home .offline-copy p, .bp-home .security-copy p, .bp-home .access-copy p {
+  font-size: var(--bp-copy); line-height: 1.65;
+}
+.bp-home .btn, .bp-home .btn-large, .bp-home .nav-links a,
+.bp-home .mobile-menu a, .bp-home .hero-audiences a,
+.bp-home .security-links a, .bp-home .record-help,
+.bp-home .role-tab, .bp-home .building-controls button {
+  font-size: var(--bp-control); line-height: 1.5; min-height: 44px;
+  white-space: normal; letter-spacing: 0;
+}
+.bp-home .btn { text-align: center; }
+.bp-home .hero-audiences p, .bp-home .footer-brand p,
+.bp-home .footer-grid > div:not(.footer-brand) a,
+.bp-home .client-invite-note, .bp-home .role-item b,
+.bp-home .network-control p, .bp-home .log-line, .bp-home .toast {
+  font-size: var(--bp-control); line-height: 1.6;
+}
+.bp-home .hero-facts span, .bp-home .building-controls > span,
+.bp-home .role-tab small, .bp-home .role-item small, .bp-home .security-stack small {
+  font-size: var(--bp-meta); line-height: 1.55; color: var(--bp-readable-muted);
+}
+.bp-home .hero-facts { flex-wrap: wrap; }
+.bp-home .hero-audiences span[aria-hidden] { font-size: 1em; }
+.bp-home .building-sequence-steps > span { font-size: var(--bp-caption); line-height: 1.5; }
+.bp-home .building-sequence-steps b { font-size: var(--bp-control); line-height: 1.4; }
+.bp-home .building-controls { flex-wrap: wrap; }
+.bp-home .building-controls button { padding: .5rem .7rem; }
+.bp-home .product-shot-label, .bp-home .product-device-footer,
+.bp-home .client-proof-label, .bp-home .client-proof-footer,
+.bp-home .role-screen-top, .bp-home .footer-bottom { flex-wrap: wrap; gap: .5rem; }
+.bp-home .product-shot-label b, .bp-home .client-proof-label b { font-size: var(--bp-caption); }
+.bp-home .log-line { white-space: normal; overflow-wrap: anywhere; }
+.bp-home .terminal { min-height: 0; }
+.bp-home .role-item { align-items: start; }
+.bp-home .role-item i { font-size: var(--bp-control); }
+.bp-home .role-item b, .bp-home .role-item small { overflow-wrap: anywhere; }
+.bp-home .role-details summary { font-size: var(--bp-control); line-height: 1.5; min-height: 44px; }
+.bp-home .security-stack b { font-size: var(--bp-control); line-height: 1.5; }
+.bp-home .security-stack span { font-size: var(--bp-caption); }
+.bp-home .footer-grid > div:not(.footer-brand) a { padding-block: .6rem; min-height: 44px; }
+.bp-home .bp-section-measure { font-size: var(--bp-caption); }
+
+/* Shared legal, support, sign-in, publisher, private workspace and Plan Desk. */
+.bp-functional { --ink-faint: #a8bed2; }
+.bp-functional h1 { font-size: clamp(2rem, 5vw, 2.625rem); overflow-wrap: anywhere; }
+.bp-functional h2, .bp-functional .panel h2 { font-size: 1.375rem; }
+.bp-functional h3 { font-size: 1.125rem; }
+.bp-functional .brand { font-size: 1.1875rem; }
+.bp-functional nav.site { display: flex; flex-wrap: wrap; gap: .35rem 1rem; }
+.bp-functional nav.site a { margin-left: 0; display: inline-flex; align-items: center; min-height: 44px; font-size: var(--bp-control); }
+.bp-functional .kicker, .bp-functional .updated, .bp-functional footer.site,
+.bp-functional .security-strip, .bp-functional .markup-meta { font-size: var(--bp-meta); line-height: 1.6; letter-spacing: .025em; }
+.bp-functional .field span, .bp-functional .field input,
+.bp-functional .field select, .bp-functional .field textarea,
+.bp-functional .field input[type=file], .bp-functional .panel .hint,
+.bp-functional .card p, .bp-functional .notice p,
+.bp-functional .btn, .bp-functional .btn.quiet,
+.bp-functional .status, .bp-functional .file-list li,
+.bp-functional .file-list .state, .bp-functional .session-bar,
+.bp-functional .workspace-user, .bp-functional .project-button,
+.bp-functional .plan-meta, .bp-functional .plan-open,
+.bp-functional .sheet-tab, .bp-functional .zoom-level,
+.bp-functional .gesture-hint, .bp-functional .tool,
+.bp-functional .markup-note, .bp-functional .markup-withdraw,
+.bp-functional .offline-state, .bp-functional .preview-selected {
+  font-size: var(--bp-control); line-height: 1.55; letter-spacing: 0;
+}
+.bp-functional .field span { font-family: inherit; font-weight: 600; text-transform: none; }
+.bp-functional .project-button small { font-size: var(--bp-meta); }
+.bp-functional .btn, .bp-functional .plan-open, .bp-functional .tool,
+.bp-functional .view-tool, .bp-functional .markup-withdraw { min-height: 44px; white-space: normal; }
+.bp-functional .btn:not(.quiet), .bp-functional .plan-open { background: #075bb7; }
+.bp-functional .btn:not(.quiet):hover, .bp-functional .plan-open:hover { background: #064d9c; }
+.bp-functional .view-tool:not(.icon) { font-size: var(--bp-control); }
+.bp-functional .view-tools { flex-wrap: wrap; flex: 0 1 auto; }
+.bp-functional .view-tool.icon { font-size: 1.25rem; }
+.bp-functional .sheet-tab { max-width: 18rem; white-space: normal; }
+.bp-functional .navigator-label { font-size: var(--bp-caption); letter-spacing: 0; }
+.bp-functional .markup-pin { font-size: var(--bp-caption); }
+.bp-functional .markup-card.voided { opacity: 1; border-style: dashed; }
+.bp-functional .file-list li { flex-wrap: wrap; }
+.bp-functional .file-list .state { white-space: normal; }
+.bp-functional .workspace-panel, .bp-functional .panel, .bp-functional .desk-sidebar { min-width: 0; }
+
+/* Activation/recovery: access status and security advice must be easy to read. */
+.bp-invitation { --faint: #a8bed2; }
+.bp-invitation .eyebrow, .bp-invitation .secure, .bp-invitation .pass-head,
+.bp-invitation .pass-label, .bp-invitation .unlock-label,
+.bp-invitation .state-tag, .bp-invitation .footer {
+  font-size: var(--bp-caption); line-height: 1.6; letter-spacing: .04em;
+}
+.bp-invitation .pass-value, .bp-invitation .unlock-item,
+.bp-invitation .hint, .bp-invitation .field, .bp-invitation .field input,
+.bp-invitation .btn, .bp-invitation .status,
+.bp-invitation .security strong, .bp-invitation .security p, .bp-invitation .footer a {
+  font-size: var(--bp-control); line-height: 1.6; letter-spacing: 0;
+}
+.bp-invitation .field { text-transform: none; }
+.bp-invitation .btn { min-height: 48px; white-space: normal; text-align: center; }
+.bp-invitation .pass-head, .bp-invitation .topbar, .bp-invitation .footer { flex-wrap: wrap; }
+.bp-invitation .pass-head { gap: .5rem; }
+.bp-invitation .pass-value { overflow-wrap: anywhere; }
+.bp-invitation .footer a { display: inline-flex; align-items: center; min-height: 44px; }
+.bp-invitation .hero h1 { font-size: clamp(2.25rem, 4.9vw, 4rem); }
+.bp-invitation .card h2 { font-size: 1.5rem; }
+
+@media (max-width: 760px) {
+  .bp-home .truth-rail, .bp-home .product-reality-rail,
+  .bp-home .product-device-footer, .bp-home .product-release-note,
+  .bp-home .client-proof-footer, .bp-home .role-tab small,
+  .bp-home .mini-toolbar, .bp-home .mini-note, .bp-home .mini-pin,
+  .bp-home .mini-plan-copy, .bp-home .mini-plan-refs text,
+  .bp-home .mini-plan-titleblock text, .bp-home .building-annotations,
+  .bp-home .building-caption { display: none; }
+  .bp-home .product-reality-stage::after { content: none; }
+  .bp-home .hero-facts { display: grid; grid-template-columns: minmax(0, 1fr); gap: .55rem; }
+  .bp-home .hero-facts span { min-width: 0; }
+  .bp-home .building-sequence-steps { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .5rem; }
+  .bp-home .role-tabs { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .bp-home .role-tab { white-space: normal; padding: .8rem; }
+  .bp-home .security-stack > div { grid-template-columns: minmax(0, 1fr); gap: .35rem; }
+  .bp-home .security-stack > div > span { display: none; }
+  .bp-home .security-stack small { grid-column: 1; }
+  .bp-home .client-boundary { flex-wrap: wrap; }
+  .bp-home .hero { padding-top: 2.5rem; }
+  .bp-home .hero h1 { font-size: clamp(2.625rem, 12vw, 4rem); line-height: 1.05; }
+  .bp-home .access-actions { min-width: 0; }
+  .bp-invitation .pass-grid { grid-template-columns: minmax(0, 1fr); }
+  .bp-invitation .pass-cell { min-width: 0; }
+  .bp-invitation .hero-inner { padding: 24px; }
+}
+@media (max-width: 380px) {
+  .bp-readable .brand { font-size: 1rem; }
+  .bp-home .hero-actions .btn { padding-inline: .75rem; }
+  .bp-functional .wrap { padding-inline: 16px; }
+  .bp-invitation .card { padding: 20px; }
+}
+
+.bp-home .product-shot-label span { font-size: var(--bp-caption); line-height: 1.5; color: var(--bp-readable-muted); }
+@media (max-width: 760px) { .bp-home .product-swipe-hint { font-size: var(--bp-caption); line-height: 1.5; color: var(--bp-readable-muted); } }
+
+/* Preserve larger field-device controls after the shared readability rules. */
+@media (pointer: coarse) {
+  .bp-functional .btn, .bp-functional .view-tool, .bp-functional .tool,
+  .bp-functional .sheet-tab, .bp-functional .plan-open,
+  .bp-functional .project-button, .bp-functional .markup-withdraw { min-height: 48px; }
+}
+
+/* Link-based actions need the same full hit area as button elements. */
+.bp-invitation a.btn { display: block; width: 100%; margin-top: .75rem; }

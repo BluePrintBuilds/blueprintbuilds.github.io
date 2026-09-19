@@ -7,7 +7,7 @@
 <meta name="description" content="Keep current drawings, site records, variations, approvals and progress connected from the first day on site to handover." />
 <meta name="theme-color" content="#050A10" />
 <meta name="robots" content="index,follow,max-image-preview:large" />
-<link rel="icon" href="/assets/blueprint-fingerprint.png" type="image/png" />
+<link rel="icon" href="/assets/blueprint-fingerprint.png" type="image/png">
 <link rel="canonical" href="https://blueprintbuilds.app/" />
 <meta property="og:title" content="Blueprint Builds — Build from the drawing. Prove it from the field." />
 <meta property="og:description" content="Current drawings, site proof, client decisions and progress kept together from site start to handover." />
@@ -45,8 +45,10 @@
   ]
 }
 </script>
+<link rel="stylesheet" href="/assets/blueprint-readability-v1.css">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
 </head>
-<body>
+<body class="bp-readable bp-home">
 <div class="bp-arrival" data-blueprint-arrival>
   <div class="bp-arrival-sheet" aria-hidden="true" inert>
     <div class="bp-arrival-register"><strong>BLUEPRINT BUILDS</strong><span>FROM DRAWING<br>TO BUILD RECORD</span></div>
@@ -138,7 +140,7 @@
   <text x="30" y="472" class="building-caption">ILLUSTRATIVE CONCEPT / NOT FOR CONSTRUCTION</text>
 </svg>
           <div class="building-sequence-steps" aria-label="Drawing stages"><span>01 <b>Set-out</b></span><span>02 <b>Structure</b></span><span>03 <b>Roof</b></span><span>04 <b>Site detail</b></span></div>
-          <div class="building-controls"><span>Example drawing. Real construction language.</span><button type="button" data-building-pause aria-pressed="false" hidden>Pause drawing</button><button type="button" data-building-replay hidden>Replay</button></div>
+          <div class="building-controls"><span>Illustrative example. Not for construction.</span><button type="button" data-building-pause aria-pressed="false" hidden>Pause drawing</button><button type="button" data-building-replay hidden>Replay</button></div>
         </figure>
       </div>
     </div>
@@ -167,6 +169,7 @@
             <div class="product-viewport"><img src="/assets/product-media/capture-product.png" width="860" height="1560" loading="lazy" alt="Blueprint Builds Capture screen showing photo, voice, site diary and variation record paths" /></div>
             <div class="product-device-footer"><span>FIELD RECORD</span><b>DEMO DATA</b></div>
           </div>
+        <a class="bp-screen-link" href="/assets/product-media/capture-product.png" target="_blank" rel="noopener" aria-label="View full-size Capture example screen (opens a new tab)">View full-size Capture screen</a>
         </figure>
         <figure class="product-shot product-shot-primary">
           <figcaption class="product-shot-label"><span>02 // PROJECT</span><b>COMMAND BOARD</b></figcaption>
@@ -174,6 +177,7 @@
             <div class="product-viewport"><img src="/assets/product-media/project-command-product.png" width="860" height="1400" loading="lazy" alt="Blueprint Builds Project Command Board showing measured progress, Build Flight Tracker and a blocking decision" /></div>
             <div class="product-device-footer"><span>MEASURED FROM THE RECORD</span><b>LIVE SURFACE</b></div>
           </div>
+        <a class="bp-screen-link" href="/assets/product-media/project-command-product.png" target="_blank" rel="noopener" aria-label="View full-size Project example screen (opens a new tab)">View full-size Project screen</a>
         </figure>
         <figure class="product-shot product-shot-inbox">
           <figcaption class="product-shot-label"><span>03 // DECISION</span><b>INBOX</b></figcaption>
@@ -181,6 +185,7 @@
             <div class="product-viewport"><img src="/assets/product-media/inbox-product.png" width="860" height="1560" loading="lazy" alt="Blueprint Builds Inbox showing blocking decisions and approvals ordered by what they hold up" /></div>
             <div class="product-device-footer"><span>WORK WAITING</span><b>DEMO DATA</b></div>
           </div>
+        <a class="bp-screen-link" href="/assets/product-media/inbox-product.png" target="_blank" rel="noopener" aria-label="View full-size Inbox example screen (opens a new tab)">View full-size Inbox screen</a>
         </figure>
         <div class="product-release-note"><strong>REAL UI</strong> // SAFE DEMO WORKSPACE // CURRENT RELEASE SURFACE</div>
       </div>
@@ -200,7 +205,7 @@
       <div class="feature-grid">
         <article class="feature-card feature-wide reveal">
           <div class="feature-number">01 / PLAN DESK</div>
-          <div class="mini-plan">
+          <div class="mini-plan" aria-hidden="true">
             <div class="mini-toolbar"><span>BROWSE</span><span class="selected">PIN</span><span>ZONE</span><span>DRAW</span><i></i><span>FIT</span><span>125%</span></div>
             <div class="mini-sheet">
               <div class="mini-grid"></div>
@@ -318,7 +323,8 @@
         <figcaption class="client-proof-label"><span>CURRENT PRODUCT // CLIENT HOME</span><b>DEMO DATA</b></figcaption>
         <div class="client-screen"><img src="/assets/client-media/client-home-product.png" width="860" height="1560" loading="lazy" alt="Blueprint Builds client Home showing a client approval, project pulse and simplified client navigation" /></div>
         <div class="client-proof-footer" aria-label="Client navigation"><span>HOME</span><span>PROJECT</span><span>DECISIONS</span><span>ACCOUNT</span></div>
-      </figure>
+      <a class="bp-screen-link" href="/assets/client-media/client-home-product.png" target="_blank" rel="noopener" aria-label="View full-size Client Home example screen (opens a new tab)">View full-size Client Home screen</a>
+        </figure>
     </div>
   </section>
 
