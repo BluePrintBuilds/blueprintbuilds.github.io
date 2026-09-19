@@ -3,6 +3,7 @@ import { mountProjectBriefs } from './project-briefs.js';
 
 const $ = (id) => document.getElementById(id);
 let activeProject = null;
+let projectRequest = 0;
 let session = null;
 let projects = [];
 let privateBriefs = null;
@@ -14,6 +15,7 @@ function status(kind, text) {
 }
 
 function setSignedOut() {
+  ++projectRequest; activeProject = null; projects = [];
   privateBriefs?.dispose(); privateBriefs = null;
   $('signin-panel').hidden = false;
   $('workspace').hidden = true;
@@ -28,6 +30,7 @@ function setSignedIn() {
   const name = session?.user?.name || 'Blueprint Builds user';
   const role = session?.role || '';
   const staff = isStaff(role);
+  $('client-preview-entry').hidden = !(role === 'Site lead' && Array.isArray(session?.capabilities) && session.capabilities.includes('client-view-preview'));
   document.querySelector('h1').textContent = staff ? 'Builder Workspace' : 'Client Workspace';
   document.querySelector('.lede').textContent = 'Start a private project brief, then review the plans and revisions assigned to your account.';
   document.querySelectorAll('a[href="/publish/"]').forEach((link) => { link.hidden = !staff; });
@@ -59,6 +62,7 @@ async function loadProjects() {
 }
 
 async function selectProject(project, button) {
+  const request = ++projectRequest;
   activeProject = project;
   document.querySelectorAll('.project-button').forEach((node) => node.classList.toggle('active', node === button));
   $('plan-heading').textContent = project.name;
@@ -66,8 +70,10 @@ async function selectProject(project, button) {
   $('plans').innerHTML = '';
   try {
     const plans = await rpc('blueprint_mobile_project_plans', { p_project_id: project.id });
+    if (request !== projectRequest || activeProject?.id !== project.id) return;
     renderPlans(Array.isArray(plans) ? plans : []);
   } catch (reason) {
+    if (request !== projectRequest || activeProject?.id !== project.id) return;
     $('plans').innerHTML = `<div class="empty-state">${escapeHtml(reason?.message || 'Plans could not be loaded.')}</div>`;
   }
 }

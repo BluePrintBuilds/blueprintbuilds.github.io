@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en-AU">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow"><meta name="referrer" content="no-referrer">
+  <title>Client View Preview - Blueprint Builds</title>
+  <link rel="stylesheet" href="/styles.css"><link rel="stylesheet" href="/workspace/workspace.css">
+  <link rel="stylesheet" href="/workspace/review/review.css">
+</head>
+<body class="workspace-body">
+<div class="workspace-wrap">
+  <header class="site"><a class="brand" href="/"><span class="mark">&#9638;</span> Blueprint Builds</a><nav class="site"><a href="/support/">Support</a></nav></header>
+  <main>
+    <p class="kicker">Special review access / client perspective</p>
+    <h1>Client View Preview</h1>
+    <p class="lede">See the build from the client side, separate from your business workspace.</p>
+    <nav class="perspective-nav" aria-label="Review perspective"><a class="btn quiet" href="/workspace/">Business workspace</a><span class="preview-selected" aria-current="page">Client preview / read-only</span></nav>
+    <div class="preview-notice"><strong>Preview only.</strong> This is not a separate client login. No approvals, field updates or project changes can be submitted here. Your business permissions have not changed.</div>
+    <section class="workspace-panel" id="preview-state" role="status" aria-live="polite"><p id="preview-message">Checking your review access...</p><button class="btn quiet" id="preview-retry" type="button" hidden>Check again</button><a class="btn quiet" id="preview-signin" href="/workspace/" hidden>Sign in to Blueprint</a></section>
+    <section id="preview-content" hidden>
+      <div class="workspace-bar"><p id="preview-identity"></p><div class="workspace-actions"><button class="btn quiet" id="preview-refresh" type="button">Refresh preview</button><button class="btn quiet" id="preview-signout" type="button">Sign out</button></div></div>
+      <p class="security-strip" id="preview-checked"></p>
+      <div class="workspace-grid"><aside class="workspace-panel"><p class="kicker">Authorised projects</p><h2>Your builds</h2><div class="project-list" id="preview-projects"></div></aside>
+      <section class="workspace-panel"><p class="kicker">Client project summary</p><h2 id="preview-title">Choose a project</h2><p id="preview-summary"></p><div id="preview-progress"></div><h3>Next milestone</h3><p id="preview-milestone"></p><h3>Decisions and responses</h3><div id="preview-decisions" class="plan-list"></div></section></div>
+    </section>
+  </main>
+</div>
+<script type="module" src="/workspace/review/review.js"></script>
+</body>
+</html>
