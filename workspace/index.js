@@ -1,9 +1,11 @@
-import { clearToken, formatDate, getToken, loadSession, planDeskUrl, rpc, signIn } from './core.js';
+import { clearToken, formatDate, getToken, isStaff, loadSession, planDeskUrl, rpc, signIn } from './core.js';
+import { mountProjectBriefs } from './project-briefs.js';
 
 const $ = (id) => document.getElementById(id);
 let activeProject = null;
 let session = null;
 let projects = [];
+let privateBriefs = null;
 
 function status(kind, text) {
   const node = $('signin-status');
@@ -12,6 +14,7 @@ function status(kind, text) {
 }
 
 function setSignedOut() {
+  privateBriefs?.dispose(); privateBriefs = null;
   $('signin-panel').hidden = false;
   $('workspace').hidden = true;
   $('password').value = '';
@@ -20,8 +23,14 @@ function setSignedOut() {
 function setSignedIn() {
   $('signin-panel').hidden = true;
   $('workspace').hidden = false;
+  privateBriefs?.dispose();
+  privateBriefs = mountProjectBriefs($('project-briefs'));
   const name = session?.user?.name || 'Blueprint Builds user';
   const role = session?.role || '';
+  const staff = isStaff(role);
+  document.querySelector('h1').textContent = staff ? 'Builder Workspace' : 'Client Workspace';
+  document.querySelector('.lede').textContent = 'Start a private project brief, then review the plans and revisions assigned to your account.';
+  document.querySelectorAll('a[href="/publish/"]').forEach((link) => { link.hidden = !staff; });
   const workspace = session?.workspace?.name || 'Workspace';
   $('workspace-user').innerHTML = `<strong>${escapeHtml(name)}</strong> · ${escapeHtml(role)} · ${escapeHtml(workspace)}`;
 }

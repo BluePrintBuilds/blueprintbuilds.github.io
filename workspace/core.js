@@ -102,7 +102,7 @@ export async function signIn(email, password) {
   return payload.access_token;
 }
 
-export async function rpc(name, params = {}, token) {
+export async function rpc(name, params = {}, token, options = {}) {
   const planToken = inPlanDesk() ? getPlanSessionToken() : '';
   if (planToken) {
     const payload = await planDeskFetch('/call', { token: planToken, body: { name, params } });
@@ -114,6 +114,7 @@ export async function rpc(name, params = {}, token) {
     method: 'POST',
     headers: authHeaders(accessToken),
     body: JSON.stringify(params),
+    signal: options.signal,
   });
   if (!response.ok) throw new Error(await responseError(response, 'Blueprint Builds could not load that record.'));
   return response.json();
