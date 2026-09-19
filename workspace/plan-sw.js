@@ -9,6 +9,9 @@ const SHELL = [
   '/assets/blueprint-readability-v1.css',
   '/assets/blueprint-fingerprint.png',
   '/apple-touch-icon.png',
+  '/assets/icons/fingerprint-16.png',
+  '/assets/icons/fingerprint-32.png',
+  '/assets/icons/fingerprint-48.png',
   '/assets/pdfjs/pdf.min.js',
   '/assets/pdfjs/pdf.worker.min.js',
 ];
