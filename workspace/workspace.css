@@ -124,3 +124,23 @@ body.workspace-body { background-size: 20px 20px; }
   .offline-state { text-align: left; }
   .view-tools { max-width: 100%; flex-wrap: wrap; }
 }
+
+/* Personal planning is separate from the assigned-project register. */
+.private-briefs { margin: 24px 0; }
+.private-briefs > p { max-width:  70ch; line-height: 1.6; }
+.private-briefs [hidden] { display: none !important; }
+.brief-fields { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 16px; }
+.private-briefs input, .private-briefs textarea { box-sizing: border-box; width: 100%; min-width: 0; font: inherit; color: #eaf3fa; background: #081522; border: 1px solid #37566e; border-radius: 8px; padding: 12px; }
+.private-briefs textarea { resize: vertical; }
+.private-briefs input:focus-visible, .private-briefs textarea:focus-visible { outline: 2px solid #35a7ff; outline-offset: 3px; }
+.brief-actions { display: flex; flex-wrap: wrap; gap: 12px; }
+.brief-record { margin-top: 20px; padding-top: 20px; border-top: 1px solid #253949; overflow-wrap: anywhere; }
+.brief-record p { white-space: pre-wrap; }
+.brief-error { color: #ff9696; }
+.brief-notice { color: #8ecbb6; }
+@media (max-width: 640px) { .brief-fields { grid-template-columns: 1fr; } .brief-actions .btn { width: 100%; } }
+
+.private-briefs > .btn { margin: 8px 0 16px; }
+#brief-status:not(:empty) { margin: 12px 0 20px; }
+.brief-record .btn { margin-top: 8px; margin-bottom: 16px; }
+.private-briefs input[type="date"] { color-scheme: dark; }
