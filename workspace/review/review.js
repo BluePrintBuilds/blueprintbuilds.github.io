@@ -1,5 +1,5 @@
 import { buildProgress } from '/assets/blueprint-progress-model.js';
-import { clearToken, getToken } from '../core.js';
+import { clearToken, getToken, getValidToken } from '../core.js';
 const ENDPOINT = 'https://mxjuknqwzbvvmmdrvkql.supabase.co/functions/v1/blueprint-reviewer-v1/v1';
 const $ = id => document.getElementById(id);
 let generation = 0, controller = null, projects = [], decisions = [];
@@ -47,12 +47,27 @@ function selectProject(project) {
 }
 async function load() {
   const current = ++generation; controller?.abort(); controller = new AbortController(); const signal = controller.signal;
-  const token = getToken(); wipe();
+  let token = '';
+  try { token = await getValidToken(); }
+  catch {
+    wipe();
+    if (!getToken()) message('Your sign-in needs renewing. Use your existing account; a new invitation is not required.', false, true);
+    else message('The preview could not be checked. Your account has not been signed out. Reconnect and try again.', true);
+    return;
+  }
+  wipe();
   if (!token) { message('Sign in with your existing Blueprint account, then open Client View Preview from the business workspace.', false, true); return; }
   message('Checking your review access...');
   const timer = setTimeout(() => controller?.signal === signal && controller.abort(), 15000);
-  async function read(path) {
-    const response = await fetch(ENDPOINT + path, {method:'GET',headers:{Authorization:'Bearer '+token},signal,cache:'no-store',referrerPolicy:'no-referrer'});
+  async function read(path, retry = true) {
+    let response = await fetch(ENDPOINT + path, {method:'GET',headers:{Authorization:'Bearer '+token},signal,cache:'no-store',referrerPolicy:'no-referrer'});
+    if (response.status === 401 && retry) {
+      const refreshed = await getValidToken({ forceRefresh: true }).catch(() => '');
+      if (refreshed) {
+        token = refreshed;
+        response = await fetch(ENDPOINT + path, {method:'GET',headers:{Authorization:'Bearer '+token},signal,cache:'no-store',referrerPolicy:'no-referrer'});
+      }
+    }
     const body = await response.json().catch(() => ({}));
     if (!response.ok) { const error = new Error(body.error?.message || 'The preview is temporarily unavailable.'); error.status = response.status; throw error; }
     if (body.perspective !== 'client-preview' || body.readOnly !== true) throw new Error('The server did not confirm a read-only preview.');

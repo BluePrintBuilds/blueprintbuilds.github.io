@@ -110,16 +110,15 @@ function recover(reason) {
     clearToken(); setSignedOut(); status('err', reason?.message || 'Sign in again to check your workspace.'); return;
   }
   setSignedOut(); $('signin-panel').hidden = true; $('recovery-panel').hidden = false;
-  $('recovery-message').textContent = reason?.configurationFailure ? 'Blueprint needs a service correction. Your password has not been checked.' : 'Reconnect and try again. Your sign-in is kept in this tab; no password reset is needed.';
+  $('recovery-message').textContent = reason?.configurationFailure ? 'Blueprint needs a service correction. Your password has not been checked.' : 'Reconnect and try again. Your sign-in is still saved on this device; no password reset is needed.';
 }
 async function boot() {
-  const token = getToken();
-  if (!token) return setSignedOut();
+  if (!getToken()) return setSignedOut();
   const request = ++bootGeneration; activeBoot = request;
-  const current = () => request === bootGeneration && getToken() === token;
+  const current = () => request === bootGeneration && Boolean(getToken());
   $('retry-workspace').disabled = true;
   try {
-    const next = await loadSession(token);
+    const next = await loadSession();
     if (!current()) return;
     if (!next?.user?.id || !(isStaff(next?.role) || next?.role === 'Client')) throw new Error('The workspace details could not be checked. Try again.');
     session = next;

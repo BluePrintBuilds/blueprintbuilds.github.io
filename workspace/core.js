@@ -2,23 +2,80 @@ const SUPABASE_URL = 'https://mxjuknqwzbvvmmdrvkql.supabase.co';
 const ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im14anVrbnF3emJ2dm1tZHJ2a3FsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU5ODU4MjcsImV4cCI6MjEwMTU2MTgyN30.RNrDixA6B1TgVHqoswkMDSYlwywGYfcC0P7SYY8A_lY';
 const PLAN_DESK_EDGE = `${SUPABASE_URL}/functions/v1/blueprint-plan-desk-v1`;
 const TOKEN_KEY = 'blueprint.workspace.token';
+const SESSION_KEY = 'blueprint.workspace.session.v1';
 const PLAN_SESSION_KEY = 'blueprint.plan.desk.session';
 const STAFF_ROLES = new Set(['Owner', 'Project manager', 'Site lead']);
+let refreshPromise = null;
+
+function browserStorage(name) {
+  try { return globalThis[name] || null; } catch { return null; }
+}
+
+function epochSeconds() {
+  return Math.floor(Date.now() / 1000);
+}
+
+function normaliseSession(payload) {
+  if (!payload || typeof payload !== 'object') return null;
+  const accessToken = typeof payload.access_token === 'string' ? payload.access_token : '';
+  const refreshToken = typeof payload.refresh_token === 'string' ? payload.refresh_token : '';
+  if (!accessToken) return null;
+  const seconds = Number(payload.expires_in);
+  const expiresAt = Number(payload.expires_at) || (Number.isFinite(seconds) && seconds > 0 ? epochSeconds() + seconds : 0);
+  return { access_token: accessToken, refresh_token: refreshToken, expires_at: expiresAt };
+}
+
+function readSession() {
+  for (const target of [browserStorage('localStorage'), browserStorage('sessionStorage')]) {
+    if (!target) continue;
+    try {
+      const session = normaliseSession(JSON.parse(target.getItem(SESSION_KEY) || 'null'));
+      if (session) return session;
+    } catch { /* ignore unreadable browser storage */ }
+  }
+  const legacy = browserStorage('sessionStorage')?.getItem(TOKEN_KEY)
+    || browserStorage('localStorage')?.getItem(TOKEN_KEY)
+    || '';
+  if (!legacy) return null;
+  const migrated = { access_token: legacy, refresh_token: '', expires_at: 0 };
+  persistSession(migrated);
+  return migrated;
+}
+
+function persistSession(payload) {
+  const session = normaliseSession(payload);
+  if (!session) return null;
+  const target = browserStorage('localStorage') || browserStorage('sessionStorage');
+  try { target?.setItem(SESSION_KEY, JSON.stringify(session)); } catch { /* memory session still works */ }
+  for (const store of [browserStorage('localStorage'), browserStorage('sessionStorage')]) {
+    try { store?.removeItem(TOKEN_KEY); } catch { /* best effort legacy cleanup */ }
+  }
+  return session;
+}
 
 export function getToken() {
-  return sessionStorage.getItem(TOKEN_KEY) || '';
+  return readSession()?.access_token || '';
+}
+
+export async function getValidToken({ forceRefresh = false } = {}) {
+  return refreshSession(forceRefresh);
 }
 
 export function getPlanSessionToken() {
-  return sessionStorage.getItem(PLAN_SESSION_KEY) || '';
+  return browserStorage('sessionStorage')?.getItem(PLAN_SESSION_KEY) || '';
 }
 
 export function clearToken() {
-  sessionStorage.removeItem(TOKEN_KEY);
+  for (const store of [browserStorage('localStorage'), browserStorage('sessionStorage')]) {
+    try {
+      store?.removeItem(SESSION_KEY);
+      store?.removeItem(TOKEN_KEY);
+    } catch { /* best effort */ }
+  }
 }
 
 export function clearPlanSession() {
-  sessionStorage.removeItem(PLAN_SESSION_KEY);
+  browserStorage('sessionStorage')?.removeItem(PLAN_SESSION_KEY);
 }
 
 export function isStaff(role) {
@@ -59,6 +116,44 @@ async function responseError(response, fallback) {
   return body?.message || body?.msg || body?.error_description || fallback;
 }
 
+async function responseFailure(response, fallback) {
+  const message = await responseError(response, fallback);
+  return Object.assign(new Error(message), {
+    status: response.status,
+    configurationFailure: message.includes('sign-in configuration needs attention'),
+  });
+}
+
+async function refreshSession(force = false) {
+  const session = readSession();
+  if (!session?.access_token) return '';
+  if (!force && (!session.expires_at || session.expires_at - epochSeconds() > 90)) return session.access_token;
+  if (!session.refresh_token) return session.access_token;
+  if (!refreshPromise) {
+    refreshPromise = (async () => {
+      const response = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=refresh_token`, {
+        method: 'POST',
+        headers: { apikey: ANON_KEY, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ refresh_token: session.refresh_token }),
+        cache: 'no-store',
+        referrerPolicy: 'no-referrer',
+      });
+      if (!response.ok) {
+        const failure = await responseFailure(response, 'Your Blueprint Builds session could not be renewed.');
+        if ([400, 401, 403].includes(response.status)) clearToken();
+        throw failure;
+      }
+      const saved = persistSession(await response.json());
+      if (!saved) {
+        clearToken();
+        throw new Error('Blueprint Builds returned an unusable refreshed session.');
+      }
+      return saved.access_token;
+    })().finally(() => { refreshPromise = null; });
+  }
+  return refreshPromise;
+}
+
 async function planDeskFetch(path, { token = getPlanSessionToken(), body } = {}) {
   const response = await fetch(`${PLAN_DESK_EDGE}${path}`, {
     method: 'POST',
@@ -67,7 +162,7 @@ async function planDeskFetch(path, { token = getPlanSessionToken(), body } = {})
     cache: 'no-store',
     referrerPolicy: 'no-referrer',
   });
-  if (!response.ok) throw new Error(await responseError(response, 'Blueprint Plan Desk could not load that record.'));
+  if (!response.ok) throw await responseFailure(response, 'Blueprint Plan Desk could not load that record.');
   if (response.status === 204) return null;
   return response.json();
 }
@@ -98,11 +193,10 @@ export async function signIn(email, password) {
     headers: { apikey: ANON_KEY, 'Content-Type': 'application/json' },
     body: JSON.stringify({ email: email.trim(), password }),
   });
-  if (!response.ok) throw new Error(await responseError(response, 'Check the email and password and try again.'));
-  const payload = await response.json();
-  if (!payload?.access_token) throw new Error('Blueprint Builds did not return a usable session.');
-  sessionStorage.setItem(TOKEN_KEY, payload.access_token);
-  return payload.access_token;
+  if (!response.ok) throw await responseFailure(response, 'Check the email and password and try again.');
+  const saved = persistSession(await response.json());
+  if (!saved) throw new Error('Blueprint Builds did not return a usable session.');
+  return saved.access_token;
 }
 
 export async function rpc(name, params = {}, token, options = {}) {
@@ -111,22 +205,24 @@ export async function rpc(name, params = {}, token, options = {}) {
     const payload = await planDeskFetch('/call', { token: planToken, body: { name, params } });
     return payload?.data;
   }
-  const accessToken = token || getToken();
-  if (!accessToken) throw new Error('Sign in is required.');
+  let accessToken = token || await getValidToken();
+  if (!accessToken) throw Object.assign(new Error('Sign in is required.'), { status: 401 });
   const controller = new AbortController();
   const cancel = () => controller.abort();
   if (options.signal?.aborted) controller.abort();
   else options.signal?.addEventListener('abort', cancel, { once: true });
   const timer = setTimeout(cancel, 15000);
   try {
-    const response = await fetch(`${SUPABASE_URL}/rest/v1/rpc/${name}`, {
-      method: 'POST', headers: authHeaders(accessToken), body: JSON.stringify(params), signal: controller.signal,
+    const request = (credential) => fetch(`${SUPABASE_URL}/rest/v1/rpc/${name}`, {
+      method: 'POST', headers: authHeaders(credential), body: JSON.stringify(params), signal: controller.signal,
       cache: 'no-store', referrerPolicy: 'no-referrer',
     });
-    if (!response.ok) {
-      const message = await responseError(response, 'Blueprint Builds could not load that record.');
-      throw Object.assign(new Error(message), { status: response.status, configurationFailure: message.includes('sign-in configuration needs attention') });
+    let response = await request(accessToken);
+    if (response.status === 401 && !token) {
+      accessToken = await getValidToken({ forceRefresh: true });
+      if (accessToken) response = await request(accessToken);
     }
+    if (!response.ok) throw await responseFailure(response, 'Blueprint Builds could not load that record.');
     return await response.json();
   } catch (error) {
     if (controller.signal.aborted && !options.signal?.aborted) throw Object.assign(new Error('The connection took too long. Reconnect and try again.'), { status: 408 });
@@ -174,14 +270,19 @@ export async function signPlanPaths(paths, token) {
     const wrapped = await planDeskFetch('/media/sign', { token: planToken, body: { paths: unique } });
     payload = wrapped?.data;
   } else {
-    const accessToken = token || getToken();
-    if (!accessToken) throw new Error('Sign in is required.');
-    const response = await fetch(`${SUPABASE_URL}/storage/v1/object/sign/plans`, {
+    let accessToken = token || await getValidToken();
+    if (!accessToken) throw Object.assign(new Error('Sign in is required.'), { status: 401 });
+    const request = (credential) => fetch(`${SUPABASE_URL}/storage/v1/object/sign/plans`, {
       method: 'POST',
-      headers: authHeaders(accessToken),
+      headers: authHeaders(credential),
       body: JSON.stringify({ expiresIn: 900, paths: unique }),
     });
-    if (!response.ok) throw new Error(await responseError(response, 'The secure plan view could not be prepared.'));
+    let response = await request(accessToken);
+    if (response.status === 401 && !token) {
+      accessToken = await getValidToken({ forceRefresh: true });
+      if (accessToken) response = await request(accessToken);
+    }
+    if (!response.ok) throw await responseFailure(response, 'The secure plan view could not be prepared.');
     payload = await response.json();
   }
 

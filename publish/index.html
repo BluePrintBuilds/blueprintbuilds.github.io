@@ -114,8 +114,50 @@
     var MAX_BYTES = 52428800;
     var MIME_BY_EXT = { pdf: 'application/pdf', png: 'image/png', jpg: 'image/jpeg', jpeg: 'image/jpeg', webp: 'image/webp', heic: 'image/heic' };
     var STAFF_ROLES = ['Owner', 'Project manager', 'Site lead'];
+    var SHARED_SESSION_KEY = 'blueprint.workspace.session.v1';
 
     var session = null; // { token, name, workspaceId, workspaceName }
+
+    function normaliseTokens(tokens) {
+      if (!tokens || typeof tokens !== 'object' || typeof tokens.access_token !== 'string' || !tokens.access_token) return null;
+      var seconds = Number(tokens.expires_in);
+      var expiresAt = Number(tokens.expires_at) || (Number.isFinite(seconds) && seconds > 0 ? Math.floor(Date.now() / 1000) + seconds : 0);
+      return { access_token: tokens.access_token, refresh_token: typeof tokens.refresh_token === 'string' ? tokens.refresh_token : '', expires_at: expiresAt };
+    }
+    function readSharedTokens() {
+      try { return normaliseTokens(JSON.parse(localStorage.getItem(SHARED_SESSION_KEY) || 'null')); } catch (_) { return null; }
+    }
+    function saveSharedTokens(tokens) {
+      var value = normaliseTokens(tokens);
+      if (!value) return null;
+      try { localStorage.setItem(SHARED_SESSION_KEY, JSON.stringify(value)); } catch (_) {}
+      return value;
+    }
+    function clearSharedTokens() {
+      try { localStorage.removeItem(SHARED_SESSION_KEY); } catch (_) {}
+    }
+    function validSharedToken(force) {
+      var tokens = readSharedTokens();
+      if (!tokens) return Promise.resolve('');
+      var remaining = tokens.expires_at ? tokens.expires_at - Math.floor(Date.now() / 1000) : 0;
+      if (!force && (!tokens.expires_at || remaining > 90)) return Promise.resolve(tokens.access_token);
+      if (!tokens.refresh_token) return Promise.resolve(tokens.access_token);
+      return fetch(SUPABASE_URL + '/auth/v1/token?grant_type=refresh_token', {
+        method: 'POST', headers: { apikey: ANON_KEY, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ refresh_token: tokens.refresh_token }), cache: 'no-store', referrerPolicy: 'no-referrer',
+      }).then(function (response) {
+        if (!response.ok) {
+          if ([400, 401, 403].indexOf(response.status) !== -1) clearSharedTokens();
+          throw new Error('Your Blueprint session could not be renewed.');
+        }
+        var data = response.json();
+        return data;
+      }).then(function (next) {
+        var saved = saveSharedTokens(next);
+        if (!saved) throw new Error('Blueprint returned an unusable refreshed session.');
+        return saved.access_token;
+      });
+    }
 
     function el(id) { return document.getElementById(id); }
     function status(id, kind, text) {
@@ -125,10 +167,24 @@
     }
 
     function api(path, options) {
-      options = options || {};
-      options.headers = Object.assign({ apikey: ANON_KEY }, options.headers || {});
-      if (session) options.headers.Authorization = 'Bearer ' + session.token;
-      return fetch(SUPABASE_URL + path, options);
+      function send(token) {
+        var requestOptions = Object.assign({}, options || {});
+        requestOptions.headers = Object.assign({ apikey: ANON_KEY }, (options && options.headers) || {});
+        if (token) requestOptions.headers.Authorization = 'Bearer ' + token;
+        return fetch(SUPABASE_URL + path, requestOptions);
+      }
+      return validSharedToken(false).then(function (token) {
+        if (!token && session && session.token) token = session.token;
+        if (token) session = Object.assign({}, session || {}, { token: token });
+        return send(token).then(function (response) {
+          if (response.status !== 401) return response;
+          return validSharedToken(true).then(function (fresh) {
+            if (!fresh || fresh === token) return response;
+            session = Object.assign({}, session || {}, { token: fresh });
+            return send(fresh);
+          });
+        });
+      });
     }
 
     function readError(response, fallback) {
@@ -159,7 +215,8 @@
         }
         return response.json();
       }).then(function (tokens) {
-        session = { token: tokens.access_token };
+        var saved = saveSharedTokens(tokens);
+        session = { token: saved ? saved.access_token : tokens.access_token };
         return api('/rest/v1/rpc/blueprint_mobile_session', {
           method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}',
         });
@@ -207,6 +264,7 @@
     });
 
     el('signout').addEventListener('click', function () {
+      clearSharedTokens();
       session = null;
       el('panel-signin').hidden = false;
       el('session-bar').hidden = true;
@@ -214,6 +272,63 @@
       el('file-list').innerHTML = '';
       status('upload-status', null, '');
     });
+
+    function restorePublisherSession() {
+      if (!readSharedTokens()) return;
+      status('signin-status', 'busy', 'Restoring your Blueprint session…');
+      validSharedToken(false).then(function (token) {
+        if (!token) return null;
+        session = { token: token };
+        return api('/rest/v1/rpc/blueprint_mobile_session', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}',
+        });
+      }).then(function (response) {
+        if (!response) return null;
+        if (!response.ok) {
+          if (response.status === 401) clearSharedTokens();
+          throw new Error('Your saved Blueprint session could not be verified.');
+        }
+        return response.json();
+      }).then(function (data) {
+        if (!data) return null;
+        if (STAFF_ROLES.indexOf(data.role) === -1) {
+          session = null;
+          status('signin-status', 'err', 'This account is read-only. Publishing needs a build-team login.');
+          return null;
+        }
+        session.name = data.user && data.user.name ? data.user.name : 'Build team';
+        session.workspaceId = data.workspace.id;
+        session.workspaceName = data.workspace.name;
+        return api('/rest/v1/rpc/blueprint_mobile_projects', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}',
+        });
+      }).then(function (response) {
+        if (!response) return null;
+        if (!response.ok) throw new Error('Projects could not be loaded. Try again.');
+        return response.json();
+      }).then(function (projects) {
+        if (!projects) return;
+        var select = el('project');
+        select.innerHTML = '';
+        (projects || []).forEach(function (project) {
+          var option = document.createElement('option');
+          option.value = project.id;
+          option.textContent = project.name;
+          select.appendChild(option);
+        });
+        if (!select.options.length) throw new Error('No projects are assigned to this account yet.');
+        el('session-name').textContent = session.name;
+        el('session-workspace').textContent = session.workspaceName;
+        el('panel-signin').hidden = true;
+        el('session-bar').hidden = false;
+        el('panel-upload').hidden = false;
+        status('signin-status', null, '');
+      }).catch(function (reason) {
+        session = null;
+        if (readSharedTokens()) status('signin-status', 'err', 'Your sign-in is still saved. Reconnect and reload this page.');
+        else status('signin-status', 'err', reason && reason.message ? reason.message : 'Sign in again to publish drawings.');
+      });
+    }
 
     function titleFromName(name) {
       var stem = name.replace(/\.[^.]+$/, '').replace(/[_-]+/g, ' ').replace(/\s+/g, ' ').trim();
@@ -422,6 +537,7 @@
     }
 
     function requireReauth(message) {
+      clearSharedTokens();
       session = null;
       el('panel-upload').hidden = true;
       el('session-bar').hidden = true;
@@ -514,6 +630,8 @@
         }
       });
     });
+
+    restorePublisherSession();
   })();
   </script>
 </body>

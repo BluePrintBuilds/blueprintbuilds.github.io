@@ -885,7 +885,7 @@ async function boot() {
     await syncOfflineQueue();
   } catch (reason) {
     if (offlinePack && isNetworkError(reason)) return bootOfflinePack();
-    if (/session|sign in|access token/i.test(reason?.message || '')) {
+    if ([401, 403].includes(reason?.status) || (!getToken() && !getPlanSessionToken())) {
       clearPlanSession();
       clearToken();
       showSignin();
@@ -909,8 +909,9 @@ $('signin-form').addEventListener('submit', async (event) => {
     await loadPlan();
     await syncOfflineQueue();
   } catch (reason) {
-    clearToken();
-    setStatus('signin-status', 'err', reason?.message || 'Sign-in failed.');
+    if ([400, 401, 403].includes(reason?.status)) clearToken();
+    const suffix = getToken() && ![400, 401, 403].includes(reason?.status) ? ' Your sign-in is still saved; reconnect and try again.' : '';
+    setStatus('signin-status', 'err', (reason?.message || 'Sign-in failed.') + suffix);
   } finally {
     button.disabled = false;
   }
