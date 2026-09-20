@@ -1,3 +1,4 @@
+import { buildProgress } from '/assets/blueprint-progress-model.js';
 import { clearToken, getToken } from '../core.js';
 const ENDPOINT = 'https://mxjuknqwzbvvmmdrvkql.supabase.co/functions/v1/blueprint-reviewer-v1/v1';
 const $ = id => document.getElementById(id);
@@ -16,12 +17,22 @@ function selectProject(project) {
   document.querySelectorAll('#preview-projects button').forEach(button => { button.classList.toggle('active', button.dataset.project === project.id); button.setAttribute('aria-pressed', String(button.dataset.project === project.id)); });
   $('preview-title').textContent = project.name;
   $('preview-summary').textContent = [project.location, project.stage, project.status].filter(Boolean).join(' / ');
-  $('preview-progress').replaceChildren();
-  if (typeof project.progress === 'number' && Number.isFinite(project.progress)) {
-    const value = Math.max(0, Math.min(100, project.progress));
-    element('p', `${Math.round(value)}% complete`, $('preview-progress'));
-    const progress = document.createElement('progress'); progress.max = 100; progress.value = value; progress.setAttribute('aria-label', 'Project progress'); $('preview-progress').appendChild(progress);
+  const progressRoot = $('preview-progress'); progressRoot.replaceChildren();
+  const model = buildProgress({ percentage: project.progress });
+  const panel = element('section', '', progressRoot); panel.className = 'bp-build-progress';
+  const heading = element('div', '', panel); heading.className = 'bp-progress-heading';
+  const copy = element('div', '', heading); copy.className = 'bp-progress-copy';
+  element('p', 'Build progress', copy).className = 'bp-progress-label';
+  element('p', model.summary, copy).className = 'bp-progress-summary';
+  element('strong', model.display, heading).className = 'bp-progress-value';
+  const track = element('div', '', panel); track.className = 'bp-progress-track';
+  track.setAttribute('role', 'progressbar'); track.setAttribute('aria-label', 'Recorded build progress');
+  track.setAttribute('aria-valuetext', model.accessibleText);
+  if (model.value !== null) {
+    track.setAttribute('aria-valuemin', '0'); track.setAttribute('aria-valuemax', '100'); track.setAttribute('aria-valuenow', String(model.value));
+    const fill = element('span', '', track); fill.className = 'bp-progress-fill'; fill.style.width = model.value + '%';
   }
+  if (model.completionText) element('p', model.completionText, panel).className = 'bp-progress-caption';
   $('preview-milestone').textContent = project.nextMilestone || 'No next milestone has been recorded.';
   const list = $('preview-decisions'); list.replaceChildren();
   const related = decisions.filter(item => item.projectId === project.id);
