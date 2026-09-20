@@ -113,14 +113,25 @@ export async function rpc(name, params = {}, token, options = {}) {
   }
   const accessToken = token || getToken();
   if (!accessToken) throw new Error('Sign in is required.');
-  const response = await fetch(`${SUPABASE_URL}/rest/v1/rpc/${name}`, {
-    method: 'POST',
-    headers: authHeaders(accessToken),
-    body: JSON.stringify(params),
-    signal: options.signal,
-  });
-  if (!response.ok) throw new Error(await responseError(response, 'Blueprint Builds could not load that record.'));
-  return response.json();
+  const controller = new AbortController();
+  const cancel = () => controller.abort();
+  if (options.signal?.aborted) controller.abort();
+  else options.signal?.addEventListener('abort', cancel, { once: true });
+  const timer = setTimeout(cancel, 15000);
+  try {
+    const response = await fetch(`${SUPABASE_URL}/rest/v1/rpc/${name}`, {
+      method: 'POST', headers: authHeaders(accessToken), body: JSON.stringify(params), signal: controller.signal,
+      cache: 'no-store', referrerPolicy: 'no-referrer',
+    });
+    if (!response.ok) {
+      const message = await responseError(response, 'Blueprint Builds could not load that record.');
+      throw Object.assign(new Error(message), { status: response.status, configurationFailure: message.includes('sign-in configuration needs attention') });
+    }
+    return await response.json();
+  } catch (error) {
+    if (controller.signal.aborted && !options.signal?.aborted) throw Object.assign(new Error('The connection took too long. Reconnect and try again.'), { status: 408 });
+    throw error;
+  } finally { clearTimeout(timer); options.signal?.removeEventListener('abort', cancel); }
 }
 
 export async function loadSession(token) {

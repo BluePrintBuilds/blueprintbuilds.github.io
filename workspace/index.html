@@ -37,6 +37,12 @@
         <p class="status" id="signin-status"></p>
       </section>
 
+      <section class="panel" id="recovery-panel" hidden aria-labelledby="recovery-title">
+        <p class="kicker">Connection interrupted</p><h2 id="recovery-title">Your sign-in is still here</h2>
+        <p id="recovery-message" class="hint" role="status">Reconnect and try again. You do not need to repeat your password.</p>
+        <div class="workspace-actions"><button class="btn" id="retry-workspace" type="button">Try again</button><button class="btn quiet" id="change-account" type="button">Use another account</button></div>
+      </section>
+
       <section id="workspace" hidden>
         <div class="workspace-bar">
           <div class="workspace-user" id="workspace-user"></div>
