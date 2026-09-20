@@ -144,3 +144,16 @@ body.workspace-body { background-size: 20px 20px; }
 #brief-status:not(:empty) { margin: 12px 0 20px; }
 .brief-record .btn { margin-top: 8px; margin-bottom: 16px; }
 .private-briefs input[type="date"] { color-scheme: dark; }
+
+/* Selected text is reviewed privately before the existing brief save. */
+.intake-option{display:flex;gap:12px;align-items:flex-start;padding:16px;border:1px solid var(--border);border-radius:10px;margin:12px 0;min-height:64px;cursor:pointer}
+.intake-option input{width:22px;height:22px;flex:0 0 auto;margin-top:4px}
+.intake-copy{display:flex;flex-direction:column;gap:6px;min-width:0;overflow-wrap:anywhere;font-size:17px;line-height:1.5}
+.intake-copy small{font-size:15px;color:var(--ink-muted)}
+#brief-text-intake{margin:16px 0;padding:16px;border:1px solid var(--border);border-radius:12px}
+#brief-text-intake .brief-actions{margin-top:16px}
+#brief-text-intake textarea{font-size:17px;line-height:1.5}
+
+#selected-text-input{display:block;box-sizing:border-box;width:100%;min-height:176px;resize:vertical;padding:14px;margin-top:8px;color:var(--ink);background:var(--navy-raised);border:1px solid var(--border);border-radius:10px;font-family:inherit;font-size:17px;line-height:1.55}
+#selected-text-input::placeholder{color:var(--ink-faint)}
+#selected-text-review{margin-top:16px}

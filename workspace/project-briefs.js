@@ -1,6 +1,8 @@
+import { mountSelectedText } from './selected-text.js';
 import { rpc } from './core.js';
 
 export function mountProjectBriefs(root) {
+  let intake = null;
   let disposed = false;
   let busy = false;
   let records = [];
@@ -8,7 +10,7 @@ export function mountProjectBriefs(root) {
   let version = 0;
   let baseline = '';
   const requests = new Set();
-  root.innerHTML = '<p class="kicker">Private planning</p><h2>Start your own project</h2><p>Add your business details if relevant and describe the outcome you want. Only you can see these briefs. Builder access is arranged separately.</p><button class="btn quiet" id="new-brief" type="button">New project brief</button><p id="brief-status" role="status" aria-live="polite"></p><form id="brief-form" hidden><h3 id="brief-editor-title">New private brief</h3><div class="brief-fields"><label class="field"><span>Project name</span><input name="name" maxlength="200" required></label><label class="field"><span>Business name (optional)</span><input name="businessName" maxlength="160"></label><label class="field"><span>Location (optional)</span><input name="location" maxlength="300"></label><label class="field"><span>Target date (optional)</span><input name="targetDate" type="date"></label></div><label class="field"><span>What would a successful outcome look like?</span><textarea name="objective" maxlength="2000" rows="5" required></textarea></label><p class="hint">This is a planning draft, not an approved build or a quote. Save while online. It stays separate from your assigned projects.</p><div class="brief-actions"><button class="btn" id="save-brief" type="submit">Save private brief</button><button class="btn quiet" id="close-brief" type="button">Close editor</button></div></form><h3>Your saved briefs</h3><div id="brief-list"></div><button class="btn quiet" id="reload-briefs" type="button">Reload saved briefs</button>';
+  root.innerHTML = '<p class="kicker">Private planning</p><h2>Start your own project</h2><p>Add your business details if relevant and describe the outcome you want. Only you can see these briefs. Builder access is arranged separately.</p><button class="btn quiet" id="new-brief" type="button">New project brief</button><button class="btn quiet" id="paste-brief" type="button">Paste project details</button><section id="brief-text-intake" hidden></section><p id="brief-status" role="status" aria-live="polite"></p><form id="brief-form" hidden><h3 id="brief-editor-title">New private brief</h3><div class="brief-fields"><label class="field"><span>Project name</span><input name="name" maxlength="200" required></label><label class="field"><span>Business name (optional)</span><input name="businessName" maxlength="160"></label><label class="field"><span>Location (optional)</span><input name="location" maxlength="300"></label><label class="field"><span>Target date (optional)</span><input name="targetDate" type="date"></label></div><label class="field"><span>What would a successful outcome look like?</span><textarea name="objective" maxlength="2000" rows="5" required></textarea></label><p class="hint">This is a planning draft, not an approved build or a quote. Save while online. It stays separate from your assigned projects.</p><div class="brief-actions"><button class="btn" id="save-brief" type="submit">Save private brief</button><button class="btn quiet" id="close-brief" type="button">Close editor</button></div></form><h3>Your saved briefs</h3><div id="brief-list"></div><button class="btn quiet" id="reload-briefs" type="button">Reload saved briefs</button>';
   const find = (selector) => root.querySelector(selector);
   const form = find('#brief-form');
   const fields = ['name', 'businessName', 'location', 'objective', 'targetDate'];
@@ -26,12 +28,12 @@ export function mountProjectBriefs(root) {
     } finally { clearTimeout(timeout); requests.delete(controller); }
   }
   function open(item) {
-    if (busy || (dirty() && !window.confirm('Discard unsaved changes? The saved brief will stay unchanged.'))) return;
+    if (busy || intake || (dirty() && !window.confirm('Discard unsaved changes? The saved brief will stay unchanged.'))) return;
     draftId = item?.id || crypto.randomUUID(); version = item?.version || 0;
     for (const key of fields) form.elements.namedItem(key).value = item?.[key] || '';
     baseline = JSON.stringify(values());
     find('#brief-editor-title').textContent = version ? 'Edit your brief' : 'New private brief';
-    form.hidden = false; status(''); form.elements.namedItem('name').focus();
+    form.hidden = false; find('#paste-brief').hidden = true; status(''); form.elements.namedItem('name').focus();
   }
   function render() {
     const list = find('#brief-list'); list.replaceChildren();
@@ -74,11 +76,23 @@ export function mountProjectBriefs(root) {
     } catch (error) { if (!disposed) status(error?.message || 'The brief could not be saved. Your entries are still here.', true); }
     finally { busy = false; if (!disposed) controls(false); }
   }
-  const beforeUnload = (event) => { if (dirty() || busy) { event.preventDefault(); event.returnValue = ''; } };
+  const beforeUnload = (event) => { if (dirty() || busy || intake?.dirty()) { event.preventDefault(); event.returnValue = ''; } };
+  const closeIntake = () => { intake?.dispose(); intake = null; find('#brief-text-intake').hidden = true; find('#paste-brief').hidden = false; find('#new-brief').disabled = false; };
+  find('#paste-brief').addEventListener('click', () => {
+    if (disposed || busy || intake || !form.hidden) return;
+    find('#paste-brief').hidden = true; find('#new-brief').disabled = true;
+    const panel = find('#brief-text-intake'); panel.hidden = false;
+    intake = mountSelectedText(panel, selected => {
+      if (disposed || busy) return;
+      closeIntake(); open(null);
+      for (const key of fields) if (typeof selected[key] === 'string') form.elements.namedItem(key).value = selected[key];
+      status('Selected details are in your private draft. Check them before saving; the original text is not attached.');
+    }, closeIntake);
+  });
   find('#new-brief').addEventListener('click', () => open(null));
-  find('#close-brief').addEventListener('click', () => { if (!dirty() || window.confirm('Discard unsaved changes?')) { form.hidden = true; baseline = ''; status(''); } });
+  find('#close-brief').addEventListener('click', () => { if (!dirty() || window.confirm('Discard unsaved changes?')) { form.hidden = true; baseline = ''; find('#paste-brief').hidden = false; status(''); } });
   find('#reload-briefs').addEventListener('click', () => { void load(); });
   form.addEventListener('submit', save); window.addEventListener('beforeunload', beforeUnload);
   void load();
-  return { dispose() { disposed = true; for (const controller of requests) controller.abort(); window.removeEventListener('beforeunload', beforeUnload); root.replaceChildren(); } };
+  return { dispose() { disposed = true; intake?.dispose(); intake = null; for (const controller of requests) controller.abort(); window.removeEventListener('beforeunload', beforeUnload); root.replaceChildren(); } };
 }
