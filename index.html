@@ -11,20 +11,19 @@
 <link rel="icon" sizes="32x32" href="/assets/icons/fingerprint-32.png" type="image/png">
 <link rel="icon" sizes="48x48" href="/assets/icons/fingerprint-48.png" type="image/png">
 <link rel="canonical" href="https://blueprintbuilds.app/" />
-<meta property="og:title" content="Blueprint Builds — Build from the drawing. Prove it from the field." />
+<meta property="og:title" content="Blueprint Builds — The build, made clear." />
 <meta property="og:description" content="Current drawings, site proof, client decisions and progress kept together from site start to handover." />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://blueprintbuilds.app/" />
 <meta property="og:image" content="https://blueprintbuilds.app/assets/og-blueprint-builds.png" />
 <meta name="twitter:card" content="summary_large_image" />
 <link rel="stylesheet" href="/assets/home.css" />
-<link rel="stylesheet" href="/assets/blueprint-pulse.css" />
 <link rel="stylesheet" href="/assets/blueprint-pulse-home.css" />
 <link rel="stylesheet" href="/assets/blueprint-product-media.css" />
 <link rel="stylesheet" href="/assets/blueprint-motion-system.css" />
 <link rel="stylesheet" href="/assets/blueprint-client-experience.css" />
 <link rel="stylesheet" href="/assets/blueprint-build-story.css" />
-<link rel="stylesheet" href="/assets/blueprint-arrival.css" />
+<link rel="stylesheet" href="/assets/blueprint-arrival.css?v=signature-20260920" />
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -51,21 +50,6 @@
 <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
 </head>
 <body class="bp-readable bp-home">
-<div class="bp-arrival" data-blueprint-arrival>
-  <div class="bp-arrival-sheet" aria-hidden="true" inert>
-    <div class="bp-arrival-register"><strong>BLUEPRINT BUILDS</strong><span>FROM DRAWING<br>TO BUILD RECORD</span></div>
-    <div class="bp-arrival-rule"></div>
-    <div class="bp-arrival-composition">
-      <div class="bp-arrival-art" data-arrival-art></div>
-      <div class="bp-arrival-copy">
-        <p class="bp-arrival-caption">Every build. A clear record.</p>
-        <p class="bp-arrival-detail">Plans. Site evidence. Client decisions.</p>
-      </div>
-    </div>
-    <div class="bp-arrival-titleblock"><span>THE BLUEPRINT SIGNATURE</span><b>BUILT ON EVIDENCE</b></div>
-  </div>
-  <button class="bp-arrival-skip" type="button" data-arrival-skip>Skip intro</button>
-</div>
 <div class="blueprint-field" aria-hidden="true"></div>
 <div class="ambient ambient-a" aria-hidden="true"></div>
 <div class="ambient ambient-b" aria-hidden="true"></div>
@@ -106,14 +90,47 @@
 <main>
   <section class="hero">
     <div class="shell hero-grid">
-      <div class="hero-copy reveal">
-        <div class="eyebrow"><span class="pulse"></span> BUILT FOR THE JOB <span>//</span> CLEAR FOR THE CLIENT</div>
-        <h1>Build from the drawing.<br><span>Prove it from the field.</span></h1>
-        <p class="hero-lead">Current drawings. Site evidence. Clear client decisions. Keep the build and the record together.</p>
+      <div class="hero-copy">
+        <div class="eyebrow"><span class="pulse"></span> YOUR NEXT CHAPTER STARTS HERE</div>
+        <h1>The build,<br><span>made clear.</span></h1>
+        <p class="hero-lead">Projects, site evidence and decisions. One shared view. Less second-guessing.</p>
         <div class="hero-actions">
-          <a class="btn btn-primary btn-large" href="#access">Builders: register interest <span aria-hidden="true">→</span></a>
-          <a class="btn btn-quiet btn-large" href="/workspace/">Already invited? Open workspace</a>
+          <a class="btn btn-primary btn-large" href="/workspace/">Open workspace <span aria-hidden="true">↗</span></a>
+          <a class="btn btn-quiet btn-large" href="#access">Builders: register interest</a>
         </div>
+      </div>
+
+      <div class="bp-arrival hero-system" data-blueprint-arrival data-state="finished">
+        <div class="bp-arrival-sheet" aria-hidden="true" inert>
+          <svg class="bpb-plan-drawing" viewBox="0 0 520 440" fill="none" focusable="false">
+            <g class="bpb-plan-ghost">
+              <path d="M54 60H456V374H54V60Z M62 68H448V366H62V68Z"/>
+              <path d="M54 142H135M176 142H250V60M54 254H150M194 254H250V374M250 114H456M354 114V224M354 270V374M250 292H314M355 292H456"/>
+              <path d="M84 86H134V120H84V86Z M84 304H172V348H84V304Z M370 310H428V348H370V310Z"/>
+              <path d="M135 142V103 A39 39 0 0 1 174 142 M150 254V214 A40 40 0 0 1 190 254 M354 224H397 A43 43 0 0 1 354 267"/>
+            </g>
+            <g class="bpb-plan-detail">
+              <path d="M30 60V374 M22 60H38 M22 374H38 M54 34H456 M54 26V42 M456 26V42 M477 114V374 M470 114H484 M470 374H484"/>
+              <path d="M18 214H500 M258 18V412" stroke-dasharray="3 8" opacity=".3"/>
+              <path d="M47 53H67 M57 43V63 M443 367H463 M453 357V377 M37 389H57 M47 379V399"/>
+            </g>
+            <g class="bpb-plan-route">
+              <path data-trace pathLength="1" d="M54 168V60H250V140"/><path data-trace pathLength="1" d="M456 292V374H250V310"/>
+              <path data-trace pathLength="1" d="M54 292H116V222H157"/><path data-trace pathLength="1" d="M456 168H396V224H365"/>
+            </g>
+          </svg>
+          <div class="bpb-mark-stage" data-mark-stage>
+            <img class="bp-arrival-art" data-arrival-art src="/assets/blueprint-identity-master.webp" width="178" height="178" alt="" fetchpriority="high" decoding="sync" />
+            <div class="bp-arrival-rule"></div>
+          </div>
+        </div>
+        <button class="bp-arrival-skip" type="button" data-arrival-skip hidden aria-label="Skip welcome animation">Still view</button>
+      </div>
+    </div>
+    <div class="shell truth-rail" aria-label="Blueprint Builds connected workflow">
+      <span>PLAN</span><i></i><span>SITE</span><i></i><span>EVIDENCE</span><i></i><span>DECISION</span><i></i><span>RECORD</span>
+    </div>
+  <div class="bpb-welcome-audiences" aria-label="For building teams and clients"><div class="shell">
         <div class="hero-facts" aria-label="Blueprint Builds product facts">
           <span><i class="status status-live"></i> Current drawings</span>
           <span><i class="status status-offline"></i> Works without signal</span>
@@ -124,32 +141,12 @@
           <div><span>BUILD TEAM</span><p>Plans, site updates and decisions.</p><a href="#access">I run building projects <span aria-hidden="true">&rarr;</span></a></div>
           <div><span>CLIENT</span><p>Your progress, changes and next steps.</p><a href="#client-clarity">I am having something built <span aria-hidden="true">&rarr;</span></a></div>
         </div>
-      </div>
-
-      <div class="hero-system reveal" aria-label="Architectural drawing sequence">
-        <figure class="command-frame building-frame" data-building-sequence>
-          <figcaption class="building-heading"><span>FROM THE GROUND UP</span><b>A build, taking shape.</b></figcaption>
-<svg class="building-scene" viewBox="0 0 800 500" role="img" aria-labelledby="building-title building-description">
-  <title id="building-title">An arena building taking shape from set-out to site detail</title>
-  <desc id="building-description">An illustrative building with a ground plan, repeated portal frames, a pitched roof and a highlighted drainage route. This is not a construction drawing or a live project record.</desc>
-  <defs><pattern id="building-grid" width="28" height="28" patternUnits="userSpaceOnUse"><path d="M28 0H0V28" fill="none" stroke="currentColor" stroke-width=".5"/></pattern></defs>
-  <rect width="800" height="500" fill="url(#building-grid)" class="building-grid"/>
-  <g data-building-stage="setout"><path class="building-trace boundary" pathLength="1" d="M165.8 318.0L453.8 401.2L639.8 305.2L351.8 222.0L165.8 318.0"/><path class="building-trace slab" pathLength="1" d="M190.0 320.0L442.0 392.8L615.6 303.2L363.6 230.4L190.0 320.0"/><path class="building-trace datum" pathLength="1" d="M154.0 309.6L478.0 403.2"/><path class="building-trace datum" pathLength="1" d="M197.4 287.2L521.4 380.8"/><path class="building-trace datum" pathLength="1" d="M240.8 264.8L564.8 358.4"/><path class="building-trace datum" pathLength="1" d="M284.2 242.4L608.2 336.0"/><path class="building-trace datum" pathLength="1" d="M327.6 220.0L651.6 313.6"/><path class="building-trace datum" pathLength="1" d="M171.4 329.6L382.2 220.8"/><path class="building-trace datum" pathLength="1" d="M297.4 366.0L508.2 257.2"/><path class="building-trace datum" pathLength="1" d="M423.4 402.4L634.2 293.6"/></g>
-  <g data-building-stage="structure"><path class="building-trace portal" pathLength="1" d="M363.6 230.4L363.6 130.4L489.6 86.8L615.6 203.2L615.6 303.2"/><path class="building-trace portal" pathLength="1" d="M320.2 252.8L320.2 152.8L446.2 109.2L572.2 225.6L572.2 325.6"/><path class="building-trace portal" pathLength="1" d="M276.8 275.2L276.8 175.2L402.8 131.6L528.8 248.0L528.8 348.0"/><path class="building-trace portal" pathLength="1" d="M233.4 297.6L233.4 197.6L359.4 154.0L485.4 270.4L485.4 370.4"/><path class="building-trace portal" pathLength="1" d="M190.0 320.0L190.0 220.0L316.0 176.4L442.0 292.8L442.0 392.8"/><path class="building-trace eave" pathLength="1" d="M190.0 220.0L363.6 130.4"/><path class="building-trace eave" pathLength="1" d="M442.0 292.8L615.6 203.2"/><path class="building-trace ridge" pathLength="1" d="M316.0 176.4L489.6 86.8"/></g>
-  <g data-building-stage="roof"><path class="building-trace purlin" pathLength="1" d="M232.0 205.5L405.6 115.9"/><path class="building-trace purlin" pathLength="1" d="M274.0 190.9L447.6 101.3"/><path class="building-trace purlin" pathLength="1" d="M358.0 215.2L531.6 125.6"/><path class="building-trace purlin" pathLength="1" d="M400.0 254.0L573.6 164.4"/><path class="building-trace bracing" pathLength="1" d="M442.0 392.8L485.4 270.4L442.0 292.8L485.4 370.4"/><path class="building-trace bracing" pathLength="1" d="M485.4 370.4L528.8 248.0L485.4 270.4L528.8 348.0"/><path class="building-trace bracing" pathLength="1" d="M528.8 348.0L572.2 225.6L528.8 248.0L572.2 325.6"/><path class="building-trace bracing" pathLength="1" d="M572.2 325.6L615.6 203.2L572.2 225.6L615.6 303.2"/></g>
-  <g data-building-stage="detail"><path class="building-trace door" pathLength="1" d="M271.0 343.4L271.0 258.4L361.0 284.4L361.0 369.4"/><path class="building-trace stalls" pathLength="1" d="M485.4 370.4L485.4 312.9L516.4 296.9L516.4 354.4"/><path class="building-trace stalls" pathLength="1" d="M528.8 348.0L528.8 290.5L559.8 274.5L559.8 332.0"/><path class="building-trace stalls" pathLength="1" d="M572.2 325.6L572.2 268.1L603.2 252.1L603.2 309.6"/><path class="building-trace drain" pathLength="1" d="M471.8 406.4L571.0 355.2L601.4 354.0L675.8 315.6"/><circle class="building-outlet" cx="675.8" cy="315.6" r="5"/></g>
-  <g class="building-annotations" aria-hidden="true"><path d="M675.8 315.6V406H574"/><text x="575" y="427">SITE DETAIL</text><text x="575" y="444">Drainage route</text><path d="M278 177H160V143"/><text x="65" y="124">STRUCTURE</text><text x="65" y="141">Portal frames</text></g>
-  <text x="30" y="472" class="building-caption">ILLUSTRATIVE CONCEPT / NOT FOR CONSTRUCTION</text>
-</svg>
-          <div class="building-sequence-steps" aria-label="Drawing stages"><span>01 <b>Set-out</b></span><span>02 <b>Structure</b></span><span>03 <b>Roof</b></span><span>04 <b>Site detail</b></span></div>
-          <div class="building-controls"><span>Illustrative example. Not for construction.</span><button type="button" data-building-pause aria-pressed="false" hidden>Pause drawing</button><button type="button" data-building-replay hidden>Replay</button></div>
-        </figure>
-      </div>
-    </div>
-    <div class="shell truth-rail" aria-label="Blueprint Builds connected workflow">
-      <span>PLAN</span><i></i><span>SITE</span><i></i><span>EVIDENCE</span><i></i><span>DECISION</span><i></i><span>RECORD</span>
-    </div>
+  </div></div>
   </section>
+
+
+
+
 
   <section class="product-reality" id="product-reality">
     <div class="shell" id="proof-system">
@@ -256,6 +253,25 @@
         </article>
       </div>
     </div>
+  <div class="bpb-building-example" aria-label="Illustrative architectural sequence"><div class="shell">
+<figure class="command-frame building-frame" data-building-sequence>
+          <figcaption class="building-heading"><span>FROM THE GROUND UP</span><b>A build, taking shape.</b></figcaption>
+<svg class="building-scene" viewBox="0 0 800 500" role="img" aria-labelledby="building-title building-description">
+  <title id="building-title">An arena building taking shape from set-out to site detail</title>
+  <desc id="building-description">An illustrative building with a ground plan, repeated portal frames, a pitched roof and a highlighted drainage route. This is not a construction drawing or a live project record.</desc>
+  <defs><pattern id="building-grid" width="28" height="28" patternUnits="userSpaceOnUse"><path d="M28 0H0V28" fill="none" stroke="currentColor" stroke-width=".5"/></pattern></defs>
+  <rect width="800" height="500" fill="url(#building-grid)" class="building-grid"/>
+  <g data-building-stage="setout"><path class="building-trace boundary" pathLength="1" d="M165.8 318.0L453.8 401.2L639.8 305.2L351.8 222.0L165.8 318.0"/><path class="building-trace slab" pathLength="1" d="M190.0 320.0L442.0 392.8L615.6 303.2L363.6 230.4L190.0 320.0"/><path class="building-trace datum" pathLength="1" d="M154.0 309.6L478.0 403.2"/><path class="building-trace datum" pathLength="1" d="M197.4 287.2L521.4 380.8"/><path class="building-trace datum" pathLength="1" d="M240.8 264.8L564.8 358.4"/><path class="building-trace datum" pathLength="1" d="M284.2 242.4L608.2 336.0"/><path class="building-trace datum" pathLength="1" d="M327.6 220.0L651.6 313.6"/><path class="building-trace datum" pathLength="1" d="M171.4 329.6L382.2 220.8"/><path class="building-trace datum" pathLength="1" d="M297.4 366.0L508.2 257.2"/><path class="building-trace datum" pathLength="1" d="M423.4 402.4L634.2 293.6"/></g>
+  <g data-building-stage="structure"><path class="building-trace portal" pathLength="1" d="M363.6 230.4L363.6 130.4L489.6 86.8L615.6 203.2L615.6 303.2"/><path class="building-trace portal" pathLength="1" d="M320.2 252.8L320.2 152.8L446.2 109.2L572.2 225.6L572.2 325.6"/><path class="building-trace portal" pathLength="1" d="M276.8 275.2L276.8 175.2L402.8 131.6L528.8 248.0L528.8 348.0"/><path class="building-trace portal" pathLength="1" d="M233.4 297.6L233.4 197.6L359.4 154.0L485.4 270.4L485.4 370.4"/><path class="building-trace portal" pathLength="1" d="M190.0 320.0L190.0 220.0L316.0 176.4L442.0 292.8L442.0 392.8"/><path class="building-trace eave" pathLength="1" d="M190.0 220.0L363.6 130.4"/><path class="building-trace eave" pathLength="1" d="M442.0 292.8L615.6 203.2"/><path class="building-trace ridge" pathLength="1" d="M316.0 176.4L489.6 86.8"/></g>
+  <g data-building-stage="roof"><path class="building-trace purlin" pathLength="1" d="M232.0 205.5L405.6 115.9"/><path class="building-trace purlin" pathLength="1" d="M274.0 190.9L447.6 101.3"/><path class="building-trace purlin" pathLength="1" d="M358.0 215.2L531.6 125.6"/><path class="building-trace purlin" pathLength="1" d="M400.0 254.0L573.6 164.4"/><path class="building-trace bracing" pathLength="1" d="M442.0 392.8L485.4 270.4L442.0 292.8L485.4 370.4"/><path class="building-trace bracing" pathLength="1" d="M485.4 370.4L528.8 248.0L485.4 270.4L528.8 348.0"/><path class="building-trace bracing" pathLength="1" d="M528.8 348.0L572.2 225.6L528.8 248.0L572.2 325.6"/><path class="building-trace bracing" pathLength="1" d="M572.2 325.6L615.6 203.2L572.2 225.6L615.6 303.2"/></g>
+  <g data-building-stage="detail"><path class="building-trace door" pathLength="1" d="M271.0 343.4L271.0 258.4L361.0 284.4L361.0 369.4"/><path class="building-trace stalls" pathLength="1" d="M485.4 370.4L485.4 312.9L516.4 296.9L516.4 354.4"/><path class="building-trace stalls" pathLength="1" d="M528.8 348.0L528.8 290.5L559.8 274.5L559.8 332.0"/><path class="building-trace stalls" pathLength="1" d="M572.2 325.6L572.2 268.1L603.2 252.1L603.2 309.6"/><path class="building-trace drain" pathLength="1" d="M471.8 406.4L571.0 355.2L601.4 354.0L675.8 315.6"/><circle class="building-outlet" cx="675.8" cy="315.6" r="5"/></g>
+  <g class="building-annotations" aria-hidden="true"><path d="M675.8 315.6V406H574"/><text x="575" y="427">SITE DETAIL</text><text x="575" y="444">Drainage route</text><path d="M278 177H160V143"/><text x="65" y="124">STRUCTURE</text><text x="65" y="141">Portal frames</text></g>
+  <text x="30" y="472" class="building-caption">ILLUSTRATIVE CONCEPT / NOT FOR CONSTRUCTION</text>
+</svg>
+          <div class="building-sequence-steps" aria-label="Drawing stages"><span>01 <b>Set-out</b></span><span>02 <b>Structure</b></span><span>03 <b>Roof</b></span><span>04 <b>Site detail</b></span></div>
+          <div class="building-controls"><span>Illustrative example. Not for construction.</span><button type="button" data-building-pause aria-pressed="false" hidden>Pause drawing</button><button type="button" data-building-replay hidden>Replay</button></div>
+        </figure>
+  </div></div>
   </section>
 
   <section class="offline-demo" id="offline-demo">
@@ -373,11 +389,10 @@
   <div class="shell footer-bottom"><span>© <span data-testid="footer-year"></span> Blueprint Builds</span><span>Built for the job. Clear for the client.</span></div>
 </footer>
 <div class="toast" data-testid="toast" role="status" aria-live="polite"></div>
-<script src="/assets/blueprint-arrival.js"></script>
+<script src="/assets/blueprint-arrival.js?v=signature-20260920"></script>
 <script src="/assets/landing.js"></script>
 <script src="/assets/home.js"></script>
 <script src="/assets/blueprint-building.js"></script>
-<script src="/assets/blueprint-pulse.js"></script>
 <script src="/assets/blueprint-motion-system.js"></script>
 </body>
 </html>
