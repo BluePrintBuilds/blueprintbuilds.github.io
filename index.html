@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Blueprint Builds — Plans, Site Proof & Client Decisions</title>
 <meta name="description" content="Keep current drawings, site records, variations, approvals and progress connected from the first day on site to handover." />
-<meta name="theme-color" content="#050A10" />
+<meta name="theme-color" content="#04101f">
 <meta name="robots" content="index,follow,max-image-preview:large" />
 <link rel="icon" sizes="16x16" href="/assets/icons/fingerprint-16.png" type="image/png">
 <link rel="icon" sizes="32x32" href="/assets/icons/fingerprint-32.png" type="image/png">
@@ -48,8 +48,9 @@
 </script>
 <link rel="stylesheet" href="/assets/blueprint-readability-v1.css">
 <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="stylesheet" href="/assets/blueprint-system-v1.css">
 </head>
-<body class="bp-readable bp-home">
+<body class="bp-readable bp-home" data-bpb-system="signature-v1" data-bpb-surface="home">
 <div class="blueprint-field" aria-hidden="true"></div>
 <div class="ambient ambient-a" aria-hidden="true"></div>
 <div class="ambient ambient-b" aria-hidden="true"></div>
@@ -102,23 +103,29 @@
 
       <div class="bp-arrival hero-system" data-blueprint-arrival data-state="finished">
         <div class="bp-arrival-sheet" aria-hidden="true" inert>
-          <svg class="bpb-plan-drawing" viewBox="0 0 520 440" fill="none" focusable="false">
-            <g class="bpb-plan-ghost">
-              <path d="M54 60H456V374H54V60Z M62 68H448V366H62V68Z"/>
-              <path d="M54 142H135M176 142H250V60M54 254H150M194 254H250V374M250 114H456M354 114V224M354 270V374M250 292H314M355 292H456"/>
-              <path d="M84 86H134V120H84V86Z M84 304H172V348H84V304Z M370 310H428V348H370V310Z"/>
-              <path d="M135 142V103 A39 39 0 0 1 174 142 M150 254V214 A40 40 0 0 1 190 254 M354 224H397 A43 43 0 0 1 354 267"/>
-            </g>
-            <g class="bpb-plan-detail">
-              <path d="M30 60V374 M22 60H38 M22 374H38 M54 34H456 M54 26V42 M456 26V42 M477 114V374 M470 114H484 M470 374H484"/>
-              <path d="M18 214H500 M258 18V412" stroke-dasharray="3 8" opacity=".3"/>
-              <path d="M47 53H67 M57 43V63 M443 367H463 M453 357V377 M37 389H57 M47 379V399"/>
-            </g>
-            <g class="bpb-plan-route">
-              <path data-trace pathLength="1" d="M54 168V60H250V140"/><path data-trace pathLength="1" d="M456 292V374H250V310"/>
-              <path data-trace pathLength="1" d="M54 292H116V222H157"/><path data-trace pathLength="1" d="M456 168H396V224H365"/>
-            </g>
-          </svg>
+          <svg class="bpb-plan-drawing" viewBox="0 0 600 480" fill="none" focusable="false">
+ <path class="bpb-plan-floor" d="M62 337L310 205L554 335L307 467Z"/>
+ <g class="bpb-plan-ghost">
+  <path d="M62 337L310 205L554 335L307 467L62 337Z M92 325L308 210L521 326L306 441L92 325Z M114 329L307 226L500 329L306 431L114 329Z"/>
+  <path d="M133 317L307 224L482 317 M153 328L326 235 M174 339L347 246 M196 350L368 257 M217 362L389 269 M239 373L411 280 M260 384L432 291 M281 395L454 303 M133 317L306 411L482 317 M156 305L329 399 M179 293L352 387 M202 281L375 375 M225 269L398 363 M248 257L421 351 M271 245L444 339" opacity=".44"/>
+  <path d="M170 319L280 260L340 292L298 315L347 342L257 390L170 343V319Z M355 283L428 322L366 355L316 328 M241 282L283 305L241 327L201 305 M274 351L319 375 M259 362L290 379"/>
+  <path d="M113 325V166L310 61L509 169V326 M310 61V211 M113 166L310 272L509 169 M113 325L310 431L509 326" stroke-dasharray="4 6"/>
+ </g>
+ <g class="bpb-plan-detail">
+  <path d="M62 320V352 M53 337H72 M554 320V352 M545 335H564 M307 449V479 M295 467H319 M310 47V75 M301 61H319"/>
+  <path d="M84 143V317 M76 147H92 M76 307H92 M536 148V337 M528 158H544 M528 328H544 M310 7V56 M310 277V439" stroke-dasharray="3 7"/>
+  <path d="M156 262V214 M163 214H149 M163 261H149 M459 266V218 M452 218H466 M452 266H466"/>
+ </g>
+ <g class="bpb-plan-route">
+  <path data-trace pathLength="1" d="M62 337L307 467L554 335"/>
+  <path data-trace pathLength="1" d="M62 337L310 205L554 335"/>
+  <path data-trace pathLength="1" d="M113 325L306 431L509 326"/>
+  <path data-trace pathLength="1" d="M113 325V166L310 61L509 169V326"/>
+  <path data-trace pathLength="1" d="M310 61V7 M310 270V304 M154 336L241 383L301 351"/>
+  <path data-trace pathLength="1" d="M362 354L459 303V263 M155 287L199 263V227"/>
+ </g>
+ <g class="bpb-plan-node"><circle cx="62" cy="337" r="2.8"/><circle cx="307" cy="467" r="3"/><circle cx="554" cy="335" r="2.8"/><circle cx="113" cy="166" r="2.3"/><circle cx="310" cy="61" r="2.7"/><circle cx="509" cy="169" r="2.3"/><circle cx="306" cy="431" r="2.3"/></g>
+</svg>
           <div class="bpb-mark-stage" data-mark-stage>
             <img class="bp-arrival-art" data-arrival-art src="/assets/blueprint-identity-master.webp" width="178" height="178" alt="" fetchpriority="high" decoding="sync" />
             <div class="bp-arrival-rule"></div>
@@ -128,7 +135,7 @@
       </div>
     </div>
     <div class="shell truth-rail" aria-label="Blueprint Builds connected workflow">
-      <span>PLAN</span><i></i><span>SITE</span><i></i><span>EVIDENCE</span><i></i><span>DECISION</span><i></i><span>RECORD</span>
+      <span><svg aria-hidden="true" viewBox="0 0 24 24" focusable="false"><path d="M6 3h9l4 4v14H6z M14 3v5h5 M9 12h7 M9 16h5"/></svg>PLAN</span><i></i><span><svg aria-hidden="true" viewBox="0 0 24 24" focusable="false"><path d="M4 19L20 3v16H4z M10 15l6-6v6z M4 3h5v5H4z"/></svg>SITE</span><i></i><span><svg aria-hidden="true" viewBox="0 0 24 24" focusable="false"><path d="M4 7h4l2-3h5l2 3h4v13H4z"/><circle cx="12.5" cy="13" r="4"/></svg>EVIDENCE</span><i></i><span><svg aria-hidden="true" viewBox="0 0 24 24" focusable="false"><rect x="4" y="3" width="17" height="18" rx="2"/><path d="M8 12l3 3 6-7"/></svg>DECISION</span><i></i><span><svg aria-hidden="true" viewBox="0 0 24 24" focusable="false"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14c0 4 16 4 16 0V5 M4 10c0 4 16 4 16 0 M4 15c0 4 16 4 16 0"/></svg>RECORD</span>
     </div>
   <div class="bpb-welcome-audiences" aria-label="For building teams and clients"><div class="shell">
         <div class="hero-facts" aria-label="Blueprint Builds product facts">

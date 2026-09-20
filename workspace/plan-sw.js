@@ -1,4 +1,4 @@
-const CACHE = 'blueprint-plan-desk-shell-v5';
+const CACHE = 'blueprint-plan-desk-shell-v6';
 const SHELL = [
   '/workspace/plan/',
   '/workspace/core.js',
@@ -7,6 +7,7 @@ const SHELL = [
   '/workspace/plan/plan.js',
   '/styles.css',
   '/assets/blueprint-readability-v1.css',
+  '/assets/blueprint-system-v1.css',
   '/assets/blueprint-fingerprint.png',
   '/apple-touch-icon.png',
   '/assets/icons/fingerprint-16.png',
