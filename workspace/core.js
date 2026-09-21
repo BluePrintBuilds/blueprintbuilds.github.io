@@ -1,5 +1,5 @@
 const SUPABASE_URL = 'https://mxjuknqwzbvvmmdrvkql.supabase.co';
-const ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im14anVrbnF3emJ2dm1tZHJ2a3FsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU5ODU4MjcsImV4cCI6MjEwMTU2MTgyN30.RNrDixA6B1TgVHqoswkMDSYlwywGYfcC0P7SYY8A_lY';
+const PUBLISHABLE_KEY = 'sb_publishable_NuXysCFLmpv66WEOx0YFQg__GTwZz4K';
 const PLAN_DESK_EDGE = `${SUPABASE_URL}/functions/v1/blueprint-plan-desk-v1`;
 const TOKEN_KEY = 'blueprint.workspace.token';
 const SESSION_KEY = 'blueprint.workspace.session.v1';
@@ -88,7 +88,7 @@ function inPlanDesk() {
 
 function authHeaders(token, json = true) {
   return {
-    apikey: ANON_KEY,
+    apikey: PUBLISHABLE_KEY,
     Authorization: `Bearer ${token}`,
     ...(json ? { 'Content-Type': 'application/json' } : {}),
   };
@@ -96,7 +96,7 @@ function authHeaders(token, json = true) {
 
 function planSessionHeaders(token, json = true) {
   return {
-    apikey: ANON_KEY,
+    apikey: PUBLISHABLE_KEY,
     'X-Blueprint-API-Version': '1',
     'X-Blueprint-Client': 'web-plan-desk',
     ...(token ? { 'X-Blueprint-Plan-Session': token } : {}),
@@ -133,7 +133,7 @@ async function refreshSession(force = false) {
     refreshPromise = (async () => {
       const response = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=refresh_token`, {
         method: 'POST',
-        headers: { apikey: ANON_KEY, 'Content-Type': 'application/json' },
+        headers: { apikey: PUBLISHABLE_KEY, 'Content-Type': 'application/json' },
         body: JSON.stringify({ refresh_token: session.refresh_token }),
         cache: 'no-store',
         referrerPolicy: 'no-referrer',
@@ -190,7 +190,7 @@ export async function signIn(email, password) {
   clearPlanSession();
   const response = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=password`, {
     method: 'POST',
-    headers: { apikey: ANON_KEY, 'Content-Type': 'application/json' },
+    headers: { apikey: PUBLISHABLE_KEY, 'Content-Type': 'application/json' },
     body: JSON.stringify({ email: email.trim(), password }),
   });
   if (!response.ok) throw await responseFailure(response, 'Check the email and password and try again.');

@@ -110,7 +110,7 @@
     'use strict';
     var SUPABASE_URL = 'https://mxjuknqwzbvvmmdrvkql.supabase.co';
     // Publishable key: safe to embed, it grants nothing without a user session.
-    var ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im14anVrbnF3emJ2dm1tZHJ2a3FsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU5ODU4MjcsImV4cCI6MjEwMTU2MTgyN30.RNrDixA6B1TgVHqoswkMDSYlwywGYfcC0P7SYY8A_lY';
+    var PUBLISHABLE_KEY = 'sb_publishable_NuXysCFLmpv66WEOx0YFQg__GTwZz4K';
     var MAX_BYTES = 52428800;
     var MIME_BY_EXT = { pdf: 'application/pdf', png: 'image/png', jpg: 'image/jpeg', jpeg: 'image/jpeg', webp: 'image/webp', heic: 'image/heic' };
     var STAFF_ROLES = ['Owner', 'Project manager', 'Site lead'];
@@ -143,7 +143,7 @@
       if (!force && (!tokens.expires_at || remaining > 90)) return Promise.resolve(tokens.access_token);
       if (!tokens.refresh_token) return Promise.resolve(tokens.access_token);
       return fetch(SUPABASE_URL + '/auth/v1/token?grant_type=refresh_token', {
-        method: 'POST', headers: { apikey: ANON_KEY, 'Content-Type': 'application/json' },
+        method: 'POST', headers: { apikey: PUBLISHABLE_KEY, 'Content-Type': 'application/json' },
         body: JSON.stringify({ refresh_token: tokens.refresh_token }), cache: 'no-store', referrerPolicy: 'no-referrer',
       }).then(function (response) {
         if (!response.ok) {
@@ -169,7 +169,7 @@
     function api(path, options) {
       function send(token) {
         var requestOptions = Object.assign({}, options || {});
-        requestOptions.headers = Object.assign({ apikey: ANON_KEY }, (options && options.headers) || {});
+        requestOptions.headers = Object.assign({ apikey: PUBLISHABLE_KEY }, (options && options.headers) || {});
         if (token) requestOptions.headers.Authorization = 'Bearer ' + token;
         return fetch(SUPABASE_URL + path, requestOptions);
       }
@@ -205,7 +205,7 @@
 
       fetch(SUPABASE_URL + '/auth/v1/token?grant_type=password', {
         method: 'POST',
-        headers: { apikey: ANON_KEY, 'Content-Type': 'application/json' },
+        headers: { apikey: PUBLISHABLE_KEY, 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: el('email').value.trim(), password: el('password').value }),
       }).then(function (response) {
         if (!response.ok) {

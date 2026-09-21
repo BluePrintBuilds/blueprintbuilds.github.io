@@ -1,5 +1,5 @@
 const SUPABASE_URL = 'https://mxjuknqwzbvvmmdrvkql.supabase.co';
-const ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im14anVrbnF3emJ2dm1tZHJ2a3FsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU5ODU4MjcsImV4cCI6MjEwMTU2MTgyN30.RNrDixA6B1TgVHqoswkMDSYlwywGYfcC0P7SYY8A_lY';
+const PUBLISHABLE_KEY = 'sb_publishable_NuXysCFLmpv66WEOx0YFQg__GTwZz4K';
 
 const ROLE_PROFILE = {
   Owner: {
@@ -120,7 +120,7 @@ async function requestJson(url, options = {}) {
 
 async function fetchAccount() {
   const user = await requestJson(`${SUPABASE_URL}/auth/v1/user`, {
-    headers: { apikey: ANON_KEY, Authorization: `Bearer ${accessToken}` },
+    headers: { apikey: PUBLISHABLE_KEY, Authorization: `Bearer ${accessToken}` },
   });
   if (!user?.email) throw new Error('verification_unavailable');
   return user;
@@ -129,7 +129,7 @@ async function fetchAccount() {
 async function savePassword(password) {
   await requestJson(`${SUPABASE_URL}/auth/v1/user`, {
     method: 'PUT',
-    headers: { apikey: ANON_KEY, Authorization: `Bearer ${accessToken}`, 'Content-Type': 'application/json' },
+    headers: { apikey: PUBLISHABLE_KEY, Authorization: `Bearer ${accessToken}`, 'Content-Type': 'application/json' },
     body: JSON.stringify({ password }),
   });
 }
@@ -137,7 +137,7 @@ async function savePassword(password) {
 async function recordAcceptance() {
   return requestJson(`${SUPABASE_URL}/rest/v1/rpc/blueprint_mobile_accept_invite`, {
     method: 'POST',
-    headers: { apikey: ANON_KEY, Authorization: `Bearer ${accessToken}`, 'Content-Type': 'application/json' },
+    headers: { apikey: PUBLISHABLE_KEY, Authorization: `Bearer ${accessToken}`, 'Content-Type': 'application/json' },
     body: '{}',
   });
 }
