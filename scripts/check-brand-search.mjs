@@ -25,6 +25,9 @@ const expected = [
 for (const value of expected) assert.ok(html.includes(value), 'Missing approved discovery or identity reference: ' + value);
 assert.match(html, /<title>[^<]*Blueprint Builds[^<]*Construction[^<]*<\/title>/i, 'Search title should identify Blueprint and its construction purpose');
 assert.match(html, /<meta name="description" content="[^"]*builders[^"]*clients[^"]*"/i, 'Search description should describe the intended audiences');
+assert.match(html, /<button[^>]*data-arrival-replay[^>]*hidden[^>]*>/, 'The optional intro replay must start hidden until supported');
+assert.match(html, /<script src="\/assets\/blueprint-arrival\.js\?[^"]+"><\/script>/, 'The current versioned welcome script must load');
+assert.match(html, /<link rel="stylesheet" href="\/assets\/blueprint-arrival\.css\?[^"]+"/, 'The current versioned welcome stylesheet must load');
 assert.ok(readFileSync('sitemap.xml', 'utf8').includes('<loc>https://blueprintbuilds.app/</loc>'), 'Sitemap must include the canonical homepage');
 assert.ok(readFileSync('robots.txt', 'utf8').includes('Sitemap: https://blueprintbuilds.app/sitemap.xml'), 'Robots file must advertise the canonical sitemap');
 console.log('PASS: approved fingerprint, browser icon, social preview, search metadata and sitemap references');
