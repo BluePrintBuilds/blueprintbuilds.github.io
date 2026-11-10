@@ -1,14 +1,6 @@
 (function () {
   'use strict';
 
-  var navToggle = document.querySelector("[data-testid='nav-menu-toggle']");
-  var navMenu = document.querySelector("[data-testid='mobile-menu']");
-  if (navToggle && navMenu) {
-    navToggle.addEventListener('click', function () {
-      navToggle.setAttribute('aria-expanded', navMenu.classList.contains('open') ? 'true' : 'false');
-    });
-  }
-
   var roleTabs = Array.from(document.querySelectorAll('[data-role-tab]'));
   roleTabs.forEach(function (tab) {
     tab.setAttribute('aria-selected', tab.classList.contains('active') ? 'true' : 'false');

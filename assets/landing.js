@@ -7,11 +7,22 @@
   var toggle = document.querySelector("[data-testid='nav-menu-toggle']");
   var menu = document.querySelector("[data-testid='mobile-menu']");
   if (toggle && menu) {
+    function setMenuOpen(open) {
+      menu.classList.toggle("open", open);
+      toggle.setAttribute("aria-expanded", open ? "true" : "false");
+      toggle.setAttribute("aria-label", open ? "Close menu" : "Open menu");
+    }
     toggle.addEventListener("click", function () {
-      menu.classList.toggle("open");
+      setMenuOpen(!menu.classList.contains("open"));
     });
     menu.querySelectorAll("a").forEach(function (a) {
-      a.addEventListener("click", function () { menu.classList.remove("open"); });
+      a.addEventListener("click", function () { setMenuOpen(false); });
+    });
+    document.addEventListener("keydown", function (event) {
+      if (event.key === "Escape" && menu.classList.contains("open")) {
+        setMenuOpen(false);
+        toggle.focus();
+      }
     });
   }
 
