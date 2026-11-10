@@ -1,52 +1,64 @@
-/* Approved Blueprint welcome: one 2.4s decorative pass inside the hero.
- * Static artwork and working links are present before this script runs.
- * No fullscreen curtain, authentication, video load or returning-user delay. */
+/* Blueprint welcome: an optional 2.4s decorative pass inside the hero.
+ * Static artwork and working links remain available throughout.
+ * Returning visitors can replay it without a fullscreen curtain or video. */
 (() => {
   'use strict';
   const root = document.querySelector('[data-blueprint-arrival]');
   const artwork = root?.querySelector('[data-arrival-art]');
+  const skip = root?.querySelector('[data-arrival-skip]');
+  const replay = root?.querySelector('[data-arrival-replay]');
   if (!root || !artwork) return;
   root.dataset.state = 'finished';
   const motion = matchMedia('(prefers-reduced-motion: reduce)');
-  const navigation = performance.getEntriesByType('navigation')[0];
-  if (!root.animate || motion.matches || navigator.connection?.saveData || document.hidden || location.hash || navigation?.type === 'back_forward') return;
-  const key = 'blueprint-signature-welcome-v1';
-  try { if (sessionStorage.getItem(key)) return; sessionStorage.setItem(key, 'seen'); } catch { return; }
-  const skip = root.querySelector('[data-arrival-skip]');
-  const animations = [], initialScroll = { x: scrollX, y: scrollY };
-  let finished = false, expiry = null;
+  const events = ['pointerdown', 'keydown', 'wheel', 'touchstart', 'focusin', 'resize', 'pagehide'];
+  let finished = true, expiry = null, initialScroll = { x: scrollX, y: scrollY };
+  let animations = [], replayHadFocus = false;
+  const canAnimate = () => !!root.animate && !motion.matches && !navigator.connection?.saveData;
+  const showReplay = () => {
+    if (replay) replay.hidden = !canAnimate() || !finished || (artwork.complete && !artwork.naturalWidth);
+  };
   const interaction = event => {
-    if (event.target instanceof Element && event.target.closest('[data-arrival-skip]')) return;
+    if (event.target instanceof Element && event.target.closest('[data-arrival-skip], [data-arrival-replay]')) return;
     finish('interaction');
   };
   const scroll = () => { if (scrollX !== initialScroll.x || scrollY !== initialScroll.y) finish('scroll'); };
   const background = () => { if (document.hidden) finish('background'); };
-  const preference = () => finish('motion-preference');
-  const events = ['pointerdown', 'keydown', 'wheel', 'touchstart', 'focusin', 'resize', 'pagehide'];
+  const preference = () => {
+    if (motion.matches) finish('motion-preference');
+    showReplay();
+  };
+  const dataSaver = () => {
+    if (navigator.connection?.saveData) finish('data-saver');
+    showReplay();
+  };
+  const failedArt = () => finish('image-error');
   function finish(reason = 'complete') {
     if (finished) return;
+    const restoreReplayFocus = document.activeElement === skip;
     finished = true; clearTimeout(expiry);
-    animations.forEach(animation => animation.cancel());
+    animations.forEach(animation => animation.cancel()); animations = [];
     root.classList.remove('is-active'); root.dataset.state = 'finished';
     root.dataset.finishReason = typeof reason === 'string' ? reason : 'interaction';
-    if (skip) { skip.hidden = true; skip.removeEventListener('click', finish); }
+    if (skip) skip.hidden = true;
     artwork.removeEventListener('load', start); artwork.removeEventListener('error', failedArt);
     events.forEach(event => window.removeEventListener(event, interaction, true));
     window.removeEventListener('scroll', scroll, true);
     document.removeEventListener('visibilitychange', background);
-    motion.removeEventListener?.('change', preference);
-    navigator.connection?.removeEventListener?.('change', dataSaver);
+    showReplay();
+    if (restoreReplayFocus && replay && !replay.hidden) replay.focus({ preventScroll: true });
   }
-  const failedArt = () => finish('image-error');
-  const dataSaver = () => { if (navigator.connection?.saveData) finish('data-saver'); };
   function animate(element, frames, options) {
     if (!element) return;
     animations.push(element.animate(frames, { fill: 'both', easing: 'cubic-bezier(.2,.75,.25,1)', ...options }));
   }
   function start() {
-    if (finished || motion.matches || document.hidden || !artwork.naturalWidth) return;
+    if (finished) return;
+    if (!canAnimate() || document.hidden || !artwork.naturalWidth) { finish('unavailable'); return; }
     clearTimeout(expiry); root.classList.add('is-active'); root.dataset.state = 'playing';
-    if (skip) skip.hidden = false;
+    if (skip) {
+      skip.hidden = false;
+      if (replayHadFocus) skip.focus({ preventScroll: true });
+    }
     try {
       root.querySelectorAll('[data-trace]').forEach((path, index) => animate(path,
         [{ strokeDasharray: '1', strokeDashoffset: '1', opacity: .15 }, { strokeDasharray: '1', strokeDashoffset: '0', opacity: .82 }],
@@ -73,16 +85,35 @@
       expiry = setTimeout(() => finish('complete'), 2400);
     } catch { finish('unsupported-motion'); }
   }
-  events.forEach(event => window.addEventListener(event, interaction, { capture: true, passive: true }));
-  window.addEventListener('scroll', scroll, { capture: true, passive: true });
-  document.addEventListener('visibilitychange', background);
+  function begin() {
+    if (!finished || !canAnimate() || document.hidden) return;
+    finished = false;
+    replayHadFocus = document.activeElement === replay;
+    if (replay) replay.hidden = true;
+    initialScroll = { x: scrollX, y: scrollY };
+    events.forEach(event => window.addEventListener(event, interaction, { capture: true, passive: true }));
+    window.addEventListener('scroll', scroll, { capture: true, passive: true });
+    document.addEventListener('visibilitychange', background);
+    if (artwork.complete && artwork.naturalWidth) start();
+    else {
+      expiry = setTimeout(() => finish('image-deadline'), 350);
+      artwork.addEventListener('load', start, { once: true });
+      artwork.addEventListener('error', failedArt, { once: true });
+    }
+  }
+  artwork.addEventListener('load', showReplay);
+  artwork.addEventListener('error', showReplay);
+  replay?.addEventListener('click', begin);
+  skip?.addEventListener('click', () => finish('skip'));
   motion.addEventListener?.('change', preference);
   navigator.connection?.addEventListener?.('change', dataSaver);
-  skip?.addEventListener('click', finish);
-  if (artwork.complete && artwork.naturalWidth) start();
-  else {
-    expiry = setTimeout(() => finish('image-deadline'), 350);
-    artwork.addEventListener('load', start, { once: true });
-    artwork.addEventListener('error', failedArt, { once: true });
-  }
+  showReplay();
+  const navigation = performance.getEntriesByType('navigation')[0];
+  if (!canAnimate() || document.hidden || location.hash || navigation?.type === 'back_forward') return;
+  const key = 'blueprint-signature-welcome-v1';
+  try {
+    if (sessionStorage.getItem(key)) return;
+    sessionStorage.setItem(key, 'seen');
+  } catch { return; }
+  begin();
 })();

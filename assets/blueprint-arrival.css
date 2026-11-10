@@ -38,3 +38,11 @@
 @media(prefers-reduced-motion:reduce){.bp-arrival *{animation:none!important;transition:none!important}.bp-arrival-skip{display:none!important}}
 
 .bpb-welcome-audiences{padding:14px 0 26px;background:#07131f}.bpb-welcome-audiences .hero-facts{margin-top:0}.bpb-welcome-audiences .hero-audiences{margin-top:20px}
+
+/* A quiet optional replay for visitors who missed the first pass. */
+.bp-arrival-replay{position:absolute;right:14px;bottom:0;min-height:44px;padding:9px 13px;border:1px solid #38536b;border-radius:9px;color:#c7d9e9;background:#0b1928;font:500 14px/1.4 var(--sans);pointer-events:auto;cursor:pointer}
+.bp-arrival-replay[hidden]{display:none!important}
+.bp-arrival-replay:hover{background:#132a3e;color:#fff}
+.bp-arrival-replay:focus-visible{outline:2px solid #8dcfff;outline-offset:4px}
+@media(max-width:700px){.bp-arrival-replay{right:0;bottom:-6px}}
+@media(prefers-reduced-motion:reduce){.bp-arrival-replay{display:none!important}}
