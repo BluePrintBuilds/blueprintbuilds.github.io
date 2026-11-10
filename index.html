@@ -72,15 +72,16 @@
     <div class="nav-actions">
       <a class="btn btn-quiet" href="/workspace/">Sign in</a>
       <a class="btn btn-primary" href="#access">Builders: register interest</a>
-      <button class="nav-toggle" data-testid="nav-menu-toggle" type="button" aria-label="Open menu" aria-expanded="false">
+      <button class="nav-toggle" data-testid="nav-menu-toggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="site-menu">
         <span></span><span></span><span></span>
       </button>
     </div>
   </div>
-  <div class="mobile-menu" data-testid="mobile-menu">
+  <div class="mobile-menu" id="site-menu" data-testid="mobile-menu">
     <a href="#plan-desk">Plan Desk</a>
     <a href="#live-record">Live record</a>
     <a href="#proof-system">Proof system</a>
+    <a href="#client-clarity">For clients</a>
     <a href="#roles">Access</a>
     <a href="#security">Security</a>
     <a href="/workspace/">Builder Workspace</a>
@@ -94,7 +95,7 @@
       <div class="hero-copy">
         <div class="eyebrow"><span class="pulse"></span> YOUR NEXT CHAPTER STARTS HERE</div>
         <h1>The build,<br><span>made clear.</span></h1>
-        <p class="hero-lead">Plans, site evidence and decisions — connected to one source-backed record that still makes sense when the signal drops.</p>
+        <p class="hero-lead">Capture site updates when the signal drops. Keep decisions and plans together, with a clear view of the build for clients.</p>
         <div class="hero-actions">
           <a class="btn btn-primary btn-large" href="/workspace/">Open workspace <span aria-hidden="true">↗</span></a>
           <a class="btn btn-quiet btn-large" href="#access">Builders: register interest</a>
@@ -158,8 +159,21 @@
   <section class="product-reality" id="product-reality">
     <div class="shell" id="proof-system">
       <div class="section-heading product-reality-heading reveal">
-        <div><span class="section-kicker">THE ACTUAL PRODUCT // 1.0.3</span><h2>From site note to a clear decision.</h2></div>
-        <p>Explore the actual Capture, project and decision screens below. Shown with demo data.</p>
+        <div><span class="section-kicker">EXPLORE THE EXPERIENCE // DEMO</span><h2>From site note to a clear decision.</h2></div>
+        <p>See how a site update can become a clear decision, then explore the product screens below. The project information shown is demo data.</p>
+      </div>
+      <div class="change-example reveal" id="change-example" role="group" aria-labelledby="change-example-title">
+        <div class="change-example-heading">
+          <div><span class="section-kicker">ONE EXAMPLE // SITE TO CLIENT</span><h3 id="change-example-title">A drainage detail changes.</h3></div>
+          <p>Keep the important details together, from the first site note to the decision and the record afterwards.</p>
+        </div>
+        <ol class="change-example-steps">
+          <li><span>01 / NOTICE</span><strong>Capture the issue</strong><p>Record a site photo or note while the detail is fresh.</p></li>
+          <li><span>02 / REVIEW</span><strong>Explain the change</strong><p>Set out what is proposed and any cost or time impact.</p></li>
+          <li><span>03 / DECIDE</span><strong>Invite a response</strong><p>The right person reviews the decision meant for them.</p></li>
+          <li><span>04 / REMEMBER</span><strong>Find the proof</strong><p>Return to the records that explain what happened.</p></li>
+        </ol>
+        <p class="change-example-note">Illustrative example. A project record depends on what its team has captured and confirmed.</p>
       </div>
       <div class="product-reality-stage reveal">
         <svg class="product-reality-wires" viewBox="0 0 1200 760" preserveAspectRatio="none" aria-hidden="true">
@@ -181,7 +195,7 @@
           <figcaption class="product-shot-label"><span>02 // PROJECT</span><b>YOUR BUILD</b></figcaption>
           <div class="product-device">
             <div class="product-viewport"><img src="/assets/product-media/project-command-product.png" width="860" height="1400" loading="lazy" alt="Blueprint Builds project view showing measured progress, the build timeline and a blocking decision" /></div>
-            <div class="product-device-footer"><span>MEASURED FROM THE RECORD</span><b>LIVE SURFACE</b></div>
+            <div class="product-device-footer"><span>MEASURED FROM THE RECORD</span><b>DEMO DATA</b></div>
           </div>
         <a class="bp-screen-link" href="/assets/product-media/project-command-product.png" target="_blank" rel="noopener" aria-label="View full-size Project example screen (opens a new tab)">View full-size Project screen</a>
         </figure>
@@ -193,7 +207,7 @@
           </div>
         <a class="bp-screen-link" href="/assets/product-media/inbox-product.png" target="_blank" rel="noopener" aria-label="View full-size Inbox example screen (opens a new tab)">View full-size Inbox screen</a>
         </figure>
-        <div class="product-release-note"><strong>REAL UI</strong> // SAFE DEMO WORKSPACE // CURRENT RELEASE SURFACE</div>
+        <div class="product-release-note"><strong>PRODUCT SCREENS</strong> // ILLUSTRATIVE PROJECT DATA</div>
       </div>
       <div class="product-swipe-hint" aria-hidden="true">SWIPE // PROJECT -> CAPTURE -> INBOX</div>
       <div class="product-reality-rail" aria-label="Current product proof points">
@@ -284,9 +298,9 @@
   <section class="offline-demo" id="offline-demo">
     <div class="shell offline-layout">
       <div class="offline-copy reveal">
-        <span class="section-kicker">OFFLINE, PROVEN</span>
+        <span class="section-kicker">OFFLINE // HOW IT WORKS</span>
         <h2>Drop the signal.<br>Keep the record.</h2>
-        <p>Try it here. Turn the simulated connection off and capture a record. Blueprint keeps the time it happened and queues the update instead of losing it.</p>
+        <p>Try the simulation: switch the connection off, capture a record and reconnect. In the app, prepare plans before going offline and check pending updates have synced when signal returns.</p><p class="simulation-note">This demonstration uses sample data and does not create a project record.</p>
         <div class="network-control">
           <div class="switch" data-testid="offline-simulator-toggle" role="switch" tabindex="0" aria-checked="false" aria-label="Toggle network connectivity"><div class="knob"></div></div>
           <p data-testid="sim-network-label"><span class="dot sync"></span> 5G Sync — connected</p>
@@ -342,10 +356,10 @@
       </div>
         </details>
         <p class="client-invite-note">Already building? Ask your builder for an invite. <a href="/workspace/">Already invited? Open your workspace.</a></p>
-        <div class="client-boundary"><i></i> CLIENT VIEW // READ ONLY // SITE TOOLS HIDDEN</div>
+        <div class="client-boundary"><i></i> CLIENT VIEW // DECISIONS INCLUDED // SITE TOOLS HIDDEN</div>
       </div>
       <figure class="client-proof reveal">
-        <figcaption class="client-proof-label"><span>CURRENT PRODUCT // CLIENT HOME</span><b>DEMO DATA</b></figcaption>
+        <figcaption class="client-proof-label"><span>CLIENT HOME // PRODUCT PREVIEW</span><b>DEMO DATA</b></figcaption>
         <div class="client-screen"><img src="/assets/client-media/client-home-product.png" width="860" height="1560" loading="lazy" alt="Blueprint Builds client Home showing a client approval, project pulse and simplified client navigation" /></div>
         <div class="client-proof-footer" aria-label="Client navigation"><span>HOME</span><span>PROJECT</span><span>DECISIONS</span><span>ACCOUNT</span></div>
       <a class="bp-screen-link" href="/assets/client-media/client-home-product.png" target="_blank" rel="noopener" aria-label="View full-size Client Home example screen (opens a new tab)">View full-size Client Home screen</a>

@@ -352,13 +352,18 @@ section:not(.hero) { position: relative; padding: 94px 0; }
   .system-card:nth-child(5) { border-right: 0; }
 }
 
-@media (max-width: 980px) {
-  .nav-links, .nav-actions > .btn { display: none; }
+/* Switch to the compact menu before the desktop links crowd the header. */
+@media (max-width: 1350px) {
+  .nav-links { display: none; }
   .nav-toggle { display: block; }
   .mobile-menu.open { display: flex; }
   .mobile-menu { flex-direction: column; gap: 3px; padding: 11px 28px 22px; border-top: 1px solid rgba(31,62,83,.35); background: rgba(5,10,16,.97); }
   .mobile-menu a { padding: 11px 4px; border-bottom: 1px solid rgba(31,62,83,.5); color: #91A8B7; font-size: 14px; }
   .mobile-menu .btn { margin-top: 8px; color: #03111B; border-bottom: 0; }
+}
+
+@media (max-width: 980px) {
+  .nav-actions > .btn { display: none; }
   .section-heading { grid-template-columns: 1fr; gap: 18px; }
   .positioning-grid { grid-template-columns: 1fr; gap: 18px; }
   .positioning-bands { grid-column: 1; }
