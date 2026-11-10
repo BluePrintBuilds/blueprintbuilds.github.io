@@ -51,8 +51,24 @@
       root.querySelectorAll('[data-trace]').forEach((path, index) => animate(path,
         [{ strokeDasharray: '1', strokeDashoffset: '1', opacity: .15 }, { strokeDasharray: '1', strokeDashoffset: '0', opacity: .82 }],
         { duration: 1200, delay: index * 100 }));
-      animate(root.querySelector('[data-mark-stage]'), [{ opacity: .68, transform: 'translateY(7px)' }, { opacity: 1, transform: 'translateY(0)' }], { duration: 1500, delay: 150 });
-      animate(artwork, [{ opacity: .28, clipPath: 'inset(0 0 70% 0)' }, { opacity: 1, clipPath: 'inset(0 0 0% 0)' }], { duration: 1450, delay: 230 });
+      animate(root.querySelector('.bpb-plan-ghost'), [{ opacity: .12 }, { opacity: .57 }], { duration: 1750, delay: 100 });
+      animate(root.querySelector('.bpb-plan-detail'), [{ opacity: .08 }, { opacity: .62 }], { duration: 1500, delay: 350 });
+      animate(root.querySelector('.bpb-plan-node'), [{ opacity: .12 }, { opacity: 1 }], { duration: 900, delay: 1100 });
+      const stage = root.querySelector('[data-mark-stage]');
+      animate(stage, [{ opacity: .62, transform: 'translateY(7px) scale(.98)' }, { opacity: 1, transform: 'translateY(0) scale(1)' }], { duration: 1500, delay: 150 });
+      const revealTiming = { duration: 1650, delay: 230, easing: 'cubic-bezier(.42,0,.58,1)' };
+      animate(artwork, [{ opacity: .24, clipPath: 'inset(0 0 100% 0)' }, { opacity: 1, clipPath: 'inset(0 0 0% 0)' }], revealTiming);
+      const scan = root.querySelector('[data-arrival-scan]');
+      if (stage && scan) {
+        const frame = stage.getBoundingClientRect(), image = artwork.getBoundingClientRect();
+        const from = image.top - frame.top, to = from + image.height;
+        animate(scan, [
+          { opacity: 0, transform: `translateY(${from}px)` },
+          { opacity: .78, offset: .16 },
+          { opacity: .66, offset: .82 },
+          { opacity: 0, transform: `translateY(${to}px)` }
+        ], revealTiming);
+      }
       animate(root.querySelector('.bp-arrival-rule'), [{ opacity: .3, transform: 'scaleX(.1)' }, { opacity: 1, transform: 'scaleX(1)' }], { duration: 900, delay: 1080 });
       expiry = setTimeout(() => finish('complete'), 2400);
     } catch { finish('unsupported-motion'); }

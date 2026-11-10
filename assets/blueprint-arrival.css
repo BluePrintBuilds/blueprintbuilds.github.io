@@ -24,6 +24,8 @@
 .bpb-mark-stage::before,.bpb-mark-stage::after{content:"";position:absolute;width:20px;height:20px;pointer-events:none;border-color:#65adf1;border-style:solid}
 .bpb-mark-stage::before{left:-1px;top:-1px;border-width:1px 0 0 1px}.bpb-mark-stage::after{bottom:-1px;right:-1px;border-width:0 1px 1px 0}
 .bp-arrival-art{width:178px;height:178px;display:block;object-fit:contain;max-width:none;border-radius:34px}
+/* A single drafting-light sweep lives inside the existing brand panel. */
+.bp-arrival-scan{position:absolute;z-index:2;top:0;left:14%;right:14%;height:1px;opacity:0;pointer-events:none;background:linear-gradient(90deg,transparent,#71c9ff 23%,#e1f6ff 50%,#71c9ff 77%,transparent);box-shadow:0 0 10px 1px rgba(70,177,255,.5),0 0 24px 3px rgba(37,142,255,.2)}
 .bp-arrival-rule{position:absolute;bottom:25px;width:66px;height:2px;background:#258eff;transform-origin:left}
 .bp-arrival-skip{position:absolute;right:14px;bottom:0;min-height:44px;padding:10px 14px;border:1px solid #38536b;border-radius:9px;color:#c7d9e9;background:#0b1928;font:500 15px/1.4 var(--sans);pointer-events:auto;cursor:pointer}
 .bp-arrival-skip[hidden]{display:none!important}.bp-arrival-skip:hover{background:#132a3e}.bp-arrival-skip:focus-visible{outline:2px solid #8dcfff;outline-offset:4px}
