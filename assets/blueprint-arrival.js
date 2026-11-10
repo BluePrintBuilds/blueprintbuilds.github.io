@@ -15,7 +15,12 @@
   let animations = [], replayHadFocus = false;
   const canAnimate = () => !!root.animate && !motion.matches && !navigator.connection?.saveData;
   const showReplay = () => {
-    if (replay) replay.hidden = !canAnimate() || !finished || (artwork.complete && !artwork.naturalWidth);
+    if (!replay) return;
+    const hide = !canAnimate() || !finished || (artwork.complete && !artwork.naturalWidth);
+    if (hide && document.activeElement === replay) {
+      document.querySelector('.hero-actions a')?.focus({ preventScroll: true });
+    }
+    replay.hidden = hide;
   };
   const interaction = event => {
     if (event.target instanceof Element && event.target.closest('[data-arrival-skip], [data-arrival-replay]')) return;
