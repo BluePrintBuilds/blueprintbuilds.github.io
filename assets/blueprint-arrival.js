@@ -116,7 +116,8 @@
   artwork.addEventListener('error', showReplay);
   replay?.addEventListener('click', begin);
   skip?.addEventListener('click', () => finish('skip'));
-  motion.addEventListener?.('change', preference);
+  if (motion.addEventListener) motion.addEventListener('change', preference);
+  else motion.addListener?.(preference);
   navigator.connection?.addEventListener?.('change', dataSaver);
   showReplay();
   const navigation = performance.getEntriesByType('navigation')[0];
