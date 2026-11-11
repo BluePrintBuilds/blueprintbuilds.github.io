@@ -15,7 +15,12 @@
   let animations = [], replayHadFocus = false;
   const canAnimate = () => !!root.animate && !motion.matches && !navigator.connection?.saveData;
   const showReplay = () => {
-    if (replay) replay.hidden = !canAnimate() || !finished || (artwork.complete && !artwork.naturalWidth);
+    if (!replay) return;
+    const hide = !canAnimate() || !finished || (artwork.complete && !artwork.naturalWidth);
+    if (hide && document.activeElement === replay) {
+      document.querySelector('.hero-actions a')?.focus({ preventScroll: true });
+    }
+    replay.hidden = hide;
   };
   const interaction = event => {
     if (event.target instanceof Element && event.target.closest('[data-arrival-skip], [data-arrival-replay]')) return;
@@ -34,7 +39,9 @@
   const failedArt = () => finish('image-error');
   function finish(reason = 'complete') {
     if (finished) return;
-    const restoreReplayFocus = document.activeElement === skip;
+    const active = document.activeElement;
+    const focusWasLostDuringReplay = replayHadFocus && (active === document.body || active === document.documentElement);
+    const restoreReplayFocus = active === skip || active === replay || focusWasLostDuringReplay;
     finished = true; clearTimeout(expiry);
     animations.forEach(animation => animation.cancel()); animations = [];
     root.classList.remove('is-active'); root.dataset.state = 'finished';
@@ -45,7 +52,11 @@
     window.removeEventListener('scroll', scroll, true);
     document.removeEventListener('visibilitychange', background);
     showReplay();
-    if (restoreReplayFocus && replay && !replay.hidden) replay.focus({ preventScroll: true });
+    if (restoreReplayFocus) {
+      const target = replay && !replay.hidden ? replay : document.querySelector('.hero-actions a');
+      target?.focus({ preventScroll: true });
+    }
+    replayHadFocus = false;
   }
   function animate(element, frames, options) {
     if (!element) return;
@@ -105,7 +116,8 @@
   artwork.addEventListener('error', showReplay);
   replay?.addEventListener('click', begin);
   skip?.addEventListener('click', () => finish('skip'));
-  motion.addEventListener?.('change', preference);
+  if (motion.addEventListener) motion.addEventListener('change', preference);
+  else motion.addListener?.(preference);
   navigator.connection?.addEventListener?.('change', dataSaver);
   showReplay();
   const navigation = performance.getEntriesByType('navigation')[0];
